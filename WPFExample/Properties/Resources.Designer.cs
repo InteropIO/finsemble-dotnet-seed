@@ -8,7 +8,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace FinsembleWPFDemo.Properties {
+namespace WPFExample.Properties {
     using System;
     
     

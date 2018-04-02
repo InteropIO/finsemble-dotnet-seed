@@ -16,7 +16,7 @@ using ChartIQ.Finsemble;
 using Newtonsoft.Json.Linq;
 using System.Diagnostics;
 
-namespace FinsembleWPFDemo
+namespace WPFExample
 {
     /// <summary>
     /// Interaction logic for MainWindow.xaml
@@ -48,10 +48,10 @@ namespace FinsembleWPFDemo
         {
             FSBL = new Finsemble(args, this);
             FSBL.Connect();
-            FSBL.Connected += Bridge_Connected;
+            FSBL.Connected += Finsemble_Connected;
         }
 
-        private void Bridge_Connected(object sender, EventArgs e)
+        private void Finsemble_Connected(object sender, EventArgs e)
         {
             Application.Current.Dispatcher.Invoke(delegate //main thread
             {

@@ -3,9 +3,9 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
 VisualStudioVersion = 15.0.26228.9
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FinsembleWPFDemo", "FinsembleWPFDemo\FinsembleWPFDemo.csproj", "{B6FB5104-A0EA-479A-8BFC-4DFE207CEB24}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WPFExample", "WPFExample\WPFExample.csproj", "{B6FB5104-A0EA-479A-8BFC-4DFE207CEB24}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Authentication", "Authentication\Authentication.csproj", "{815ADC60-447D-445B-A875-B50218956A07}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AuthenticationExample", "AuthenticationExample\AuthenticationExample.csproj", "{815ADC60-447D-445B-A875-B50218956A07}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

@@ -34,7 +34,7 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <PropertyGroup>
-    <StartupObject>FinsembleWPFDemo.App</StartupObject>
+    <StartupObject>WPFExample.App</StartupObject>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="Finsemble">

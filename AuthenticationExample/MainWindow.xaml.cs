@@ -15,7 +15,7 @@ using System.Windows.Shapes;
 using ChartIQ.Finsemble;
 using Newtonsoft.Json.Linq;
 
-namespace Authentication
+namespace AuthenticationExample
 {
     /// <summary>
     /// Interaction logic for MainWindow.xaml
@@ -23,9 +23,6 @@ namespace Authentication
     public partial class MainWindow : Window
     {
         private Finsemble finsemble;
-        private string windowName;
-        private string componentType = "Unknown";
-        private string top, left, height, width, uuid;
 
         private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
         {
@@ -38,10 +35,10 @@ namespace Authentication
         {
             finsemble = new Finsemble(args, this);
             finsemble.Connect();
-            finsemble.Connected += Bridge_Connected;
+            finsemble.Connected += Finsemble_Connected;
         }
 
-        private void Bridge_Connected(object sender, EventArgs e)
+        private void Finsemble_Connected(object sender, EventArgs e)
         {
             Application.Current.Dispatcher.Invoke(delegate //main thread
             {
