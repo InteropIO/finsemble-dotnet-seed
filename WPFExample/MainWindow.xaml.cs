@@ -44,9 +44,13 @@ namespace WPFExample
             }, (s, a) => { });
         }
 
+        /// <summary>
+        /// The MainWindow is created by the App so that we can get command line arguments passed from Finsemble.
+        /// </summary>
+        /// <param name="args"></param>
         public MainWindow(string[] args)
         {
-            FSBL = new Finsemble(args, this);
+            FSBL = new Finsemble(args, this); // Finsemble needs the command line arguments to connect and also this Window to manage snapping, docking etc.
             FSBL.Connect();
             FSBL.Connected += Finsemble_Connected;
         }
@@ -56,11 +60,12 @@ namespace WPFExample
             Application.Current.Dispatcher.Invoke(delegate //main thread
             {
                 // Initialize this Window and show it
-                InitializeComponent();
-                FinsembleHeader.SetBridge(FSBL);
+                InitializeComponent(); // Initialize after Finsemble is connected
+                FinsembleHeader.SetBridge(FSBL); // The Header Control needs a connected finsemble instance
 
-                FSBL.dragAndDropClient.SetScrim(Scrim);
+                FSBL.dragAndDropClient.SetScrim(Scrim); // The Scrim Label Control is used for drag and drop.
 
+                // Receivers for dropped data.
                 FSBL.dragAndDropClient.AddReceivers(new List<KeyValuePair<string, EventHandler<FinsembleEventArgs>>>()
                 {
                 new KeyValuePair<string, EventHandler<FinsembleEventArgs>>("symbol", (s, args) =>
@@ -77,22 +82,24 @@ namespace WPFExample
                 })
                 });
 
+                // Emitters for data that can be dragged using the drag icon.
                 FSBL.dragAndDropClient.SetEmitters(new List<KeyValuePair<string, DragAndDropClient.emitter>>()
                 {
-                new KeyValuePair<string, DragAndDropClient.emitter>("symbol", () =>
-                {
-                    return new JObject
+                    new KeyValuePair<string, DragAndDropClient.emitter>("symbol", () =>
                     {
-                        ["symbol"] = DataToSend.Text,
-                        ["description"] = "Symbol " + DataToSend.Text
-                    };
-                })
+                        return new JObject
+                        {
+                            ["symbol"] = DataToSend.Text,
+                            ["description"] = "Symbol " + DataToSend.Text
+                        };
+                    })
                 });
 
                 this.Show();
 
             });
 
+            // Subscribe to Finsemble Linker Channels
             FSBL.RPC("LinkerClient.subscribe", new List<JToken>
             {
                 "symbol"

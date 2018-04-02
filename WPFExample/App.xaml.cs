@@ -16,8 +16,8 @@ namespace WPFExample
     {
         protected override void OnStartup(StartupEventArgs e)
         {
-            //Debugger.Launch();
-            var mainWindow = new MainWindow(e.Args);
+            //Debugger.Launch(); // uncomment to launch debugger when executing externally.
+            var mainWindow = new MainWindow(e.Args); // send command line arguments to main window.
         }
 
         private void Application_DispatcherUnhandledException(object sender, System.Windows.Threading.DispatcherUnhandledExceptionEventArgs e)
