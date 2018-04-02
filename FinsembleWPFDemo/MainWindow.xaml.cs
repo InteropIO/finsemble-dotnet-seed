@@ -57,7 +57,7 @@ namespace FinsembleWPFDemo
             {
                 // Initialize this Window and show it
                 InitializeComponent();
-                FinsembleHeader.setBridge(FSBL);
+                FinsembleHeader.SetBridge(FSBL);
 
                 FSBL.dragAndDropClient.SetScrim(Scrim);
 
