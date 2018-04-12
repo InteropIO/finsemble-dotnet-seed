@@ -20,7 +20,7 @@
     </WindowChrome.WindowChrome>
     <Border x:Name="WindowBorder" BorderBrush="#FF233958" BorderThickness="1">
         <Grid Background="White">
-            <Finsemble:FinsembleWPFHeader x:Name="FinsembleHeader" Height="32" VerticalAlignment="Top" Margin="0"/>
+            <Finsemble:WPFWindowTitleBar x:Name="FinsembleHeader" Height="32" VerticalAlignment="Top" Margin="0"/>
             <Button x:Name="Send" Content="Send Symbol" HorizontalAlignment="Left" Margin="10,76,0,0" VerticalAlignment="Top" Width="120" Height="23" Click="Send_Click" Panel.ZIndex="1"/>
             <TextBox Text="MSFT" x:Name="DataToSend" HorizontalAlignment="Left" Height="23" Margin="10,48,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="120" Panel.ZIndex="1"/>
             <Label x:Name="Scrim" Margin="0,32,0,0" AllowDrop="True" Visibility="Hidden"  Panel.ZIndex="1000" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" />
