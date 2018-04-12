@@ -63,6 +63,18 @@ namespace WPFExample
                 InitializeComponent(); // Initialize after Finsemble is connected
                 FinsembleHeader.SetBridge(FSBL); // The Header Control needs a connected finsemble instance
 
+                //Styling the Finsemble Header
+                /* 
+                FinsembleHeader.SetActiveBackground(new SolidColorBrush(Colors.Red));
+                FinsembleHeader.SetInactiveBackground(new SolidColorBrush(Colors.DarkRed));
+                FinsembleHeader.SetButtonHoverBackground(new SolidColorBrush(Colors.Purple));
+                FinsembleHeader.SetInactiveButtonHoverBackground(new SolidColorBrush(Colors.Yellow));
+                FinsembleHeader.SetCloseButtonHoverBackground(new SolidColorBrush(Colors.SeaShell));
+                FinsembleHeader.SetInactiveCloseButtonHoverBackground(new SolidColorBrush(Colors.BurlyWood));
+                FinsembleHeader.SetDockingButtonDockedBackground(new SolidColorBrush(Colors.BlanchedAlmond));
+                FinsembleHeader.SetTitleForeground(new SolidColorBrush(Colors.LightGoldenrodYellow));
+                FinsembleHeader.SetButtonForeground(new SolidColorBrush(Colors.LightSalmon));
+                */
                 FSBL.dragAndDropClient.SetScrim(Scrim); // The Scrim Label Control is used for drag and drop.
 
                 // Receivers for dropped data.
@@ -111,6 +123,29 @@ namespace WPFExample
                     DroppedData.Content = response?["data"]?.ToString();
                 });
             });
+
+            // Logging to the Finsemble Central Console
+            /*FSBL.RPC("Logger.error", new List<JToken> {
+                "Error Test"
+            });
+
+            FSBL.RPC("Logger.log", new List<JToken> {
+                "Log Test"
+            });
+
+            FSBL.RPC("Logger.debug", new List<JToken> {
+                "Debug Test"
+            });
+
+            FSBL.RPC("Logger.info", new List<JToken> {
+                "Info Test"
+            });
+
+            FSBL.RPC("Logger.verbose", new List<JToken> {
+                "Verbose Test"
+            });
+            */
+
         }
     }
 }
