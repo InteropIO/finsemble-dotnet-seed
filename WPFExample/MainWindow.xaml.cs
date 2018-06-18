@@ -29,7 +29,7 @@ namespace WPFExample
         {
             FSBL.RPC("LauncherClient.spawn", new List<JToken> {
                 "Advanced Chart",
-                new JObject { }
+                new JObject { ["addToWorkspace"] = true }
             }, (s, a) => { });
         }
 
@@ -75,10 +75,10 @@ namespace WPFExample
                 FinsembleHeader.SetTitleForeground(new SolidColorBrush(Colors.LightGoldenrodYellow));
                 FinsembleHeader.SetButtonForeground(new SolidColorBrush(Colors.LightSalmon));
                 */
-                FSBL.dragAndDropClient.SetScrim(Scrim); // The Scrim Label Control is used for drag and drop.
+                FSBL.DragAndDropClient.SetScrim(Scrim); // The Scrim Label Control is used for drag and drop.
 
                 // Receivers for dropped data.
-                FSBL.dragAndDropClient.AddReceivers(new List<KeyValuePair<string, EventHandler<FinsembleEventArgs>>>()
+                FSBL.DragAndDropClient.AddReceivers(new List<KeyValuePair<string, EventHandler<FinsembleEventArgs>>>()
                 {
                 new KeyValuePair<string, EventHandler<FinsembleEventArgs>>("symbol", (s, args) =>
                 {
@@ -95,7 +95,7 @@ namespace WPFExample
                 });
 
                 // Emitters for data that can be dragged using the drag icon.
-                FSBL.dragAndDropClient.SetEmitters(new List<KeyValuePair<string, DragAndDropClient.emitter>>()
+                FSBL.DragAndDropClient.SetEmitters(new List<KeyValuePair<string, DragAndDropClient.emitter>>()
                 {
                     new KeyValuePair<string, DragAndDropClient.emitter>("symbol", () =>
                     {
