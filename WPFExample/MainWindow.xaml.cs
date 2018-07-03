@@ -63,6 +63,15 @@ namespace WPFExample
                 InitializeComponent(); // Initialize after Finsemble is connected
                 FinsembleHeader.SetBridge(FSBL); // The Header Control needs a connected finsemble instance
 
+                FSBL.HandleClose((action) =>
+                {
+                    //handle things here that need to happen before close
+                    //when done call action() -> action is of type Action
+                    //currently this will only be called when close is initiated by Finsemble shutdown/restart.
+                    //will not happen when workspaces switch. This is being worked on in finsemble.
+                    action();
+                });
+
                 //Styling the Finsemble Header
                 /* 
                 FinsembleHeader.SetActiveBackground(new SolidColorBrush(Colors.Red));
