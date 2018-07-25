@@ -63,6 +63,9 @@ namespace WPFExample
                 InitializeComponent(); // Initialize after Finsemble is connected
                 FinsembleHeader.SetBridge(FSBL); // The Header Control needs a connected finsemble instance
 
+                // Trigger actions on close when requested by Finsemble, e.g.:
+                this.Closing += MainWindow_Closing;
+
                 FSBL.HandleClose((action) =>
                 {
                     //handle things here that need to happen before close
@@ -155,6 +158,20 @@ namespace WPFExample
             });
             */
 
+        }
+
+        /// <summary>
+        /// Example window close handler
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void MainWindow_Closing(object sender, System.ComponentModel.CancelEventArgs e)
+        {
+            /*if (MessageBox.Show("Close Application?", "Question", MessageBoxButton.YesNo, MessageBoxImage.Warning) == MessageBoxResult.No)
+            {
+                // Cancel Closing
+                e.Cancel = true;
+            }*/
         }
     }
 }
