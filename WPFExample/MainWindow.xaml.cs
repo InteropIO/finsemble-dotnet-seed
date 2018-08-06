@@ -86,6 +86,9 @@ namespace WPFExample
                 FinsembleHeader.SetTitleForeground(new SolidColorBrush(Colors.White));
                 FinsembleHeader.SetButtonForeground(new SolidColorBrush(Colors.White));
 
+                FinsembleHeader.SetButtonFont(null, 14, FontStyles.Normal, FontWeights.Normal);
+                FinsembleHeader.SetTitleFont(null, 14, FontStyles.Normal, FontWeights.Normal);
+
                 FSBL.DragAndDropClient.SetScrim(Scrim); // The Scrim Label Control is used for drag and drop.
 
                 // Receivers for dropped data.
