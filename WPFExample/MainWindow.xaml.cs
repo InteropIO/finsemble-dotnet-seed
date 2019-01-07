@@ -28,7 +28,7 @@ namespace WPFExample
         private void SpawnChart_Click(object sender, RoutedEventArgs e)
         {
             FSBL.RPC("LauncherClient.spawn", new List<JToken> {
-                "Advanced Chart",
+                "Welcome Component",
                 new JObject { ["addToWorkspace"] = true }
             }, (s, a) => { });
         }
@@ -50,12 +50,15 @@ namespace WPFExample
         /// <param name="args"></param>
         public MainWindow(string[] args)
         {
-            FSBL = new Finsemble(args, this); // Finsemble needs the command line arguments to connect and also this Window to manage snapping, docking etc.
-            FSBL.Connected += Finsemble_Connected;
-			FSBL.Connect();
-		}
+            // Trigger actions on close when requested by Finsemble, e.g.:
+            this.Closing += MainWindow_Closing;
 
-		private void Finsemble_Connected(object sender, EventArgs e)
+            FSBL = new Finsemble(args, this); // Finsemble needs the command line arguments to connect and also this Window to manage snapping, docking etc.
+            FSBL.Connect();
+            FSBL.Connected += Finsemble_Connected;
+        }
+
+        private void Finsemble_Connected(object sender, EventArgs e)
         {
             Application.Current.Dispatcher.Invoke(delegate //main thread
             {
@@ -63,30 +66,22 @@ namespace WPFExample
                 InitializeComponent(); // Initialize after Finsemble is connected
                 FinsembleHeader.SetBridge(FSBL); // The Header Control needs a connected finsemble instance
 
-                // Trigger actions on close when requested by Finsemble, e.g.:
-                this.Closing += MainWindow_Closing;
-
-                FSBL.HandleClose((action) =>
-                {
-                    //handle things here that need to happen before close
-                    //when done call action() -> action is of type Action
-                    //currently this will only be called when close is initiated by Finsemble shutdown/restart.
-                    //will not happen when workspaces switch. This is being worked on in finsemble.
-                    action();
-                });
-
                 //Styling the Finsemble Header
-                /* 
-                FinsembleHeader.SetActiveBackground(new SolidColorBrush(Colors.Red));
-                FinsembleHeader.SetInactiveBackground(new SolidColorBrush(Colors.DarkRed));
-                FinsembleHeader.SetButtonHoverBackground(new SolidColorBrush(Colors.Purple));
-                FinsembleHeader.SetInactiveButtonHoverBackground(new SolidColorBrush(Colors.Yellow));
-                FinsembleHeader.SetCloseButtonHoverBackground(new SolidColorBrush(Colors.SeaShell));
-                FinsembleHeader.SetInactiveCloseButtonHoverBackground(new SolidColorBrush(Colors.BurlyWood));
-                FinsembleHeader.SetDockingButtonDockedBackground(new SolidColorBrush(Colors.BlanchedAlmond));
-                FinsembleHeader.SetTitleForeground(new SolidColorBrush(Colors.LightGoldenrodYellow));
-                FinsembleHeader.SetButtonForeground(new SolidColorBrush(Colors.LightSalmon));
+                /*
+                FinsembleHeader.SetActiveBackground(new SolidColorBrush((Color)ColorConverter.ConvertFromString("#3C4C58")));
+                FinsembleHeader.SetInactiveBackground(new SolidColorBrush((Color)ColorConverter.ConvertFromString("#303D47")));
+                FinsembleHeader.SetButtonHoverBackground(new SolidColorBrush((Color)ColorConverter.ConvertFromString("#005BC5")));
+                FinsembleHeader.SetInactiveButtonHoverBackground(new SolidColorBrush((Color)ColorConverter.ConvertFromString("#004BA3")));
+                FinsembleHeader.SetCloseButtonHoverBackground(new SolidColorBrush((Color)ColorConverter.ConvertFromString("#D30E2D")));
+                FinsembleHeader.SetInactiveCloseButtonHoverBackground(new SolidColorBrush((Color)ColorConverter.ConvertFromString("#D30E2D")));
+                FinsembleHeader.SetDockingButtonDockedBackground(new SolidColorBrush((Color)ColorConverter.ConvertFromString("#005BC5")));
+                FinsembleHeader.SetTitleForeground(new SolidColorBrush(Colors.White));
+                FinsembleHeader.SetButtonForeground(new SolidColorBrush(Colors.White));
+
+                FinsembleHeader.SetButtonFont(null, 14, FontStyles.Normal, FontWeights.Normal);
+                FinsembleHeader.SetTitleFont(null, 14, FontStyles.Normal, FontWeights.Normal);
                 */
+
                 FSBL.DragAndDropClient.SetScrim(Scrim); // The Scrim Label Control is used for drag and drop.
 
                 // Receivers for dropped data.
@@ -118,6 +113,8 @@ namespace WPFExample
                         };
                     })
                 });
+
+                FSBL.LinkerClient.LinkToChannel("group2", null, (s, a) => { });
 
                 this.Show();
 
@@ -171,7 +168,14 @@ namespace WPFExample
             {
                 // Cancel Closing
                 e.Cancel = true;
+                return;
             }*/
         }
+
+        private void LinkToGroup_Click(object sender, RoutedEventArgs e)
+        {
+            FSBL.LinkerClient.LinkToChannel("group1", null, (s, r) => { });
+        }
+
     }
 }
