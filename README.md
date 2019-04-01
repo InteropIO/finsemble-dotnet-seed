@@ -7,4 +7,4 @@ The seed contains a three sample projects
 - WPFExample: This demonstrates using the Finsemble APIs for .NET apps and shows the WPF Window Title Bar user control which allows linking, drag and drop data sharing, and snapping and docking within Finsemble.
 - WindowlessExample: This demonstrates using the Finsemble API for .NET without a displayed window which facilitates communications between Finsemble and (headless) native service components.
 
-Visit our [Finsemble .NET Tutorial](https://documentation.chartiq.com/finsemble/tutorial-IntegratingANetApplication.html) for more documentation.
+Visit our [Native Integration tutorial](https://documentation.chartiq.com/finsemble/tutorial-integratingNativeApplications.html) for more documentation.
