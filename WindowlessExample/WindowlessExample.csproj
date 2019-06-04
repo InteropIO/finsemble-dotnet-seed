@@ -86,8 +86,8 @@
     <Reference Include="EventHook, Version=1.4.105.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\EventHook.1.4.105\lib\net45\EventHook.dll</HintPath>
     </Reference>
-    <Reference Include="Finsemble, Version=3.8.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\Finsemble.3.8.0\lib\net461\Finsemble.dll</HintPath>
+    <Reference Include="Finsemble, Version=3.9.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Finsemble.3.9.0\lib\net452\Finsemble.dll</HintPath>
     </Reference>
     <Reference Include="log4net, Version=2.0.8.0, Culture=neutral, PublicKeyToken=669e0ddf0bb1aa2a, processorArchitecture=MSIL">
       <HintPath>..\packages\log4net.2.0.8\lib\net45-full\log4net.dll</HintPath>
