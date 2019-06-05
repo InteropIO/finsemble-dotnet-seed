@@ -21,12 +21,13 @@
     <Border x:Name="WindowBorder" BorderBrush="#FF233958" BorderThickness="1">
         <Grid Background="White">
             <Finsemble:WPFWindowTitleBar x:Name="FinsembleHeader" Height="25" VerticalAlignment="Top" Margin="0"/>
-            <Button x:Name="Send" Content="Send Symbol" HorizontalAlignment="Left" Margin="10,76,0,0" VerticalAlignment="Top" Width="175" Height="23" Click="Send_Click" Panel.ZIndex="1"/>
-            <TextBox Text="MSFT" x:Name="DataToSend" HorizontalAlignment="Left" Height="23" Margin="10,48,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="175" Panel.ZIndex="1"/>
-            <Label x:Name="Scrim" Margin="0,25,0,0" AllowDrop="True" Visibility="Hidden"  Panel.ZIndex="1000" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" />
+            <Button x:Name="Send" Content="Send Symbol" HorizontalAlignment="Left" Margin="10,76,0,0" VerticalAlignment="Top" Width="120" Height="23" Click="Send_Click" Panel.ZIndex="1"/>
+            <TextBox Text="MSFT" x:Name="DataToSend" HorizontalAlignment="Left" Height="23" Margin="10,48,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="120" Panel.ZIndex="1"/>
+            <Label x:Name="Scrim" Margin="0,32,0,0" AllowDrop="True" Visibility="Hidden"  Panel.ZIndex="1000" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" />
             <Label x:Name="DroppedData" Margin="0" HorizontalContentAlignment="Center" FontSize="50" VerticalAlignment="Center"/>
-            <Button x:Name="SpawnChart" Content="Spawn Welcome Component" HorizontalAlignment="Left" Margin="9,124,0,0" VerticalAlignment="Top" Width="176" Height="23" Click="SpawnChart_Click"/>
-            <Button x:Name="LinkToGroup" Content="Link to Group 1" HorizontalAlignment="Left" Margin="9,177,0,0" VerticalAlignment="Top" Width="176" Height="23" Click="LinkToGroup_Click"/>
-        </Grid>
+            <Button x:Name="SpawnComponent" Content="Spawn Component" HorizontalAlignment="Left" Margin="10,169,0,0" VerticalAlignment="Top" Width="121" Height="23" Click="SpawnComponent_Click"/>
+            <Button x:Name="LinkToGroup" Content="Link to Group 1" HorizontalAlignment="Left" Margin="8,206,0,0" VerticalAlignment="Top" Width="121" Height="23" Click="LinkToGroup_Click"/>
+			<ComboBox x:Name="ComponentSelect" HorizontalAlignment="Left" Margin="11,142,0,0" VerticalAlignment="Top" Width="120"/>
+		</Grid>
     </Border>
 </Window>
