@@ -35,6 +35,13 @@ namespace WPFExample
 
         private void Send_Click(object sender, RoutedEventArgs e)
         {
+            //set state on click 
+            Application.Current.Dispatcher.Invoke(delegate //main thread
+            {
+                DroppedData.Content = DataToSend.Text;
+                SaveState();
+            });
+
             FSBL.RPC("LinkerClient.publish", new List<JToken>
             {
                 new JObject {
@@ -96,6 +103,8 @@ namespace WPFExample
                         {
                             DroppedData.Content = data.ToString();
                             DataToSend.Text = data.ToString();
+
+                            SaveState();
                         });
                     };
                 })
@@ -106,6 +115,12 @@ namespace WPFExample
                 {
                     new KeyValuePair<string, DragAndDropClient.emitter>("symbol", () =>
                     {
+                        //set state on drag so correct symbol is displayed
+                        Application.Current.Dispatcher.Invoke(delegate //main thread
+                        {
+                            DroppedData.Content = DataToSend.Text;
+                            SaveState();
+                        });
                         return new JObject
                         {
                             ["symbol"] = DataToSend.Text,
@@ -114,7 +129,8 @@ namespace WPFExample
                     })
                 });
 
-                FSBL.LinkerClient.LinkToChannel("group2", null, (s, a) => { });
+                //Programmatically link to a colour channel
+                //FSBL.LinkerClient.LinkToChannel("group2", null, (s, a) => { });
 
                 this.Show();
 
@@ -130,8 +146,12 @@ namespace WPFExample
                 {
                     DataToSend.Text = response?["data"]?.ToString();
                     DroppedData.Content = response?["data"]?.ToString();
+                    SaveState();
                 });
             });
+
+            //restore state if one exists
+            GetState();
 
             // Logging to the Finsemble Central Console
             /*FSBL.RPC("Logger.error", new List<JToken> {
@@ -175,6 +195,56 @@ namespace WPFExample
         private void LinkToGroup_Click(object sender, RoutedEventArgs e)
         {
             FSBL.LinkerClient.LinkToChannel("group1", null, (s, r) => { });
+        }
+
+        private void SaveState()
+        {
+            try
+            {
+                FSBL.WindowClient.SetComponentState(new JObject
+                {
+                    ["field"] = "symbol",
+                    ["value"] = DataToSend.Text
+                }, delegate (object s, FinsembleEventArgs e) { });
+            }
+            catch (Exception e)
+            {
+                MessageBox.Show(e.Message);
+            }
+
+        }
+
+        private void GetState()
+        {
+            FSBL.WindowClient.GetComponentState(
+                new JObject { ["field"] = "symbol" },
+                delegate (object s, FinsembleEventArgs state)
+                {
+                    try
+                    {
+                        if (state.response != null)
+                        {
+                            var symbol = (JValue)state.response;//?["data"];
+                            if (symbol != null)
+                            {
+                                var symbolTxt = symbol?.ToString();
+                                if (!string.IsNullOrEmpty(symbolTxt))
+                                {
+                                    Application.Current.Dispatcher.Invoke(delegate //main thread
+                                    {
+                                        DataToSend.Text = symbolTxt;
+                                        DroppedData.Content = symbolTxt;
+                                    });
+                                }
+                            }
+                        }
+                    }
+                    catch (Exception e)
+                    {
+                        MessageBox.Show(e.Message);
+                    }
+                }
+            );
         }
 
     }
