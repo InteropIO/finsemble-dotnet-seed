@@ -23,11 +23,14 @@ namespace WPFExample
 
 		private void SpawnComponent_Click(object sender, RoutedEventArgs e)
 		{
-			string componentName = ComponentSelect.SelectedValue.ToString();
-			FSBL.RPC("LauncherClient.spawn", new List<JToken> {
-				componentName,
-				new JObject { ["addToWorkspace"] = true }
-			}, (s, a) => { });
+            object selected = ComponentSelect.SelectedValue;
+            if (selected != null) {
+                string componentName = selected.ToString();
+                FSBL.RPC("LauncherClient.spawn", new List<JToken> {
+                    componentName,
+                    new JObject { ["addToWorkspace"] = true }
+                }, (s, a) => { });
+            }
 		}
 
 		private void Send_Click(object sender, RoutedEventArgs e)
