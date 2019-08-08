@@ -32,14 +32,23 @@ namespace WPFExample
 
 		private void Send_Click(object sender, RoutedEventArgs e)
 		{
-			FSBL.RPC("LinkerClient.publish", new List<JToken>
+            //set state on click 
+            Application.Current.Dispatcher.Invoke(delegate //main thread
+            {
+                DroppedData.Content = DataToSend.Text;
+                SaveState();
+            });
+
+            FSBL.RPC("LinkerClient.publish", new List<JToken>
 			{
 				new JObject {
 					["dataType"] = "symbol",
 					["data"] = DataToSend.Text
 				}
 			}, (s, a) => { });
-		}
+
+            
+        }
 
 		/// <summary>
 		/// The MainWindow is created by the App so that we can get command line arguments passed from Finsemble.
@@ -88,11 +97,12 @@ namespace WPFExample
 					var data = args.response["data"]?["symbol"]?["symbol"];
 					if(data != null)
 					{
-						Application.Current.Dispatcher.Invoke((Action)delegate //main thread
+                        Application.Current.Dispatcher.Invoke((Action)delegate //main thread
                         {
-							DroppedData.Content = data.ToString();
-							DataToSend.Text = data.ToString();
-						});
+                            DroppedData.Content = data.ToString();
+                            DataToSend.Text = data.ToString();
+                            SaveState();
+                        });
 					};
 				})
 				});
@@ -102,7 +112,13 @@ namespace WPFExample
 				{
 					new KeyValuePair<string, DragAndDropClient.emitter>("symbol", () =>
 					{
-						return new JObject
+                        //set state on drag so correct symbol is displayed
+                        Application.Current.Dispatcher.Invoke(delegate //main thread
+                        {
+                            DroppedData.Content = DataToSend.Text;
+                            SaveState();
+                        });
+                        return new JObject
 						{
 							["symbol"] = DataToSend.Text,
 							["description"] = "Symbol " + DataToSend.Text
@@ -110,8 +126,7 @@ namespace WPFExample
 					})
 				});
 
-				FSBL.LinkerClient.LinkToChannel("group2", null, (s, a) => { });
-
+				
 				FSBL.ConfigClient.GetValue(new JObject { ["field"] = "finsemble.components" }, (routerClient, response) =>
 				{
 					if (response.error != null)
@@ -134,7 +149,14 @@ namespace WPFExample
 					}
 				});
 
-				this.Show();
+                //restore state if one exists
+                UpdateDisplayData();
+
+                //Programmatically link to a colour channel
+                //FSBL.LinkerClient.LinkToChannel("group2", null, (s, a) => { });
+
+
+                this.Show();
 			});
 
 			// Subscribe to Finsemble Linker Channels
@@ -147,7 +169,9 @@ namespace WPFExample
 				{
 					DataToSend.Text = response?["data"]?.ToString();
 					DroppedData.Content = response?["data"]?.ToString();
-				});
+
+                    SaveState();
+                });
 			});
 
 			// Logging to the Finsemble Central Console
@@ -174,12 +198,12 @@ namespace WPFExample
 
 		}
 
-        /// <summary>
-        /// Example window close handler
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
-        private void MainWindow_Closing(object sender, System.ComponentModel.CancelEventArgs e)
+		/// <summary>
+		/// Example window close handler
+		/// </summary>
+		/// <param name="sender"></param>
+		/// <param name="e"></param>
+		private void MainWindow_Closing(object sender, System.ComponentModel.CancelEventArgs e)
         {
             /*if (MessageBox.Show("Close Application?", "Question", MessageBoxButton.YesNo, MessageBoxImage.Warning) == MessageBoxResult.No)
             {
@@ -194,5 +218,53 @@ namespace WPFExample
             FSBL.LinkerClient.LinkToChannel("group1", null, (s, r) => { });
         }
 
+        private void SaveState()
+        {
+            try
+            {
+                FSBL.WindowClient.SetComponentState(new JObject
+                {
+                    ["field"] = "symbol",
+                    ["value"] = DataToSend.Text
+                }, delegate (object s, FinsembleEventArgs e) { });
+            }
+            catch (Exception e)
+            {
+                MessageBox.Show(e.Message);
+            }
+
+        }
+
+        private void UpdateDisplayData()
+        {
+            FSBL.WindowClient.GetComponentState(
+                new JObject { ["field"] = "symbol" },
+                delegate (object s, FinsembleEventArgs state)
+                {
+                    try { 
+                        if (state.response != null)
+                        {
+                            var symbol = (JValue)state.response;//?["data"];
+                            if (symbol != null)
+                            {
+                                var symbolTxt = symbol?.ToString();
+                                if (!string.IsNullOrEmpty(symbolTxt))
+                                {
+                                    Application.Current.Dispatcher.Invoke(delegate //main thread
+                                    {
+                                        DataToSend.Text = symbolTxt;
+                                        DroppedData.Content = symbolTxt;
+                                    });
+                                }
+                            }
+                        }
+                    }
+                    catch (Exception e)
+                    {
+                        MessageBox.Show(e.Message);
+                    }
+                }
+            );
+        }
     }
 }
