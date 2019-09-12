@@ -19,7 +19,7 @@ namespace WPFExample
 		/// </summary>
 		private static readonly ILog Logger = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
 
-		private Finsemble FSBL;
+        private Finsemble FSBL;
 
 		private void SpawnComponent_Click(object sender, RoutedEventArgs e)
 		{
@@ -32,7 +32,7 @@ namespace WPFExample
 
 		private void Send_Click(object sender, RoutedEventArgs e)
 		{
-            //set state on click 
+            //set state on click
             Application.Current.Dispatcher.Invoke(delegate //main thread
             {
                 DroppedData.Content = DataToSend.Text;
@@ -47,7 +47,6 @@ namespace WPFExample
 				}
 			}, (s, a) => { });
 
-            
         }
 
 		/// <summary>
@@ -126,10 +125,9 @@ namespace WPFExample
 					})
 				});
 
-				
 				FSBL.ConfigClient.GetValue(new JObject { ["field"] = "finsemble.components" }, (routerClient, response) =>
 				{
-					if (response.error != null)
+                    if (response.error != null)
 					{
 						Logger.Error(response.error);
 						return;
@@ -140,7 +138,7 @@ namespace WPFExample
 					{
 						object value = components?[property.Name]?["foreign"]?["components"]?["App Launcher"]?["launchableByUser"];
 						if ((value != null) && bool.Parse(value.ToString()))
-						{
+                        {
 							Application.Current.Dispatcher.Invoke(delegate //main thread
 							{
 								ComponentSelect.Items.Add(property.Name);
@@ -149,18 +147,15 @@ namespace WPFExample
 					}
 				});
 
+                FSBL.LinkerClient.LinkToChannel("group2", null, (s, a) => { });
                 //restore state if one exists
                 UpdateDisplayData();
-
-                //Programmatically link to a colour channel
-                //FSBL.LinkerClient.LinkToChannel("group2", null, (s, a) => { });
-
 
                 this.Show();
 			});
 
-			// Subscribe to Finsemble Linker Channels
-			FSBL.RPC("LinkerClient.subscribe", new List<JToken>
+            // Subscribe to Finsemble Linker Channels
+            FSBL.RPC("LinkerClient.subscribe", new List<JToken>
 			{
 				"symbol"
 			}, (error, response) =>
@@ -241,7 +236,7 @@ namespace WPFExample
                 new JObject { ["field"] = "symbol" },
                 delegate (object s, FinsembleEventArgs state)
                 {
-                    try { 
+                    try {
                         if (state.response != null)
                         {
                             var symbol = (JValue)state.response;//?["data"];
