@@ -47,7 +47,6 @@ namespace WPFExample
 				}
 			}, (s, a) => { });
 
-
         }
 
 		/// <summary>
@@ -125,7 +124,6 @@ namespace WPFExample
 						};
 					})
 				});
-
 
 				FSBL.ConfigClient.GetValue(new JObject { ["field"] = "finsemble.components" }, (routerClient, response) =>
 				{
