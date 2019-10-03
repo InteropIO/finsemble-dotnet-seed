@@ -21,6 +21,14 @@ namespace WPFExample
 
         private Finsemble FSBL;
 
+		private DateTime finsembleRequestedCloseAt = DateTime.MinValue;
+		private bool finsembleRequestedClose()
+		{
+			//did user close close in the last second
+			TimeSpan timeDiff = DateTime.UtcNow - finsembleRequestedCloseAt;
+			return timeDiff.TotalMilliseconds < 1000.0;
+		}
+
 		private void SpawnComponent_Click(object sender, RoutedEventArgs e)
 		{
 			string componentName = ComponentSelect.SelectedValue.ToString();
@@ -63,6 +71,7 @@ namespace WPFExample
 			FSBL.Connected += Finsemble_Connected;
 			FSBL.Connect();
 		}
+
 
 		private void Finsemble_Connected(object sender, EventArgs e)
 		{
@@ -191,6 +200,13 @@ namespace WPFExample
             });
             */
 
+			//listen for window close requests from FInsemble so we can differentiate user and system close requests
+			string closeTopic = "WindowService-Event-" + FSBL.windowName + "-close-requested";
+			FSBL.RouterClient.AddListener(closeTopic, (s, args) =>
+			{
+				finsembleRequestedCloseAt = DateTime.UtcNow;
+			});
+
 		}
 
 		/// <summary>
@@ -200,13 +216,26 @@ namespace WPFExample
 		/// <param name="e"></param>
 		private void MainWindow_Closing(object sender, System.ComponentModel.CancelEventArgs e)
         {
-            /*if (MessageBox.Show("Close Application?", "Question", MessageBoxButton.YesNo, MessageBoxImage.Warning) == MessageBoxResult.No)
-            {
-                // Cancel Closing
-                e.Cancel = true;
-                return;
-            }*/
-        }
+			//consider yielding here to let the message arrive?
+			if (finsembleRequestedClose())
+			{
+				if (MessageBox.Show("Finsemble is requesting that this app close, proceed?", "Question", MessageBoxButton.YesNo, MessageBoxImage.Warning) == MessageBoxResult.No)
+				{
+					// Cancel Closing
+					e.Cancel = true;
+					return;
+				}
+			}
+			else
+			{
+				if (MessageBox.Show("Close Application?", "Question", MessageBoxButton.YesNo, MessageBoxImage.Warning) == MessageBoxResult.No)
+				{
+					// Cancel Closing
+					e.Cancel = true;
+					return;
+				}
+			}
+		}
 
         private void LinkToGroup_Click(object sender, RoutedEventArgs e)
         {
