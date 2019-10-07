@@ -201,10 +201,36 @@ namespace WPFExample
             */
 
 			//listen for window close requests from FInsemble so we can differentiate user and system close requests
-			string closeTopic = "WindowService-Event-" + FSBL.windowName + "-close-requested";
+			/*string closeTopic = "WindowService-Event-" + FSBL.windowName + "-close-requested";
 			FSBL.RouterClient.AddListener(closeTopic, (s, args) =>
 			{
 				finsembleRequestedCloseAt = DateTime.UtcNow;
+			});*/
+
+			//wait for the window to come up
+			FSBL.RouterClient.AddListener("WindowService-Event-" + FSBL.windowName + "-ready", (t, arguments) =>
+			{
+				//Register an event listener to pause Finsemble during workspace switch/shutdown/restart events until this listener responds
+				var guid = DateTime.UtcNow + " " + FSBL.windowName;
+				FSBL.RouterClient.Query("WindowService-Request-addEventListener", new JObject
+				{
+					["windowIdentifier"] = FSBL.WindowClient.windowIdentifier,
+					["eventName"] = "close-requested",
+					["guid"] = guid
+				}, (s, args) => {
+
+				});
+
+				//When a close-requested event fires, log the timestamp abd then publish on the interrupt channel to let FInsemble know it can continue 
+				string closeTopic = "WindowService-Event-" + FSBL.windowName + "-close-requested";
+				FSBL.RouterClient.AddListener(closeTopic, (s, args) =>
+				{
+					finsembleRequestedCloseAt = DateTime.UtcNow;
+					FSBL.RouterClient.Publish("Finsemble.Event.Interrupt." + guid, new JObject
+					{
+						["delayed"] = false
+					});
+				});
 			});
 
 		}
