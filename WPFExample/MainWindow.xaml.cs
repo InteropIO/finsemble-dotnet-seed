@@ -47,6 +47,7 @@ namespace WPFExample
 				}
 			}, (s, a) => { });
 
+
         }
 
 		/// <summary>
@@ -100,14 +101,33 @@ namespace WPFExample
                         {
                             DroppedData.Content = data.ToString();
                             DataToSend.Text = data.ToString();
-                            SaveState();
+							DroppedDataSource.Content = "via Drag and Drop";
+							SaveState();
                         });
 					};
 				})
 				});
 
-				// Emitters for data that can be dragged using the drag icon.
-				FSBL.DragAndDropClient.SetEmitters(new List<KeyValuePair<string, DragAndDropClient.emitter>>()
+                string fieldName = "finsemble.components." + FSBL.componentType;
+                FSBL.ConfigClient.GetValue(new JObject { ["field"] = fieldName }, (routerClient, response) =>
+                {
+                    if (response.error != null)
+                    {
+                        Logger.Error(response.error);
+                        return;
+                    }
+
+                    bool? alwaysOnTopIconConfigValue = (bool?)response.response?["data"]?["foreign"]?["components"]?["Window Manager"]?["alwaysOnTopIcon"];
+                    bool showAlwaysOnTopButton = false;
+                    if (alwaysOnTopIconConfigValue != null)
+                    {
+                        showAlwaysOnTopButton = (bool) alwaysOnTopIconConfigValue;
+                    }
+                    FinsembleHeader.setAlwaysOnTopButton(showAlwaysOnTopButton);
+                });
+
+                // Emitters for data that can be dragged using the drag icon.
+                FSBL.DragAndDropClient.SetEmitters(new List<KeyValuePair<string, DragAndDropClient.emitter>>()
 				{
 					new KeyValuePair<string, DragAndDropClient.emitter>("symbol", () =>
 					{
@@ -115,7 +135,7 @@ namespace WPFExample
                         Application.Current.Dispatcher.Invoke(delegate //main thread
                         {
                             DroppedData.Content = DataToSend.Text;
-                            SaveState();
+							SaveState();
                         });
                         return new JObject
 						{
@@ -124,6 +144,7 @@ namespace WPFExample
 						};
 					})
 				});
+
 
 				FSBL.ConfigClient.GetValue(new JObject { ["field"] = "finsemble.components" }, (routerClient, response) =>
 				{
@@ -164,10 +185,15 @@ namespace WPFExample
 				{
 					DataToSend.Text = response?["data"]?.ToString();
 					DroppedData.Content = response?["data"]?.ToString();
-
-                    SaveState();
+					DroppedDataSource.Content = "via Linker";
+					SaveState();
                 });
 			});
+
+			//Subscribe to a PubSub topic
+			//N.B. You must add a PubSub responder before publishing or subscribing to any topic that doesn't start with 'Finsemble'
+			//     This is not currently supported in the .Net RouterClient implementation and will need to done in a Finsemble HTML5 service
+			Subscribe_to_pubsub();
 
 			// Logging to the Finsemble Central Console
 			/*FSBL.RPC("Logger.error", new List<JToken> {
@@ -239,7 +265,7 @@ namespace WPFExample
                     try {
                         if (state.response != null)
                         {
-                            var symbol = (JValue)state.response;//?["data"];
+                            var symbol = (JValue)state.response;
                             if (symbol != null)
                             {
                                 var symbolTxt = symbol?.ToString();
@@ -249,7 +275,8 @@ namespace WPFExample
                                     {
                                         DataToSend.Text = symbolTxt;
                                         DroppedData.Content = symbolTxt;
-                                    });
+										DroppedDataSource.Content = "via component state";
+									});
                                 }
                             }
                         }
@@ -261,5 +288,52 @@ namespace WPFExample
                 }
             );
         }
-    }
+
+		private void Publish_Click(object sender, RoutedEventArgs e)
+		{
+			//set state on click 
+			Application.Current.Dispatcher.Invoke(delegate //main thread
+			{
+				DroppedData.Content = DataToSend.Text;
+				SaveState();
+			});
+
+			//N.B. You must add a PubSub responder before publishing or subscribing to any topic that doesn't start with 'Finsemble'
+			// This is not currently supported in the .Net RouterClient implementation and will need to done in a Finsemble HTML5 service
+			FSBL.RouterClient.Publish("Finsemble.TestWPFPubSubSymbol", new JObject {
+					["symbol"] = DataToSend.Text
+			});
+		}
+
+		private void Subscribe_to_pubsub()
+		{
+			FSBL.RouterClient.Subscribe("Finsemble.TestWPFPubSubSymbol", delegate (object s, FinsembleEventArgs state)
+			{
+				try
+				{
+					if (state.response != null)
+					{
+						var pubSubData = (JObject)state.response;
+						Application.Current.Dispatcher.Invoke(delegate //main thread
+						{
+							// The initial publish will always be an empty object.
+							// Therefore, we need these null operators to handle that case.
+							var theData = ((JValue)pubSubData?["data"]?["symbol"])?.ToString();
+							if (theData != null) {
+								DataToSend.Text = theData;
+								DroppedData.Content = theData;
+								DroppedDataSource.Content = "via PubSub";
+
+								SaveState();
+							}
+						});
+					}
+				}
+				catch (Exception ex)
+				{
+					MessageBox.Show(ex.Message);
+				}
+			});
+		}
+	}
 }
