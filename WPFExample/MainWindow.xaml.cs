@@ -26,7 +26,7 @@ namespace WPFExample
 		{
 			//did user close close in the last second
 			TimeSpan timeDiff = DateTime.UtcNow - finsembleRequestedCloseAt;
-			return timeDiff.TotalMilliseconds < 1000.0;
+			return timeDiff.TotalMilliseconds < 5000.0;
 		}
 
 		private void SpawnComponent_Click(object sender, RoutedEventArgs e)
