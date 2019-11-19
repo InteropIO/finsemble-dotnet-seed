@@ -21,13 +21,7 @@ namespace WPFExample
 
         private Finsemble FSBL;
 
-		private DateTime finsembleRequestedCloseAt = DateTime.MinValue;
-		private bool finsembleRequestedClose()
-		{
-			//did user close close in the last second
-			TimeSpan timeDiff = DateTime.UtcNow - finsembleRequestedCloseAt;
-			return timeDiff.TotalMilliseconds < 5000.0;
-		}
+		private bool finsembleRequestedClose = false;
 
 		private void SpawnComponent_Click(object sender, RoutedEventArgs e)
 		{
@@ -225,7 +219,7 @@ namespace WPFExample
 				string closeTopic = "WindowService-Event-" + FSBL.windowName + "-close-requested";
 				FSBL.RouterClient.AddListener(closeTopic, (s, args) =>
 				{
-					finsembleRequestedCloseAt = DateTime.UtcNow;
+					finsembleRequestedClose = true;
 					FSBL.RouterClient.Publish("Finsemble.Event.Interrupt." + guid, new JObject
 					{
 						["delayed"] = false
@@ -243,8 +237,9 @@ namespace WPFExample
 		private void MainWindow_Closing(object sender, System.ComponentModel.CancelEventArgs e)
         {
 			//consider yielding here to let the message arrive?
-			if (finsembleRequestedClose())
+			if (finsembleRequestedClose)
 			{
+				finsembleRequestedClose = false;
 				if (MessageBox.Show("Finsemble is requesting that this app close, proceed?", "Question", MessageBoxButton.YesNo, MessageBoxImage.Warning) == MessageBoxResult.No)
 				{
 					// Cancel Closing
