@@ -21,6 +21,8 @@ namespace WPFExample
 
         private Finsemble FSBL;
 
+		private bool finsembleRequestedClose = false;
+
 		private void SpawnComponent_Click(object sender, RoutedEventArgs e)
 		{
 			string componentName = ComponentSelect.SelectedValue.ToString();
@@ -64,6 +66,7 @@ namespace WPFExample
 			FSBL.Connected += Finsemble_Connected;
 			FSBL.Connect();
 		}
+
 
 		private void Finsemble_Connected(object sender, EventArgs e)
 		{
@@ -217,6 +220,39 @@ namespace WPFExample
             });
             */
 
+			//listen for window close requests from FInsemble so we can differentiate user and system close requests
+			/*string closeTopic = "WindowService-Event-" + FSBL.windowName + "-close-requested";
+			FSBL.RouterClient.AddListener(closeTopic, (s, args) =>
+			{
+				finsembleRequestedCloseAt = DateTime.UtcNow;
+			});*/
+
+			//wait for the window to come up
+			FSBL.RouterClient.AddListener("WindowService-Event-" + FSBL.windowName + "-ready", (t, arguments) =>
+			{
+				//Register an event listener to pause Finsemble during workspace switch/shutdown/restart events until this listener responds
+				var guid = DateTime.UtcNow + " " + FSBL.windowName;
+				FSBL.RouterClient.Query("WindowService-Request-addEventListener", new JObject
+				{
+					["windowIdentifier"] = FSBL.WindowClient.windowIdentifier,
+					["eventName"] = "close-requested",
+					["guid"] = guid
+				}, (s, args) => {
+
+				});
+
+				//When a close-requested event fires, log the timestamp abd then publish on the interrupt channel to let FInsemble know it can continue 
+				string closeTopic = "WindowService-Event-" + FSBL.windowName + "-close-requested";
+				FSBL.RouterClient.AddListener(closeTopic, (s, args) =>
+				{
+					finsembleRequestedClose = true;
+					FSBL.RouterClient.Publish("Finsemble.Event.Interrupt." + guid, new JObject
+					{
+						["delayed"] = false
+					});
+				});
+			});
+
 		}
 
 		/// <summary>
@@ -226,13 +262,27 @@ namespace WPFExample
 		/// <param name="e"></param>
 		private void MainWindow_Closing(object sender, System.ComponentModel.CancelEventArgs e)
         {
-            /*if (MessageBox.Show("Close Application?", "Question", MessageBoxButton.YesNo, MessageBoxImage.Warning) == MessageBoxResult.No)
-            {
-                // Cancel Closing
-                e.Cancel = true;
-                return;
-            }*/
-        }
+			//consider yielding here to let the message arrive?
+			if (finsembleRequestedClose)
+			{
+				finsembleRequestedClose = false;
+				if (MessageBox.Show("Finsemble is requesting that this app close, proceed?", "Question", MessageBoxButton.YesNo, MessageBoxImage.Warning) == MessageBoxResult.No)
+				{
+					// Cancel Closing
+					e.Cancel = true;
+					return;
+				}
+			}
+			else
+			{
+				if (MessageBox.Show("Close Application?", "Question", MessageBoxButton.YesNo, MessageBoxImage.Warning) == MessageBoxResult.No)
+				{
+					// Cancel Closing
+					e.Cancel = true;
+					return;
+				}
+			}
+		}
 
         private void LinkToGroup_Click(object sender, RoutedEventArgs e)
         {
