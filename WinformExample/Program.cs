@@ -14,7 +14,6 @@ namespace WinformExample
         /// The main entry point for the application.
         /// </summary>
         /// 
-        private static Finsemble FSBL = null;
 
 
         [STAThread]
