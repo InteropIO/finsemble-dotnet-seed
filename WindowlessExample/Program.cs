@@ -14,14 +14,27 @@ namespace ConsoleAppExample
 
         private static Finsemble FSBL = null;
 
-        static void Main(string[] args)
+        static void Main() // ignore the commandline arguments as we're going to manually generate them in this example
         {
 #if DEBUG
 			System.Diagnostics.Debugger.Launch();
 #endif
 
-            // Initialize Finsemble
-            FSBL = new Finsemble(args, null);
+			string[] args = new string[] {
+				"finsembleWindowName=WindowlessExample-non-finsemble-launch", //artificial window name - note as this should always be unique across the finsemble instance so only run one isntance or find a way to make it unique 
+				"componentType=WindowlessExample", //ensure that the component type appears in your Finsemble configuration
+				"uuid=dummy_uuid", //provide a dummy uuid
+				"iac=true",
+				"serverAddress=ws://127.0.0.1:3376",
+				//the position parameters can be included if your window will be managed by Finsemble, omit otherwise
+				//"left=100", 
+				//"top=100",
+				//"width=800",
+				//"height=600"
+			};
+
+			// Initialize Finsemble
+			FSBL = new Finsemble(args, null); //Note that second argument is null if the window is not managed by FInsemble (or there is no window) 
             FSBL.Connected += OnConnected;
             FSBL.Disconnected += OnShutdown;
             FSBL.Connect();
