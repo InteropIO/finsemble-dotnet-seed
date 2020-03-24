@@ -46,20 +46,27 @@ namespace ConsoleAppExample
 
 			FSBL.RouterClient.AddResponder("Windowless.SelectDirectory", (s1, e1) =>
 			{
-			using (var folderBrowserDialog = new FolderBrowserDialog())
+			  string folder = e1.response?["data"]?["selectedFolder"]?.ToString();
+			  if (string.IsNullOrEmpty(folder)) {
+					folder = Environment.GetFolderPath(Environment.SpecialFolder.Personal);
+			  }
+
+				using (var folderBrowserDialog = new FolderBrowserDialog())
 			{
 				var folderName = string.Empty;
 				folderBrowserDialog.Description = "Select the directory that you want to use";
 				folderBrowserDialog.ShowNewFolderButton = true;
-				folderBrowserDialog.RootFolder = Environment.SpecialFolder.Personal;
+				folderBrowserDialog.SelectedPath = folder;
 
 				Thread thread = new Thread(new ThreadStart(() =>
 				{
-					if (folderBrowserDialog.ShowDialog() == DialogResult.OK)
+				  var parent = new Form() { TopMost = true, TopLevel = true };
+				  parent.BringToFront();
+				  if (folderBrowserDialog.ShowDialog(parent) == DialogResult.OK)
 					{
 						folderName = folderBrowserDialog.SelectedPath;
 					}
-
+					
 					var msg = new JObject()
 					{
 						["selectedPath"] = folderName
