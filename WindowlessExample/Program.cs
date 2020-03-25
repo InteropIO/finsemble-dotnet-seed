@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.IO;
 using System.Threading;
 using System.Windows.Forms;
@@ -9,8 +8,8 @@ using Newtonsoft.Json.Linq;
 
 namespace ConsoleAppExample
 {
-  class Program
-  {
+	class Program
+	{
 		private static readonly System.Timers.Timer timer = new System.Timers.Timer();
 		private static readonly AutoResetEvent autoEvent = new AutoResetEvent(false);
 		private static readonly object lockObj = new object();
@@ -20,9 +19,9 @@ namespace ConsoleAppExample
 		[STAThread]
 		static void Main(string[] args)
 		{
-	#if DEBUG
+#if DEBUG
 			System.Diagnostics.Debugger.Launch();
-	#endif
+#endif
 
 			// Initialize Finsemble
 			FSBL = new Finsemble(args, null);
@@ -46,38 +45,39 @@ namespace ConsoleAppExample
 
 			FSBL.RouterClient.AddResponder("Windowless.SelectDirectory", (s1, e1) =>
 			{
-			  string folder = e1.response?["data"]?["selectedFolder"]?.ToString();
-			  if (string.IsNullOrEmpty(folder)) {
+				string folder = e1.response?["data"]?["selectedFolder"]?.ToString();
+				if (string.IsNullOrEmpty(folder))
+				{
 					folder = Environment.GetFolderPath(Environment.SpecialFolder.Personal);
-			  }
+				}
 
 				using (var folderBrowserDialog = new FolderBrowserDialog())
-			{
-				var folderName = string.Empty;
-				folderBrowserDialog.Description = "Select the directory that you want to use";
-				folderBrowserDialog.ShowNewFolderButton = true;
-				folderBrowserDialog.SelectedPath = folder;
-
-				Thread thread = new Thread(new ThreadStart(() =>
 				{
-				  var parent = new Form() { TopMost = true, TopLevel = true };
-				  parent.BringToFront();
-				  if (folderBrowserDialog.ShowDialog(parent) == DialogResult.OK)
-					{
-						folderName = folderBrowserDialog.SelectedPath;
-					}
-					
-					var msg = new JObject()
-					{
-						["selectedPath"] = folderName
-					};
+					var folderName = string.Empty;
+					folderBrowserDialog.Description = "Select the directory that you want to use";
+					folderBrowserDialog.ShowNewFolderButton = true;
+					folderBrowserDialog.SelectedPath = folder;
 
-					// Return folder name is query
-					e1.sendQueryMessage(msg);
-				}));
-				thread.SetApartmentState(ApartmentState.STA);
-				thread.Start();
-			}
+					Thread thread = new Thread(new ThreadStart(() =>
+					{
+						var parent = new Form() { TopMost = true, TopLevel = true };
+						parent.BringToFront();
+						if (folderBrowserDialog.ShowDialog(parent) == DialogResult.OK)
+						{
+							folderName = folderBrowserDialog.SelectedPath;
+						}
+
+						var msg = new JObject()
+						{
+							["selectedPath"] = folderName
+						};
+
+						// Return folder name is query
+						e1.sendQueryMessage(msg);
+					}));
+					thread.SetApartmentState(ApartmentState.STA);
+					thread.Start();
+				}
 
 			});
 			FSBL.RouterClient.AddResponder("Windowless.DirectoryList", (s1, e1) =>
@@ -87,19 +87,41 @@ namespace ConsoleAppExample
 				// if folder is not null, list the folder contents, if the folder is null, return an error message
 				if (string.IsNullOrEmpty(folder))
 				{
-					// return error
+					// TODO: return error
 
-				}
-				else
+				} else if (!Directory.Exists (folder))
+				{
+					// TODO: return error
+				} else
 				{
 					string[] filePaths = Directory.GetFiles(folder);
-					IList<string> filenames = new List<string>();
-					foreach (string filePath in filePaths)
+					string[] folderPaths = Directory.GetDirectories(folder);
+
+					var msg = new JArray();
+					foreach (string folderPath in folderPaths)
 					{
-						filenames.Add(Path.GetFileName(filePath));
+						var directoryInfo = new DirectoryInfo(folderPath);
+						var item = new JObject()
+						{
+							["name"] = directoryInfo.Name,
+							["modified"] = directoryInfo.LastWriteTime.ToString("MM/dd/yyyy h:mm tt"), ["type"] = "Folder"
+						};
+						msg.Add (item);
 					}
 
-					var msg = new JArray(filenames);
+					foreach (string filePath in filePaths)
+					{
+						var fileInfo = new FileInfo(filePath);
+						var item = new JObject()
+						{
+							["name"] = fileInfo.Name,
+							["modified"] = fileInfo.LastWriteTime.ToString("MM/dd/yyyy h:mm tt"),
+							["type"] = fileInfo.Extension,
+							["size"] = fileInfo.Length
+						};
+						msg.Add(item);
+					}
+
 					e1.sendQueryMessage(msg);
 				}
 			});
@@ -108,7 +130,17 @@ namespace ConsoleAppExample
 			{
 				string filename = e1.response?["data"]?["filename"]?.ToString();
 				string contents = e1.response?["data"]?["contents"]?.ToString();
-				File.WriteAllText(filename, contents);
+
+				JObject msg = new JObject();
+				try
+				{
+					File.WriteAllText(filename, contents);
+					msg["success"] = true;
+				} catch (Exception ex)
+				{
+					// TODO: Send error
+				}
+				e1.sendQueryMessage(msg);
 			});
 		}
 
@@ -134,12 +166,11 @@ namespace ConsoleAppExample
 							FSBL = null;
 						}
 					}
-
 				}
 			}
 
 			// Release main thread so application can exit.
 			autoEvent.Set();
 		}
-  }
+	}
 }
