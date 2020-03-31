@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Threading;
+using System.Windows;
 using System.Windows.Forms;
 using ChartIQ.Finsemble;
 using Newtonsoft.Json.Linq;
@@ -60,8 +61,9 @@ namespace ConsoleAppExample
 
 					Thread thread = new Thread(new ThreadStart(() =>
 					{
-						var parent = new Form() { TopMost = true, TopLevel = true };
-						parent.BringToFront();
+						var parent = new Form() { StartPosition = FormStartPosition.CenterScreen, Opacity = 0, ShowInTaskbar = false };
+					  parent.Show();
+					  parent.Activate();
 						if (folderBrowserDialog.ShowDialog(parent) == DialogResult.OK)
 						{
 							folderName = folderBrowserDialog.SelectedPath;
