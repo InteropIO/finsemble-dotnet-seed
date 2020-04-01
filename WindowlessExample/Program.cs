@@ -127,7 +127,20 @@ namespace ConsoleAppExample
 					e1.sendQueryMessage(msg);
 				}
 			});
+			FSBL.RouterClient.AddResponder("Windowless.ReadFile", (s1, e1) => {
+			  string filename = e1.response?["data"]?["filename"]?.ToString();
 
+			  JObject msg = new JObject();
+			  try
+			  {
+					string contents = File.ReadAllText(filename);
+					msg["contents"] = contents;
+			  } catch (Exception ex)
+				{
+					// TODO: Send error
+				}
+			  e1.sendQueryMessage(msg);
+			});
 			FSBL.RouterClient.AddResponder("Windowless.WriteFile", (s1, e1) =>
 			{
 				string filename = e1.response?["data"]?["filename"]?.ToString();
