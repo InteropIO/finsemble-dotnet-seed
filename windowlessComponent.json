@@ -1,0 +1,25 @@
+﻿{
+	"components": {
+		"WindowlessExample": {
+			"window": {
+				"id": "Windowless",
+				"name": "winlessSeed",
+				"windowType": "FinsembleNativeWindow",
+				"path": "$windowlessRoot/WindowlessExample.exe",
+				"arguments": "",
+				"autoShow": false,
+				"addToWorkspace": false
+			},
+			"component": {
+				"spawnOnStartup": true
+			},
+			"foreign": {
+				"components": {
+					"App Launcher": {
+						"launchableByUser": false
+					}
+				}
+			}
+		}
+	}
+}
