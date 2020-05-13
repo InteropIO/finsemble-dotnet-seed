@@ -21,6 +21,8 @@ namespace WinformExample
 #endif
 			InitializeComponent();
 
+			this.input.KeyPress += new System.Windows.Forms.KeyPressEventHandler(handleKeyPresses);
+
 			//connect to Finsemble
 			FSBL = new Finsemble(args, this);
 			FSBL.Connected += FinsembleConnected;
@@ -321,8 +323,8 @@ namespace WinformExample
 		{
 			return new JObject
 			{
-				["symbol"] = input.Text,
-				["description"] = "Symbol " + input.Text
+				["symbol"] = datavalue.Text,
+				["description"] = "Symbol " + datavalue.Text
 			};
 		}
 
@@ -368,6 +370,20 @@ namespace WinformExample
 			});
 		}
 
+		private void handleKeyPresses(object sender, System.Windows.Forms.KeyPressEventArgs e)
+		{
+			if (e.KeyChar == (char)Keys.Return)
+			{
+				Dispatcher.CurrentDispatcher.Invoke((System.Windows.Forms.MethodInvoker)delegate //main thread
+				{
+					datavalue.Text = input.Text;
+					datasource.Text = "via Text input";
+					saveState();
+				});
+				e.Handled = true;
+			}
+		}
+
 		// Example for saving component state
 		private void saveState()
 		{
@@ -388,7 +404,7 @@ namespace WinformExample
 		}
 
 		// Example for starting a drag
-		private void input_MouseDown(object sender, MouseEventArgs e)
+		private void datavalue_MouseDown(object sender, MouseEventArgs e)
 		{
 			FSBL.DragAndDropClient.DragStartWithData(sender);
 		}

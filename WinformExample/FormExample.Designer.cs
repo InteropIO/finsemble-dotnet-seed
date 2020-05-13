@@ -24,8 +24,7 @@ namespace WinformExample
                 components.Dispose();
             }
             base.Dispose(disposing);
-        }
-        
+		}
 
         #region Windows Form Designer generated code
 
@@ -84,6 +83,7 @@ namespace WinformExample
 			this.datavalue.Size = new System.Drawing.Size(106, 25);
 			this.datavalue.TabIndex = 7;
 			this.datavalue.Text = "datavalue";
+			this.datavalue.MouseDown += new System.Windows.Forms.MouseEventHandler(this.datavalue_MouseDown);
 			// 
 			// input
 			// 
@@ -92,7 +92,6 @@ namespace WinformExample
 			this.input.Size = new System.Drawing.Size(115, 20);
 			this.input.TabIndex = 8;
 			this.input.Text = "AAPL";
-			this.input.MouseDown += new System.Windows.Forms.MouseEventHandler(this.input_MouseDown);
 			// 
 			// pubsub
 			// 
