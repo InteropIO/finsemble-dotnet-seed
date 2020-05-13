@@ -140,6 +140,10 @@ namespace WPFExample
 					})
 				});
 
+				//Subscribe to a PubSub topic
+				//N.B. You must add a PubSub responder before publishing or subscribing to any topic that doesn't start with 'Finsemble'
+				//     This is not currently supported in the .Net RouterClient implementation and will need to done in a Finsemble HTML5 service
+				Subscribe_to_pubsub();
 
 				FSBL.ConfigClient.GetValue(new JObject { ["field"] = "finsemble.components" }, (routerClient, response) =>
 				{
@@ -183,11 +187,6 @@ namespace WPFExample
 					SaveState();
 				});
 			});
-
-			//Subscribe to a PubSub topic
-			//N.B. You must add a PubSub responder before publishing or subscribing to any topic that doesn't start with 'Finsemble'
-			//     This is not currently supported in the .Net RouterClient implementation and will need to done in a Finsemble HTML5 service
-			Subscribe_to_pubsub();
 
 			// Logging to the Finsemble Central Console
 			/*FSBL.RPC("Logger.error", new List<JToken> {

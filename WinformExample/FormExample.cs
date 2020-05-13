@@ -219,6 +219,7 @@ namespace WinformExample
 							if (!string.IsNullOrEmpty(symbolTxt))
 							{
 								datavalue.Text = symbolTxt;
+								input.Text = symbolTxt;
 								datasource.Text = "via component state";
 							}
 						}
@@ -251,6 +252,7 @@ namespace WinformExample
 					if (value != null)
 					{
 						datavalue.Text = value.ToString();
+						input.Text = value.ToString();
 						datasource.Text = "via Spawndata";
 						saveState();
 					}
@@ -275,6 +277,7 @@ namespace WinformExample
 						if (theData != null)
 						{
 							datavalue.Text = theData;
+							input.Text = theData;
 							datasource.Text = "via PubSub";
 							saveState();
 						}
@@ -305,6 +308,7 @@ namespace WinformExample
 						{
 							data = data?["symbol"];
 							datavalue.Text = data.ToString();
+							input.Text = data.ToString();
 							datasource.Text = "via Drag and Drop";
 							saveState();
 						}
@@ -332,8 +336,10 @@ namespace WinformExample
 				}
 				else if (response.response != null)
 				{
-					datavalue.Text = response.response?["data"]?.ToString();
+					string value = response.response?["data"]?.ToString();
+					datavalue.Text = value;
 					datasource.Text = "via Linker";
+					input.Text = value;
 					saveState();
 				}
 			});
