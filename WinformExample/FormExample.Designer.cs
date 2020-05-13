@@ -50,6 +50,7 @@ namespace WinformExample
 			this.group6 = new System.Windows.Forms.Label();
 			this.componentList = new System.Windows.Forms.ComboBox();
 			this.spawnBtn = new System.Windows.Forms.Button();
+			this.groupCb = new System.Windows.Forms.CheckBox();
 			this.SuspendLayout();
 			// 
 			// scrim
@@ -201,6 +202,19 @@ namespace WinformExample
 			this.spawnBtn.UseVisualStyleBackColor = true;
 			this.spawnBtn.Click += new System.EventHandler(this.spawnBtn_Click);
 			// 
+			// groupCb
+			// 
+			this.groupCb.AutoSize = true;
+			this.groupCb.CheckAlign = System.Drawing.ContentAlignment.MiddleRight;
+			this.groupCb.Location = new System.Drawing.Point(329, 0);
+			this.groupCb.Name = "groupCb";
+			this.groupCb.Size = new System.Drawing.Size(55, 17);
+			this.groupCb.TabIndex = 20;
+			this.groupCb.Text = "Group";
+			this.groupCb.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
+			this.groupCb.UseVisualStyleBackColor = true;
+			this.groupCb.CheckedChanged += new System.EventHandler(this.groupCb_CheckedChanged);
+			// 
 			// FormExample
 			// 
 			this.AllowDrop = true;
@@ -208,6 +222,7 @@ namespace WinformExample
 			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
 			this.AutoSize = true;
 			this.ClientSize = new System.Drawing.Size(384, 393);
+			this.Controls.Add(this.groupCb);
 			this.Controls.Add(this.spawnBtn);
 			this.Controls.Add(this.componentList);
 			this.Controls.Add(this.group6);
@@ -248,6 +263,7 @@ namespace WinformExample
 		private System.Windows.Forms.Label group6;
 		private System.Windows.Forms.ComboBox componentList;
 		private System.Windows.Forms.Button spawnBtn;
+		private System.Windows.Forms.CheckBox groupCb;
 	}
 }
 

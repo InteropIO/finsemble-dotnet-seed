@@ -9,118 +9,116 @@ using System.Windows.Threading;
 
 namespace WinformExample
 {
-	
+
 	public partial class FormExample : Form
-    {
+	{
 		private SortedDictionary<string, Label> LinkerGroups = new SortedDictionary<string, Label>();
 
 		public FormExample(String[] args)
-        {
+		{
 #if DEBUG
-                System.Diagnostics.Debugger.Launch();
+			System.Diagnostics.Debugger.Launch();
 #endif
 			InitializeComponent();
 
+			//connect to Finsemble
 			FSBL = new Finsemble(args, this);
-            FSBL.Connected += FinsembleConnected;
-            FSBL.Connect();
+			FSBL.Connected += FinsembleConnected;
+			FSBL.Connect();
 
-			// Add lable to LinkerGroup
-			LinkerGroups.Add("group1", group1);
-			LinkerGroups.Add("group2", group2);
-			LinkerGroups.Add("group3", group3);
-			LinkerGroups.Add("group4", group4);
-			LinkerGroups.Add("group5", group5);
-			LinkerGroups.Add("group6", group6);
 		}
+
+		//If you encounter issues with the initial window placement (due to the handling of window borders in Windows 10) SetBoundsCore can be overridden to implement custom logic 
+		//protected override void SetBoundsCore(int x, int y, int width, int height, BoundsSpecified specified)
+		//{
+		//	base.SetBoundsCore(x, y, width, height, specified);
+		//}
 
 		private void FinsembleConnected(object sender, EventArgs e)
 		{
+			
+			FSBL.RPC("Logger.log", new List<JToken> { "Winform example connected to Finsemble." });
+			System.Diagnostics.Debug.WriteLine("FSBL Ready.");
+
+			//setup linker channels
+			FSBL.LinkerClient.GetAllChannels(handleLinkerChannelLabels);
+
+			// Listen to Linker state change to render connected channels
+			FSBL.LinkerClient.OnStateChange(handleLinkerStateChange);
+
+			// Handle Window grouping
+			FSBL.RouterClient.Subscribe("Finsemble.WorkspaceService.groupUpdate", handleWindowGrouping);
+
+			//Example for handling component state in a workspace (and hand-off to getSpawnData if no state found)
+			FSBL.WindowClient.GetComponentState(new JObject { ["field"] = "symbol" }, handleGetComponentState);
+
+
+			// Example for Handling PubSub data
+			FSBL.RouterClient.Subscribe("Finsemble.TestWPFPubSubSymbol", handlePubSub);
+
+			// Example for handling Drag and Drop
+			FSBL.DragAndDropClient.SetScrim(scrim);
+			FSBL.DragAndDropClient.AddReceivers(new List<KeyValuePair<string, EventHandler<FinsembleEventArgs>>>()
+			{
+				new KeyValuePair<string, EventHandler<FinsembleEventArgs>>("symbol", handleDragAndDropReceive)
+			});
+
+			// Emitters for data that can be dragged using the drag icon.
+			FSBL.DragAndDropClient.SetEmitters(new List<KeyValuePair<string, DragAndDropClient.emitter>>()
+			{
+				new KeyValuePair<string, DragAndDropClient.emitter>("symbol", handleDragAndDropEmit)
+			});
+
+			// Example for LinkerClient subscribe
+			FSBL.LinkerClient.Subscribe("symbol", handleLinkerData);
+
+			// Example for getting Spawnable component list
+			FSBL.ConfigClient.GetValue(new JObject { ["field"] = "finsemble.components" }, handleComponentsList);
+
+			
+		}
+
+		private void handleLinkerChannelLabels(object sender, FinsembleEventArgs args)
+		{
 			Dispatcher.CurrentDispatcher.Invoke((System.Windows.Forms.MethodInvoker)delegate //main thread
-			{ 
-				FSBL.RPC("Logger.log", new List<JToken> { "Winform example connected to Finsemble." });
-				System.Diagnostics.Debug.WriteLine("FSBL Ready.");
-
-				// Example for  Handling Spawn data
-				FSBL.WindowClient.getSpawnData((err, res) =>
+			{
+				if (args.error == null)
 				{
-					var receivedData = (JObject)res.response;
-					if (res.response != null) {
-						JToken value = receivedData.GetValue("test");
-						if (value != null) {
-							datavalue.Text = value.ToString();
-							datasource.Text = "via Spawndata";
+					Label[] groupLabels = new Label[] { group1, group2, group3, group4, group5, group6 };
+					var allChannels = args.response as JArray;
+					int labelcount = 0;
+					foreach (JObject item in allChannels)
+					{
+						Label theLabel = groupLabels[labelcount++];
+						theLabel.Visible = false;
+						LinkerGroups.Add(item["name"].ToString(), theLabel);
+						//limit channels to ones we enough labels for
+						if (labelcount == groupLabels.Length)
+						{
+							break;
 						}
 					}
-				});
-
-				// Example for Handling PubSub data
-				FSBL.RouterClient.Subscribe("Finsemble.TestWPFPubSubSymbol", delegate (object s, FinsembleEventArgs state)
+				}
+				else
 				{
-					try
-					{
-						if (state.response != null)
-						{
-							var pubSubData = (JObject)state.response;
-							var theData = ((JValue)pubSubData?["data"]?["symbol"])?.ToString();
-							if (theData != null)
-							{
-								datavalue.Text = theData;
-								datasource.Text = "via PubSub";
-							}
-						}
-					}
-					catch (Exception ex)
-					{
-						MessageBox.Show(ex.Message);
-					}
-				});
+					FSBL.RPC("Logger.error", new List<JToken> { "Error when retrieving linker channels: ", args.error.ToString() });
+				}
+			});
+		}
 
-				// Example for handling Drag and Drop
-				FSBL.DragAndDropClient.SetScrim(scrim);
-				FSBL.DragAndDropClient.AddReceivers(new List<KeyValuePair<string, EventHandler<FinsembleEventArgs>>>()
+		private void handleLinkerStateChange(Object sender, FinsembleEventArgs response)
+		{
+			Dispatcher.CurrentDispatcher.Invoke((System.Windows.Forms.MethodInvoker)delegate //main thread
+			{
+				if (response.error != null)
 				{
-					new KeyValuePair<string, EventHandler<FinsembleEventArgs>>("symbol", (s, args) =>
-					{
-						var data = args.response["data"]?["symbol"];
-						if(data != null)
-						{
-						    //Check if we received an object (so data.symbol.symbol) or a string (data.symbol) to support variations in the format
-						    if(data.HasValues) {
-								data = data?["symbol"];
-								datavalue.Text = data.ToString();
-								datasource.Text = "via Drag and Drop";
-							}
-						}
-					})
-				});
-
-				// Emitters for data that can be dragged using the drag icon.
-				FSBL.DragAndDropClient.SetEmitters(new List<KeyValuePair<string, DragAndDropClient.emitter>>()
-				{
-					new KeyValuePair<string, DragAndDropClient.emitter>("symbol", () =>
-					{
-						return new JObject
-						{
-							["symbol"] = input.Text,
-							["description"] = "Symbol " + input.Text
-						};
-					})
-				});
-
-				// Example for LinkerClient
-				FSBL.LinkerClient.Subscribe("symbol", (error, response) =>
-				{
-					datavalue.Text = response.response?["data"]?.ToString();
-					datasource.Text = "via Linker";
-				});
-
-				// Listen to Liner state change
-				FSBL.LinkerClient.OnStateChange((error, response) =>
+					FSBL.RPC("Logger.error", new List<JToken> { "Error when receiving linker state change data: ", response.error.ToString() });
+				}
+				else if (response.response != null)
 				{
 					var channels = response.response["channels"] as JArray;
 					var allChannels = response.response["allChannels"] as JArray;
-					foreach(JObject obj in allChannels)
+					foreach (JObject obj in allChannels)
 					{
 						LinkerGroups[obj["name"].ToString()].Visible = false;
 						LinkerGroups[obj["name"].ToString()].BackColor = ColorTranslator.FromHtml(obj["color"].ToString());
@@ -130,16 +128,227 @@ namespace WinformExample
 					{
 						LinkerGroups[channel.Value.ToString()].Visible = true;
 					}
-				});
+				}
+			});
+		}
 
-				// Example for getting Spawnable component list
-				FSBL.ConfigClient.GetValue(new JObject { ["field"] = "finsemble.components" }, (routerClient, response) =>
+		private void handleWindowGrouping(object s, FinsembleEventArgs res)
+		{
+			Dispatcher.CurrentDispatcher.Invoke((System.Windows.Forms.MethodInvoker)delegate //main thread
+			{
+				if (res.error != null)
 				{
-					if (response.error != null)
+					return;
+				}
+				else
+				{
+					JObject groupData = res.response["data"]["groupData"] as JObject;
+					String currentWindowName = FSBL.WindowClient.windowIdentifier["windowName"].ToString();
+					JObject thisWindowGroups = new JObject();
+					thisWindowGroups.Add("dockingGroup", "");
+					thisWindowGroups.Add("snappingGroup", "");
+					thisWindowGroups.Add("topRight", false);
+
+					foreach (var obj in groupData)
 					{
-						return;
+						string windowgroupid = obj.Key;
+						JObject windowgroup = groupData[windowgroupid] as JObject;
+						JArray windownames = windowgroup["windowNames"] as JArray;
+
+						bool windowingroup = false;
+						for (int i = 0; i < windownames.Count; i++)
+						{
+							string windowname = windownames[i].ToString();
+							if (windowname == currentWindowName)
+							{
+								windowingroup = true;
+							}
+						}
+
+						if (windowingroup)
+						{
+							bool isMovable = (bool)windowgroup["isMovable"];
+							if (isMovable)
+							{
+								thisWindowGroups["dockingGroup"] = windowgroupid;
+								if (windowgroup["topRightWindow"].ToString() == currentWindowName)
+								{
+									thisWindowGroups["topRight"] = true;
+								}
+							}
+							else
+							{
+								thisWindowGroups["snappingGroup"] = windowgroupid;
+							}
+						}
 					}
 
+					if (thisWindowGroups["dockingGroup"].ToString() != "")
+					{
+						// docked
+						groupCb.Checked = true;
+					}
+					else if (thisWindowGroups["snappingGroup"].ToString() != "")
+					{
+						// Snapped
+						groupCb.Enabled = true;
+					}
+					else
+					{
+						// unsnapped/undocked
+						groupCb.Checked = false;
+						groupCb.Enabled = false;
+					}
+				}
+			});
+		}
+
+		private void handleGetComponentState(object s, FinsembleEventArgs state)
+		{
+			Dispatcher.CurrentDispatcher.Invoke((System.Windows.Forms.MethodInvoker)delegate //main thread
+			{
+				if (state.response != null)
+				{
+					// Example for restoring state
+					if (state.response is JValue)
+					{
+						var symbol = (JValue)state.response;
+						if (symbol != null)
+						{
+							var symbolTxt = symbol?.ToString();
+							if (!string.IsNullOrEmpty(symbolTxt))
+							{
+								datavalue.Text = symbolTxt;
+								datasource.Text = "via component state";
+							}
+						}
+					} else
+					{
+						// Example for Handling Spawn data
+						FSBL.WindowClient.getSpawnData(handleSpawnData);
+					}
+				}
+				else
+				{
+					// Example for Handling Spawn data
+					FSBL.WindowClient.getSpawnData(handleSpawnData);
+				}
+			});
+		}
+
+		private void handleSpawnData(Object sender, FinsembleEventArgs res) 
+		{
+			Dispatcher.CurrentDispatcher.Invoke((System.Windows.Forms.MethodInvoker)delegate //main thread
+			{
+				var receivedData = (JObject)res.response;
+				if (res.error != null)
+				{
+					FSBL.RPC("Logger.error", new List<JToken> { "Error when retrieving spawn data: ", res.error.ToString() });
+				}
+				else if (res.response != null)
+				{
+					JToken value = receivedData.GetValue("spawndata");
+					if (value != null)
+					{
+						datavalue.Text = value.ToString();
+						datasource.Text = "via Spawndata";
+						saveState();
+					}
+				}
+			});
+		}
+
+		private void handlePubSub(object sender, FinsembleEventArgs state)
+		{
+			Dispatcher.CurrentDispatcher.Invoke((System.Windows.Forms.MethodInvoker)delegate //main thread
+			{
+				try
+				{
+					if (state.error != null)
+					{
+						FSBL.RPC("Logger.error", new List<JToken> { "Error when retrieving spawn data: ", state.error.ToString() });
+					}
+					else if (state.response != null)
+					{
+						var pubSubData = (JObject)state.response;
+						var theData = ((JValue)pubSubData?["data"]?["symbol"])?.ToString();
+						if (theData != null)
+						{
+							datavalue.Text = theData;
+							datasource.Text = "via PubSub";
+							saveState();
+						}
+					}
+				}
+				catch (Exception ex)
+				{
+					FSBL.RPC("Logger.error", new List<JToken> { "Error when retrieving linker channels: ", ex.Message });
+				}
+			});
+		}
+
+		private void handleDragAndDropReceive(object sender, FinsembleEventArgs args) 
+		{
+			Dispatcher.CurrentDispatcher.Invoke((System.Windows.Forms.MethodInvoker)delegate //main thread
+			{
+				if (args.error != null)
+				{
+					FSBL.RPC("Logger.error", new List<JToken> { "Error when receiving drag and drop data: ", args.error.ToString() });
+				}
+				else if (args.response != null)
+				{
+					var data = args.response["data"]?["symbol"];
+					if (data != null)
+					{
+						//Check if we received an object (so data.symbol.symbol) or a string (data.symbol) to support variations in the format
+						if (data.HasValues)
+						{
+							data = data?["symbol"];
+							datavalue.Text = data.ToString();
+							datasource.Text = "via Drag and Drop";
+							saveState();
+						}
+					}
+				}
+			});
+		}
+
+		private JObject handleDragAndDropEmit() 
+		{
+			return new JObject
+			{
+				["symbol"] = input.Text,
+				["description"] = "Symbol " + input.Text
+			};
+		}
+
+		private void handleLinkerData(object sender, FinsembleEventArgs response) 
+		{
+			Dispatcher.CurrentDispatcher.Invoke((System.Windows.Forms.MethodInvoker)delegate //main thread
+			{
+				if (response.error != null)
+				{
+					FSBL.RPC("Logger.error", new List<JToken> { "Error when receiving linker data: ", response.error.ToString() });
+				}
+				else if (response.response != null)
+				{
+					datavalue.Text = response.response?["data"]?.ToString();
+					datasource.Text = "via Linker";
+					saveState();
+				}
+			});
+		}
+
+		private void handleComponentsList(Object sender, FinsembleEventArgs response)
+		{
+			Dispatcher.CurrentDispatcher.Invoke((System.Windows.Forms.MethodInvoker)delegate //main thread
+			{
+				if (response.error != null)
+				{
+					FSBL.RPC("Logger.error", new List<JToken> { "Error when receiving spawnable component list: ", response.error.ToString() });
+				}
+				else if (response.response != null)
+				{
 					var components = (JObject)response.response?["data"];
 					foreach (var property in components?.Properties())
 					{
@@ -149,11 +358,21 @@ namespace WinformExample
 							componentList.Items.Add(property.Name);
 						}
 					}
-				});
-
+				}
 			});
-        }
+		}
 
+		// Example for saving component state
+		private void saveState()
+		{
+			FSBL.WindowClient.SetComponentState(new JObject
+			{
+				["field"] = "symbol",
+				["value"] = datavalue.Text
+			}, delegate (object s, FinsembleEventArgs e) { });
+		}
+
+		// Example for publishing to RouterClient
 		private void pubsub_Click(object sender, EventArgs e)
 		{
 			FSBL.RouterClient.Publish("Finsemble.TestWPFPubSubSymbol", new JObject
@@ -162,6 +381,7 @@ namespace WinformExample
 			});
 		}
 
+		// Example for starting a drag
 		private void input_MouseDown(object sender, MouseEventArgs e)
 		{
 			FSBL.DragAndDropClient.DragStartWithData(sender);
@@ -172,6 +392,7 @@ namespace WinformExample
 			FSBL.LinkerClient.ShowLinkerWindow(linker.Location.X, linker.Location.Y + linker.Height);
 		}
 
+		// Example for Publishing to LinkerClient
 		private void pubLinker_Click(object sender, EventArgs e)
 		{
 			FSBL.LinkerClient.Publish(new JObject
@@ -183,7 +404,7 @@ namespace WinformExample
 
 		private void spawnBtn_Click(object sender, EventArgs e)
 		{
-			object selected = componentList.SelectedItem;			
+			object selected = componentList.SelectedItem;
 			if (selected != null)
 			{
 				string componentName = selected.ToString();
@@ -191,10 +412,19 @@ namespace WinformExample
 			}
 		}
 
-		//If you encounter issues with the initial window placement (due to the handling of window borders in Windows 10) SetBoundsCore can be overridden to implement custom logic 
-		//protected override void SetBoundsCore(int x, int y, int width, int height, BoundsSpecified specified)
-		//{
-		//	base.SetBoundsCore(x, y, width, height, specified);
-		//}
+		private void groupCb_CheckedChanged(object sender, EventArgs e)
+		{
+			String currentWindowName = FSBL.WindowClient.windowIdentifier["windowName"].ToString();
+			if (groupCb.Checked)
+			{
+				FSBL.RouterClient.Transmit("DockingService.formGroup", new JObject { ["windowName"] = currentWindowName });
+			}
+			else
+			{
+				FSBL.RouterClient.Query("DockingService.leaveGroup", new JObject { ["name"] = currentWindowName }, delegate (object s, FinsembleEventArgs res) {
+					groupCb.Enabled = false;
+				});
+			}
+		}
 	}
 }

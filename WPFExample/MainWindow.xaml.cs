@@ -40,6 +40,7 @@ namespace WPFExample
 			Application.Current.Dispatcher.Invoke(delegate //main thread
 			{
 				DroppedData.Content = DataToSend.Text;
+				DroppedDataSource.Content = "via Linker";
 				SaveState();
 			});
 
@@ -48,7 +49,7 @@ namespace WPFExample
 				new JObject {
 					["dataType"] = "symbol",
 					["data"] = DataToSend.Text
-				}
+		}
 			}, (s, a) => { });
 		}
 
@@ -261,32 +262,37 @@ namespace WPFExample
 				delegate (object s, FinsembleEventArgs state)
 				{
 					try {
-						if (state.response != null)
+						string symbolTxt = state.response == null ? null : state.response?.ToString();
+						if (!string.IsNullOrEmpty(symbolTxt) && !symbolTxt.Equals("{}"))
 						{
-							var symbol = (JValue)state.response;
-							if (symbol != null)
+							Application.Current.Dispatcher.Invoke(delegate //main thread
 							{
-								var symbolTxt = symbol?.ToString();
-								if (!string.IsNullOrEmpty(symbolTxt))
-								{
-									Application.Current.Dispatcher.Invoke(delegate //main thread
-									{
-										DataToSend.Text = symbolTxt;
-										DroppedData.Content = symbolTxt;
-										DroppedDataSource.Content = "via component state";
-									});
-								}
-							}
+								DataToSend.Text = symbolTxt;
+								DroppedData.Content = symbolTxt;
+								DroppedDataSource.Content = "via component state";
+							});
 						}
 						else
 						{
 							//Get SpawnData if no previous state
 							FSBL.WindowClient.getSpawnData((sender, r) => {
-								if (r.response.HasValues)
+								Application.Current.Dispatcher.Invoke(delegate //main thread
 								{
-									DroppedData.Content = r.response.ToString();
-									DroppedDataSource.Content = "via SpawnData";
-								}
+									symbolTxt = r.response == null ? null : r.response?["symbol"]?.ToString();
+									if (!string.IsNullOrEmpty(symbolTxt) && !symbolTxt.Equals("{}"))
+									{
+										DataToSend.Text = symbolTxt;
+										DroppedData.Content = symbolTxt;
+										DroppedDataSource.Content = "via SpawnData";
+									}
+									else
+									{
+										DataToSend.Text = "MSFT";
+										DroppedData.Content = "MSFT";
+										DroppedDataSource.Content = "via default value";
+									}
+									SaveState();
+								});
 							});
 						}
 					}
