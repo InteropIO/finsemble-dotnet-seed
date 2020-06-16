@@ -89,8 +89,8 @@
     <Reference Include="EventHook, Version=1.4.105.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\EventHook.1.4.105\lib\net45\EventHook.dll</HintPath>
     </Reference>
-    <Reference Include="Finsemble, Version=4.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\Finsemble.4.0.0\lib\net452\Finsemble.dll</HintPath>
+    <Reference Include="Finsemble, Version=4.3.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Finsemble.4.3.0\lib\net452\Finsemble.dll</HintPath>
     </Reference>
     <Reference Include="log4net, Version=2.0.8.0, Culture=neutral, PublicKeyToken=669e0ddf0bb1aa2a, processorArchitecture=MSIL">
       <HintPath>..\packages\log4net.2.0.8\lib\net45-full\log4net.dll</HintPath>
@@ -115,15 +115,6 @@
     </Reference>
     <Reference Include="Nito.AsyncEx.Enlightenment, Version=4.0.1.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\Nito.AsyncEx.4.0.1\lib\net45\Nito.AsyncEx.Enlightenment.dll</HintPath>
-    </Reference>
-    <Reference Include="Openfin.WinForm, Version=14.1.1.0, Culture=neutral, PublicKeyToken=18a277d64dddd680, processorArchitecture=MSIL">
-      <HintPath>..\packages\Openfin.WinForm.14.1.1\lib\net452\Openfin.WinForm.dll</HintPath>
-    </Reference>
-    <Reference Include="OpenFin.WPF, Version=14.1.1.0, Culture=neutral, PublicKeyToken=18a277d64dddd680, processorArchitecture=MSIL">
-      <HintPath>..\packages\OpenFin.WPF.14.1.1\lib\net452\OpenFin.WPF.dll</HintPath>
-    </Reference>
-    <Reference Include="OpenfinDesktop, Version=14.1.1.0, Culture=neutral, PublicKeyToken=18a277d64dddd680, processorArchitecture=MSIL">
-      <HintPath>..\packages\OpenfinDesktop.14.1.1\lib\net452\OpenfinDesktop.dll</HintPath>
     </Reference>
     <Reference Include="SuperSocket.ClientEngine, Version=0.10.0.0, Culture=neutral, PublicKeyToken=ee9af13f57f00acc, processorArchitecture=MSIL">
       <HintPath>..\packages\SuperSocket.ClientEngine.0.10.0\lib\net45\SuperSocket.ClientEngine.dll</HintPath>

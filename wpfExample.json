@@ -1,0 +1,45 @@
+{
+	"comment": "Sample component configuration",
+	"components": {
+		"WPFExample": {
+			"window": {
+				"id": "WPFExample",
+				"windowType": "FinsembleNativeWindow",
+				"path": "$wpfExampleRoot/WPFExample.exe",
+				"url": "",
+				"arguments": "",
+				"defaultHeight": 600,
+				"autoShow": true,
+				"resizable": true,
+				"showTaskbarIcon": false,
+				"contextMenu": true,
+				"addToWorkspace": true,
+				"options": {
+					"alwaysOnTop": false
+				}
+			},
+			"component": {
+				"spawnOnStartup": false
+			},
+			"foreign": {
+				"services": {
+					"workspaceService": {
+						"isArrangable": true
+					}
+				},
+				"components": {
+					"App Launcher": {
+						"launchableByUser": true
+					},
+					"Window Manager": {
+						"persistWindowState": false,
+						"FSBLHeader": true
+					},
+					"Toolbar": {
+						"iconURL": "$applicationRoot/assets/img/notepad.png"
+					}
+				}
+			}
+        }
+    }
+}
