@@ -2,6 +2,8 @@
 using System.Reflection;
 using System.Windows;
 using log4net;
+using ChartIQ.Finsemble;
+
 
 namespace WPFExample
 {
@@ -14,6 +16,7 @@ namespace WPFExample
 		/// The logger
 		/// </summary>
 		private static readonly ILog Logger = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
+		private MainWindow mainWindow = null;
 
 		protected override void OnStartup(StartupEventArgs e)
         {
@@ -22,7 +25,7 @@ namespace WPFExample
 #if DEBUG
 			Debugger.Launch();
 #endif
-            var mainWindow = new MainWindow(e.Args); // send command line arguments to main window.
+            mainWindow = new MainWindow(e.Args); // send command line arguments to main window.
         }
 
         private void Application_DispatcherUnhandledException(object sender, System.Windows.Threading.DispatcherUnhandledExceptionEventArgs e)
@@ -30,8 +33,9 @@ namespace WPFExample
 #if DEBUG
 			Debugger.Launch();
 #endif
+			Finsemble.DispatcherUnhandledException(mainWindow, e);			
 			Logger.Error("An Unhandled Exception has occurred. Please Check your event Logs.", e.Exception);
-			MessageBox.Show("An Unhandled Exception has occurred. Please Check your event Logs.");
-        }
+			Shutdown();
+		}
     }
 }

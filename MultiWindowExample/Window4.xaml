@@ -21,7 +21,7 @@
 	<Border x:Name="WindowBorder" BorderBrush="#FF233958" BorderThickness="1">
 		<Grid Background="White">
 			<Finsemble:WPFWindowTitleBar x:Name="FinsembleHeader" Height="25" VerticalAlignment="Top" Margin="0"/>
-			<Label x:Name="Scrim" Margin="0,32,0,0" AllowDrop="True" Visibility="Hidden"  Panel.ZIndex="1000" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" />
+			<Label x:Name="Scrim" Margin="0,25,0,0" AllowDrop="True" Visibility="Hidden"  Panel.ZIndex="1000" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" />
 			<Label Content="Window4" HorizontalAlignment="Left" Margin="109,114,0,0" VerticalAlignment="Top" Height="73" Width="135"/>
 		</Grid>
 	</Border>

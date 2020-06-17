@@ -234,7 +234,13 @@ namespace WPFExample
 
 		private void LinkToGroup_Click(object sender, RoutedEventArgs e)
 		{
-			FSBL.LinkerClient.LinkToChannel("group1", null, (s, r) => { });
+			FSBL.LinkerClient.LinkToChannel("group1", null, (s, r) =>
+            {
+                FSBL.RPC("Logger.log", new List<JToken> {
+                    "Link to Group1", r.response
+                });
+
+            });
 		}
 
 		private void SaveState()
@@ -251,10 +257,19 @@ namespace WPFExample
 			{
 				MessageBox.Show(e.Message);
 			}
-
 		}
 
-		private void UpdateDisplayData()
+        private void UnLinkFromGroup_Click(object sender, RoutedEventArgs e)
+        {
+            FSBL.LinkerClient.UnlinkFromChannel("group1", null, (s, r) =>
+            {
+                FSBL.RPC("Logger.log", new List<JToken> {
+                    "Unlinked from Group1", r.response
+                });
+            });
+        }
+
+        private void UpdateDisplayData()
 		{
 			FSBL.WindowClient.GetComponentState(
 				new JObject { ["field"] = "symbol" },
@@ -344,5 +359,5 @@ namespace WPFExample
 				}
 			});
 		}
-	}
+    }
 }
