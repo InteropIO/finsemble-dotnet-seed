@@ -32,12 +32,12 @@ namespace ConsoleAppExample
 
 		private static void OnConnected(object sender, EventArgs e)
 		{
-			FSBL.RPC("Logger.log", new List<JToken> { "Windowless example connected to Finsemble." });
+			FSBL.Logger.Log("Windowless example connected to Finsemble.");
 
 			// Send log message every 5 seconds
 			timer.Interval = 5 * 1000;
 			timer.AutoReset = true;
-			timer.Elapsed += (s1, e1) => FSBL.RPC("Logger.log", new List<JToken> { string.Format("Windowless example elapsed event was raised at {0}", e1.SignalTime) });
+			timer.Elapsed += (s1, e1) => FSBL.Logger.Log(string.Format("Windowless example elapsed event was raised at {0}", e1.SignalTime));
 			timer.Start();
 		}
 

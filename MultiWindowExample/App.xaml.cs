@@ -73,13 +73,20 @@ namespace MultiWindowExample
                     // If window type passed for initial launch, add listener to launch window when connected.
                     var argsList = args.ToList();
                     IEnumerable<string> nonFSBLArgs = GetNonFinsembleArgs(argsList);
-                    if ((nonFSBLArgs != null) && nonFSBLArgs.Any())
-                    {
-                        // Non-finsemble arguments passed, launch window
-                        LaunchWindow(args.ToList());
-                    }
+					if ((nonFSBLArgs != null) && nonFSBLArgs.Any())
+					{
+						// Non-finsemble arguments passed, launch window
+						LaunchWindow(args.ToList());
+					}
+					else
+					{
+						// Register with Finsemble as a windowless component so the application will close when Finsemble is closed. 
+						var fsbl = new Finsemble(args.ToArray(), null);
 
-                    application.InitializeComponent();
+						fsbl.Connect();
+					}
+
+					application.InitializeComponent();
                     mutex.ReleaseMutex();
                     application.Run();
 

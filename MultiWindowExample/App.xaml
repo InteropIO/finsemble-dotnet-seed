@@ -3,7 +3,7 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:local="clr-namespace:MultiWindowExample"
              DispatcherUnhandledException="Application_DispatcherUnhandledException" 
-			 ShutdownMode="OnLastWindowClose">
+			 ShutdownMode="OnExplicitShutdown">
     <Application.Resources>
          
     </Application.Resources>

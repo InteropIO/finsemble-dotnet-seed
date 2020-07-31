@@ -27,10 +27,7 @@ namespace WPFExample
 			if (selected != null)
 			{
 				string componentName = selected.ToString();
-				FSBL.RPC("LauncherClient.spawn", new List<JToken> {
-					componentName,
-					new JObject { ["addToWorkspace"] = true }
-				}, (s, a) => { });
+				FSBL.LauncherClient.Spawn(componentName, new JObject { ["addToWorkspace"] = true }, (s, a) => { });
 			}
 		}
 
@@ -40,23 +37,23 @@ namespace WPFExample
 			Application.Current.Dispatcher.Invoke(delegate //main thread
 			{
 				DroppedData.Content = DataToSend.Text;
+				DroppedDataSource.Content = "via Linker";
 				SaveState();
 			});
 
-			FSBL.RPC("LinkerClient.publish", new List<JToken>
-			{
-				new JObject {
-					["dataType"] = "symbol",
-					["data"] = DataToSend.Text
-				}
-			}, (s, a) => { });
+			FSBL.LinkerClient.Publish(new JObject
+			{ 
+				["dataType"] = "symbol",
+				["data"] = DataToSend.Text
+			});
+
 		}
 
-		/// <summary>
-		/// The MainWindow is created by the App so that we can get command line arguments passed from Finsemble.
-		/// </summary>
-		/// <param name="args"></param>
-		public MainWindow(string[] args)
+	/// <summary>
+	/// The MainWindow is created by the App so that we can get command line arguments passed from Finsemble.
+	/// </summary>
+	/// <param name="args"></param>
+	public MainWindow(string[] args)
 		{
 
 			// Trigger actions on close when requested by Finsemble, e.g.:
@@ -139,6 +136,10 @@ namespace WPFExample
 					})
 				});
 
+				//Subscribe to a PubSub topic
+				//N.B. You must add a PubSub responder before publishing or subscribing to any topic that doesn't start with 'Finsemble'
+				//     This is not currently supported in the .Net RouterClient implementation and will need to done in a Finsemble HTML5 service
+				Subscribe_to_pubsub();
 
 				FSBL.ConfigClient.GetValue(new JObject { ["field"] = "finsemble.components" }, (routerClient, response) =>
 				{
@@ -169,24 +170,18 @@ namespace WPFExample
 			});
 
 			// Subscribe to Finsemble Linker Channels
-			FSBL.RPC("LinkerClient.subscribe", new List<JToken>
-			{
-				"symbol"
-			}, (error, response) =>
+			FSBL.LinkerClient.Subscribe("symbol", (error, response) =>
 			{
 				Application.Current.Dispatcher.Invoke(delegate //main thread
 				{
-					DataToSend.Text = response?["data"]?.ToString();
-					DroppedData.Content = response?["data"]?.ToString();
+					DataToSend.Text = response.response?["data"]?.ToString();
+					DroppedData.Content = response.response?["data"]?.ToString();
 					DroppedDataSource.Content = "via Linker";
 					SaveState();
 				});
 			});
 
-			//Subscribe to a PubSub topic
-			//N.B. You must add a PubSub responder before publishing or subscribing to any topic that doesn't start with 'Finsemble'
-			//     This is not currently supported in the .Net RouterClient implementation and will need to done in a Finsemble HTML5 service
-			Subscribe_to_pubsub();
+
 
 			// Logging to the Finsemble Central Console
 			/*FSBL.RPC("Logger.error", new List<JToken> {
@@ -255,7 +250,7 @@ namespace WPFExample
 			}
 			catch (Exception e)
 			{
-				MessageBox.Show(e.Message);
+				//MessageBox.Show(e.Message);
 			}
 		}
 
@@ -276,38 +271,43 @@ namespace WPFExample
 				delegate (object s, FinsembleEventArgs state)
 				{
 					try {
-						if (state.response != null)
+						string symbolTxt = state.response == null ? null : state.response?.ToString();
+						if (!string.IsNullOrEmpty(symbolTxt) && !symbolTxt.Equals("{}"))
 						{
-							var symbol = (JValue)state.response;
-							if (symbol != null)
+							Application.Current.Dispatcher.Invoke(delegate //main thread
 							{
-								var symbolTxt = symbol?.ToString();
-								if (!string.IsNullOrEmpty(symbolTxt))
-								{
-									Application.Current.Dispatcher.Invoke(delegate //main thread
-									{
-										DataToSend.Text = symbolTxt;
-										DroppedData.Content = symbolTxt;
-										DroppedDataSource.Content = "via component state";
-									});
-								}
-							}
+								DataToSend.Text = symbolTxt;
+								DroppedData.Content = symbolTxt;
+								DroppedDataSource.Content = "via component state";
+							});
 						}
 						else
 						{
 							//Get SpawnData if no previous state
 							FSBL.WindowClient.getSpawnData((sender, r) => {
-								if (r.response.HasValues)
+								Application.Current.Dispatcher.Invoke(delegate //main thread
 								{
-									DroppedData.Content = r.response.ToString();
-									DroppedDataSource.Content = "via SpawnData";
-								}
+									symbolTxt = r.response == null ? null : r.response?["symbol"]?.ToString();
+									if (!string.IsNullOrEmpty(symbolTxt) && !symbolTxt.Equals("{}"))
+									{
+										DataToSend.Text = symbolTxt;
+										DroppedData.Content = symbolTxt;
+										DroppedDataSource.Content = "via SpawnData";
+									}
+									else
+									{
+										DataToSend.Text = "MSFT";
+										DroppedData.Content = "MSFT";
+										DroppedDataSource.Content = "via default value";
+									}
+									SaveState();
+								});
 							});
 						}
 					}
 					catch (Exception e)
 					{
-						MessageBox.Show(e.Message);
+						//MessageBox.Show(e.Message);
 					}
 				}
 			);

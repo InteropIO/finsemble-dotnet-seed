@@ -51,15 +51,7 @@ namespace AuthenticationExample
 
         private void Button_Click(object sender, RoutedEventArgs e)
         {
-            finsemble.RPC("AuthenticationClient.publishAuthorization", new List<JToken>()
-            {
-                UserName.Text,
-                JObject.FromObject(new Credentials(Guid.NewGuid().ToString()))
-            }, (s, a) =>
-            {
-                loggedIn = true;
-                this.Close();
-            });
+            finsemble.AuthenticationClient.PublishAuthorization(UserName.Text, JObject.FromObject(new Credentials(Guid.NewGuid().ToString())));
         }
     }
 }

@@ -33,7 +33,7 @@ namespace WPFExample
 #if DEBUG
 			Debugger.Launch();
 #endif
-			Finsemble.DispatcherUnhandledException(mainWindow, e);			
+			Finsemble.DispatcherUnhandledException(mainWindow, e);
 			Logger.Error("An Unhandled Exception has occurred. Please Check your event Logs.", e.Exception);
 			Shutdown();
 		}

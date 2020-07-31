@@ -15,6 +15,7 @@ using System.Windows;
 [assembly: AssemblyCopyright("Copyright ©  2017 - 2020")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
+[assembly: log4net.Config.XmlConfigurator(ConfigFile = "log4net.config")]
 
 // Setting ComVisible to false makes the types in this assembly not visible
 // to COM components.  If you need to access a type in this assembly from
@@ -51,5 +52,5 @@ using System.Windows;
 // You can specify all the values or you can default the Build and Revision Numbers
 // by using the '*' as shown below:
 // [assembly: AssemblyVersion("1.0.*")]
-[assembly: AssemblyVersion("4.3.3.0")]
-[assembly: AssemblyFileVersion("4.3.3.0")]
+[assembly: AssemblyVersion("4.4.0.0")]
+[assembly: AssemblyFileVersion("4.4.0.0")]

@@ -1,0 +1,178 @@
+{
+	"comment": "Sample component configuration",
+	"components": {
+		"Winform-MultiWindow-Form1": {
+			"window": {
+				"id": "MultiWindow",
+				"windowType": "FinsembleNativeWindow",
+				"path": "$winformMultiwindowExampleRoot/WinformMultiWindowExample.exe",
+				"arguments": "Form1",
+				"top": "center",
+				"left": "center",
+				"width": 400,
+				"height": 432,
+				"autoShow": true,
+				"resizable": true,
+				"showTaskbarIcon": false,
+				"contextMenu": true,
+				"addToWorkspace": true,
+				"options": {
+					"alwaysOnTop": false
+				},
+				"data": {"test": "test123"}
+			},
+			"component": {
+			},
+			"foreign": {
+				"services": {
+					"windowService": {
+						"allowAutoArrange": true
+					}
+				},
+				"components": {
+					"App Launcher": {
+						"launchableByUser": true
+					},
+					"Window Manager": {
+						"persistWindowState": false,
+						"FSBLHeader": true,
+						"alwaysOnTop": false
+					},
+					"Toolbar": {
+						"iconURL": "$applicationRoot/assets/img/notepad.png"
+					}
+				}
+			}
+		},
+		"Winform-MultiWindow-Form2": {
+			"window": {
+				"id": "MultiWindow",
+				"windowType": "FinsembleNativeWindow",
+				"path": "$winformMultiwindowExampleRoot/WinformMultiWindowExample.exe",
+				"arguments": "Form2",
+				"top": "center",
+				"left": "center",
+				"width": 400,
+				"height": 432,
+				"autoShow": true,
+				"resizable": true,
+				"showTaskbarIcon": false,
+				"contextMenu": true,
+				"addToWorkspace": true,
+				"options": {
+					"alwaysOnTop": false
+				},
+				"data": {"test": "test123"}
+			},
+			"component": {
+			},
+			"foreign": {
+				"services": {
+					"windowService": {
+						"allowAutoArrange": true
+					}
+				},
+				"components": {
+					"App Launcher": {
+						"launchableByUser": true
+					},
+					"Window Manager": {
+						"persistWindowState": false,
+						"FSBLHeader": true,
+						"alwaysOnTop": false
+					},
+					"Toolbar": {
+						"iconURL": "$applicationRoot/assets/img/notepad.png"
+					}
+				}
+			}
+		},
+		"Winform-MultiWindow-Form3": {
+			"window": {
+				"id": "MultiWindow",
+				"windowType": "FinsembleNativeWindow",
+				"path": "$winformMultiwindowExampleRoot/WinformMultiWindowExample.exe",
+				"arguments": "Form3",
+				"top": "center",
+				"left": "center",
+				"width": 400,
+				"height": 432,
+				"autoShow": true,
+				"resizable": true,
+				"showTaskbarIcon": false,
+				"contextMenu": true,
+				"addToWorkspace": true,
+				"options": {
+					"alwaysOnTop": false
+				},
+				"data": {"test": "test123"}
+			},
+			"component": {
+			},
+			"foreign": {
+				"services": {
+					"windowService": {
+						"allowAutoArrange": true
+					}
+				},
+				"components": {
+					"App Launcher": {
+						"launchableByUser": true
+					},
+					"Window Manager": {
+						"persistWindowState": false,
+						"FSBLHeader": true,
+						"alwaysOnTop": false
+					},
+					"Toolbar": {
+						"iconURL": "$applicationRoot/assets/img/notepad.png"
+					}
+				}
+			}
+		},
+		"Winform-MultiWindow-Form4": {
+			"window": {
+				"id": "MultiWindow",
+				"windowType": "FinsembleNativeWindow",
+				"path": "$winformMultiwindowExampleRoot/WinformMultiWindowExample.exe",
+				"arguments": "Form4",
+				"top": "center",
+				"left": "center",
+				"width": 400,
+				"height": 432,
+				"autoShow": true,
+				"resizable": true,
+				"showTaskbarIcon": false,
+				"contextMenu": true,
+				"addToWorkspace": true,
+				"options": {
+					"alwaysOnTop": false
+				},
+				"data": {"test": "test123"}
+			},
+			"component": {
+			},
+			"foreign": {
+				"services": {
+					"windowService": {
+						"allowAutoArrange": true
+					}
+				},
+				"components": {
+					"App Launcher": {
+						"launchableByUser": true
+					},
+					"Window Manager": {
+						"persistWindowState": false,
+						"FSBLHeader": true,
+						"alwaysOnTop": false
+					},
+					"Toolbar": {
+						"iconURL": "$applicationRoot/assets/img/notepad.png"
+					}
+				}
+			}
+		}
+	}
+	
+}
