@@ -1,9 +1,12 @@
 ﻿using System.Diagnostics;
 using System.Reflection;
 using System.Windows;
+using System.Windows.Interop;
 using log4net;
+using System;
+using System.Runtime.InteropServices;
+using System.Text;
 using ChartIQ.Finsemble;
-
 
 namespace WPFExample
 {
@@ -33,7 +36,9 @@ namespace WPFExample
 #if DEBUG
 			Debugger.Launch();
 #endif
+
 			Finsemble.DispatcherUnhandledException(mainWindow, e);
+
 			Logger.Error("An Unhandled Exception has occurred. Please Check your event Logs.", e.Exception);
 			Shutdown();
 		}
