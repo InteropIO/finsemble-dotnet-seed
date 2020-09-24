@@ -81,6 +81,7 @@ namespace MultiWindowExample
 					else
 					{
 						// Register with Finsemble as a windowless component so the application will close when Finsemble is closed. 
+						//Ensure that your window has been created (so that its window handle exists) before connecting to Finsemble.
 						var fsbl = new Finsemble(args.ToArray(), null);
 
 						fsbl.Connect();
@@ -150,6 +151,7 @@ namespace MultiWindowExample
 			else
 			{
 				// Register with Finsemble
+				//Ensure that your window has been created (so that its window handle exists) before connecting to Finsemble.
 				var fsbl = new Finsemble(args.ToArray(), window);
 				fsbl.Connected += (s, e) =>
 				{

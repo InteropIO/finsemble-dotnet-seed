@@ -33,6 +33,7 @@ namespace AuthenticationExample
 
         public MainWindow(string[] args)
         {
+            //Ensure that your window has been created (so that its window handle exists) before connecting to Finsemble.
             finsemble = new Finsemble(args, this);
             finsemble.Connect();
             finsemble.Connected += Finsemble_Connected;

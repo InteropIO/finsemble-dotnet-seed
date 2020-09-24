@@ -21,6 +21,7 @@ namespace ConsoleAppExample
 #endif
 
 			// Initialize Finsemble
+			//Ensure that your window has been created (so that its window handle exists) before connecting to Finsemble.
 			FSBL = new Finsemble(args, null);
 			FSBL.Connected += OnConnected;
 			FSBL.Disconnected += OnShutdown;

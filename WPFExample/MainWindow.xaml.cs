@@ -58,7 +58,7 @@ namespace WPFExample
 
 			// Trigger actions on close when requested by Finsemble, e.g.:
 			this.Closing += MainWindow_Closing;
-
+			//Ensure that your window has been created (so that its window handle exists) before connecting to Finsemble.
 			FSBL = new Finsemble(args, this); // Finsemble needs the command line arguments to connect and also this Window to manage snapping, docking etc.
 			FSBL.Connected += Finsemble_Connected;
 			FSBL.Connect();
