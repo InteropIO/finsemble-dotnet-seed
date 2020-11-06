@@ -1,8 +1,8 @@
-﻿using System.Diagnostics;
+﻿﻿using ChartIQ.Finsemble;
+using log4net;
+using System.Diagnostics;
 using System.Reflection;
 using System.Windows;
-using log4net;
-using ChartIQ.Finsemble;
 
 
 namespace WPFExample

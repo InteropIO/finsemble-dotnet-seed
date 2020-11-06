@@ -67,7 +67,6 @@ namespace MultiWindowExample
                 // then ensure that we always release the mutex
                 if (SingleInstance<App>.InitializeAsFirstInstance(Unique))
                 {
-
                     application = new App();
 
                     // If window type passed for initial launch, add listener to launch window when connected.
@@ -94,9 +93,7 @@ namespace MultiWindowExample
                     // Allow single instance code to perform cleanup operations
                     SingleInstance<App>.Cleanup();
                 }
-
             }
-
 		}
 
 		/// <summary>
