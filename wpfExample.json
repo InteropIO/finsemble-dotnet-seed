@@ -19,7 +19,8 @@
 				}
 			},
 			"component": {
-				"spawnOnStartup": false
+				"spawnOnStartup": false,
+				"useFdc3": false
 			},
 			"foreign": {
 				"services": {

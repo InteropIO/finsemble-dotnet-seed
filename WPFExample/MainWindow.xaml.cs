@@ -1,12 +1,11 @@
 ﻿using ChartIQ.Finsemble;
-using log4net;
 using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
-using System.Reflection;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Media;
+using ChartIQ.Finsemble.Models;
 
 namespace WPFExample
 {
@@ -18,7 +17,6 @@ namespace WPFExample
 		/// <summary>
 		/// The logger
 		/// </summary>
-		private static readonly ILog Logger = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
 
 		private Finsemble FSBL;
 
@@ -108,7 +106,7 @@ namespace WPFExample
 
 		private void Send_Click(object sender, RoutedEventArgs e)
 		{
-			if(FSBL.FDC3Client is object)
+			if (FSBL.FDC3Client is object)
 			{
 				//FDC3 Usage example 
 				//Broadcast
@@ -164,21 +162,34 @@ namespace WPFExample
 				FinsembleHeader.SetBridge(FSBL); // The Header Control needs a connected finsemble instance
 
 				//Styling the Finsemble Header
-				FinsembleHeader.SetActiveBackground(new SolidColorBrush((Color)ColorConverter.ConvertFromString("#22262F")));
-				FinsembleHeader.SetInactiveBackground(new SolidColorBrush((Color)ColorConverter.ConvertFromString("#22262F")));
-				FinsembleHeader.SetButtonHoverBackground(new SolidColorBrush((Color)ColorConverter.ConvertFromString("#0A8CF4")));
-				FinsembleHeader.SetInactiveButtonHoverBackground(new SolidColorBrush((Color)ColorConverter.ConvertFromString("#0A8CF4")));
-				FinsembleHeader.SetCloseButtonHoverBackground(new SolidColorBrush((Color)ColorConverter.ConvertFromString("#F26666")));
-				FinsembleHeader.SetInactiveCloseButtonHoverBackground(new SolidColorBrush((Color)ColorConverter.ConvertFromString("#F26666")));
-				FinsembleHeader.SetDockingButtonDockedBackground(new SolidColorBrush((Color)ColorConverter.ConvertFromString("#0A8CF4")));
-				FinsembleHeader.SetTitleForeground(new SolidColorBrush((Color)ColorConverter.ConvertFromString("#ACB2C0")));
-				FinsembleHeader.SetButtonForeground(new SolidColorBrush((Color)ColorConverter.ConvertFromString("#ACB2C0")));
 
-				FinsembleHeader.SetButtonFont(null, 8, FontStyles.Normal, FontWeights.Normal);
-				FinsembleHeader.SetTitleFont(null, 12, FontStyles.Normal, FontWeights.SemiBold);
+				FinsembleHeader.GetHandlingService().ActiveBackground = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#22262F"));
+				FinsembleHeader.GetHandlingService().InactiveBackground = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#22262F"));
+				FinsembleHeader.GetHandlingService().ButtonHoverBackground = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#0A8CF4"));
+				FinsembleHeader.GetHandlingService().InactiveButtonHoverBackground = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#0A8CF4"));
+				FinsembleHeader.GetHandlingService().CloseButtonHoverBackground = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#F26666"));
+				FinsembleHeader.GetHandlingService().InactiveCloseButtonHoverBackground = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#F26666"));
+				FinsembleHeader.GetHandlingService().DockingButtonDockedBackground = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#0A8CF4"));
+				FinsembleHeader.GetHandlingService().TitleForeground = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#ACB2C0"));
+				FinsembleHeader.GetHandlingService().ButtonForeground = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#ACB2C0"));
+
+				FinsembleHeader.GetHandlingService().ButtonFont = new TitlebarFontConfiguration()
+				{
+					FontFamily = null,
+					FontSize = 8,
+					FontStyle = FontStyles.Normal,
+					FontWeight = FontWeights.Normal
+				};
+				FinsembleHeader.GetHandlingService().TitleFont = new TitlebarFontConfiguration()
+				{
+					FontFamily = null,
+					FontSize = 12,
+					FontStyle = FontStyles.Normal,
+					FontWeight = FontWeights.SemiBold
+				};
 
 				//Set window title
-				FinsembleHeader.SetTitle("WPF Example Component");
+				FinsembleHeader.GetHandlingService().Title = "WPF Example Component";
 
 				FSBL.DragAndDropClient.SetScrim(Scrim); // The Scrim Label Control is used for drag and drop.
 
@@ -236,7 +247,6 @@ namespace WPFExample
 				{
 					if (response.error != null)
 					{
-						Logger.Error(response.error);
 						return;
 					}
 
@@ -260,7 +270,7 @@ namespace WPFExample
 				this.Show();
 			});
 
-			if(FSBL.FDC3Client is object)
+			if (FSBL.FDC3Client is object)
 			{
 				//FDC3 Usage example	
 				Application.Current.Dispatcher.Invoke(delegate //main thread	
@@ -269,7 +279,8 @@ namespace WPFExample
 				});
 
 				//Context handler
-				EventHandler<JObject> contextHandler = (s, context) => {
+				EventHandler<JObject> contextHandler = (s, context) =>
+				{
 					FSBL.Logger.Log(new JToken[] { "WPF FDC3 Usage Example, context received by contextHandler.", context });
 					if (context["type"].ToString().Equals("fdc3.instrument"))
 					{
@@ -286,7 +297,8 @@ namespace WPFExample
 				//FSBL.FDC3Client.fdc3.addContextListener("fdc3.instrument", contextHandler);
 
 
-				EventHandler<JObject> intentHandler = (s, context) => {
+				EventHandler<JObject> intentHandler = (s, context) =>
+				{
 					FSBL.Logger.Log(new JToken[] { "WPF FDC3 Usage Example: context received by intentHandler.", context });
 					if (context["type"].ToString().Equals("fdc3.instrument"))
 					{
@@ -358,7 +370,7 @@ namespace WPFExample
 			{
 				FSBL.LinkerClient.LinkToChannel("group1", null, (s, r) =>
 				{
-					FSBL.Logger.Log(new JToken[] {"Link to Group1", r.response});
+					FSBL.Logger.Log(new JToken[] { "Link to Group1", r.response });
 				});
 			}
 			else
@@ -379,6 +391,10 @@ namespace WPFExample
 					["value"] = DataToSend.Text
 				});
 			}
+			catch (ApplicationException e)
+			{
+				FSBL.Logger.Warn(new JToken[] { "WPFExample SaveState Warn", e.Message, e.StackTrace });
+			}
 			catch (Exception e)
 			{
 				FSBL.Logger.Error(new JToken[] { "WPFExample SaveState Error", e.Message, e.StackTrace });
@@ -387,11 +403,11 @@ namespace WPFExample
 
 		private void UnLinkFromGroup_Click(object sender, RoutedEventArgs e)
 		{
-			if(FSBL.FDC3Client is null)
+			if (FSBL.FDC3Client is null)
 			{
 				FSBL.LinkerClient.UnlinkFromChannel("group1", null, (s, r) =>
 				{
-					FSBL.Logger.Log(new JToken[] {"Unlinked from Group1", r.response});
+					FSBL.Logger.Log(new JToken[] { "Unlinked from Group1", r.response });
 				});
 			}
 			else
@@ -427,7 +443,7 @@ namespace WPFExample
 						else
 						{
 							//Get SpawnData if no previous state
-							FSBL.WindowClient.getSpawnData((sender, r) =>
+							FSBL.WindowClient.GetSpawnData((sender, r) =>
 							{
 								Application.Current.Dispatcher.Invoke(async delegate //main thread
 								{

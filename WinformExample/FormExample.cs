@@ -152,7 +152,7 @@ namespace WinformExample
 				else
 				{
 					JObject groupData = res.response["data"]["groupData"] as JObject;
-					String currentWindowName = FSBL.WindowClient.windowIdentifier["windowName"].ToString();
+					String currentWindowName = FSBL.WindowClient.GetWindowIdentifier()["windowName"].ToString();
 					JObject thisWindowGroups = new JObject();
 					thisWindowGroups.Add("dockingGroup", "");
 					thisWindowGroups.Add("snappingGroup", "");
