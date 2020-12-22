@@ -1,19 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
-using ChartIQ.Finsemble;
+﻿using ChartIQ.Finsemble;
 using Newtonsoft.Json.Linq;
+using System;
+using System.Windows;
 
 namespace AuthenticationExample
 {
@@ -50,7 +38,7 @@ namespace AuthenticationExample
             });
         }
 
-        private void Button_Click(object sender, RoutedEventArgs e)
+        private void PublishCredentials_Click(object sender, RoutedEventArgs e)
         {
             finsemble.AuthenticationClient.PublishAuthorization(UserName.Text, JObject.FromObject(new Credentials(Guid.NewGuid().ToString())));
         }

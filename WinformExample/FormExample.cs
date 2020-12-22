@@ -5,15 +5,14 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Drawing;
 using System.Drawing.Text;
+using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.Windows.Threading;
 
 namespace WinformExample
 {
-
 	public partial class FormExample : Form
 	{
-
 		private SortedDictionary<string, Label> LinkerGroups = new SortedDictionary<string, Label>();
 
 		private System.Drawing.Text.PrivateFontCollection finfont = new System.Drawing.Text.PrivateFontCollection();
@@ -29,6 +28,11 @@ namespace WinformExample
 			//connect to Finsemble
 			//Ensure that your window has been created (so that its window handle exists) before connecting to Finsemble.
 			FSBL = new Finsemble(args, this);
+
+			// Use handle
+			// FSBL = new Finsemble(args, this.Handle);
+			//----
+
 			FSBL.Connected += FinsembleConnected;
 			FSBL.Connect();
 		}
@@ -42,7 +46,7 @@ namespace WinformExample
 		private void FinsembleConnected(object sender, EventArgs e)
 		{
 			
-			FSBL.RPC("Logger.log", new List<JToken> { "Winform example connected to Finsemble." });
+			FSBL.Logger.Log(new JToken[] { "Winform example connected to Finsemble." });
 			System.Diagnostics.Debug.WriteLine("FSBL Ready.");
 
 			//setup linker channels
@@ -61,6 +65,7 @@ namespace WinformExample
 			// Example for Handling PubSub data
 			FSBL.RouterClient.Subscribe("Finsemble.TestWPFPubSubSymbol", handlePubSub);
 
+			// If you passed a window handle to initiate FSBL, you have to comment the following code to disable drag and drop function
 			// Example for handling Drag and Drop
 			finfont.AddFontFile(@"Resources\finfont.ttf");
 			var font = new System.Drawing.Font(finfont.Families[0], 100);
@@ -83,14 +88,11 @@ namespace WinformExample
 
 			// Example for getting Spawnable component list
 			FSBL.ConfigClient.GetValue(new JObject { ["field"] = "finsemble.components" }, handleComponentsList);
-
-			
 		}
 
 		private void handleLinkerChannelLabels(object sender, FinsembleEventArgs args)
 		{
-			Dispatcher.CurrentDispatcher.Invoke((System.Windows.Forms.MethodInvoker)delegate //main thread
-			{
+			this.Invoke(new Action(() => {
 				if (args.error == null)
 				{
 					Label[] groupLabels = new Label[] { group1, group2, group3, group4, group5, group6 };
@@ -110,18 +112,17 @@ namespace WinformExample
 				}
 				else
 				{
-					FSBL.RPC("Logger.error", new List<JToken> { "Error when retrieving linker channels: ", args.error.ToString() });
+					FSBL.Logger.Error(new JToken[] { "Error when retrieving linker channels: ", args.error.ToString() });
 				}
-			});
+			}));
 		}
 
 		private void handleLinkerStateChange(Object sender, FinsembleEventArgs response)
 		{
-			Dispatcher.CurrentDispatcher.Invoke((System.Windows.Forms.MethodInvoker)delegate //main thread
-			{
+			this.Invoke(new Action(() => {
 				if (response.error != null)
 				{
-					FSBL.RPC("Logger.error", new List<JToken> { "Error when receiving linker state change data: ", response.error.ToString() });
+					FSBL.Logger.Error(new JToken[] { "Error when receiving linker state change data: ", response.error.ToString() });
 				}
 				else if (response.response != null)
 				{
@@ -138,13 +139,12 @@ namespace WinformExample
 						LinkerGroups[channel.Value.ToString()].Visible = true;
 					}
 				}
-			});
+			}));
 		}
 
 		private void handleWindowGrouping(object s, FinsembleEventArgs res)
 		{
-			Dispatcher.CurrentDispatcher.Invoke((System.Windows.Forms.MethodInvoker)delegate //main thread
-			{
+			this.Invoke(new Action(() => {
 				if (res.error != null)
 				{
 					return;
@@ -152,7 +152,7 @@ namespace WinformExample
 				else
 				{
 					JObject groupData = res.response["data"]["groupData"] as JObject;
-					String currentWindowName = FSBL.WindowClient.windowIdentifier["windowName"].ToString();
+					String currentWindowName = FSBL.WindowClient.GetWindowIdentifier()["windowName"].ToString();
 					JObject thisWindowGroups = new JObject();
 					thisWindowGroups.Add("dockingGroup", "");
 					thisWindowGroups.Add("snappingGroup", "");
@@ -209,13 +209,12 @@ namespace WinformExample
 						groupCb.Enabled = false;
 					}
 				}
-			});
+			}));
 		}
 
 		private void handleGetComponentState(object s, FinsembleEventArgs state)
 		{
-			Dispatcher.CurrentDispatcher.Invoke((System.Windows.Forms.MethodInvoker)delegate //main thread
-			{
+			this.Invoke(new Action(() => {
 				if (state.response != null)
 				{
 					// Example for restoring state
@@ -243,17 +242,16 @@ namespace WinformExample
 					// Example for Handling Spawn data
 					FSBL.WindowClient.getSpawnData(handleSpawnData);
 				}
-			});
+			}));
 		}
 
 		private void handleSpawnData(Object sender, FinsembleEventArgs res) 
 		{
-			Dispatcher.CurrentDispatcher.Invoke((System.Windows.Forms.MethodInvoker)delegate //main thread
-			{
+			this.Invoke(new Action(async () => {
 				var receivedData = (JObject)res.response;
 				if (res.error != null)
 				{
-					FSBL.RPC("Logger.error", new List<JToken> { "Error when retrieving spawn data: ", res.error.ToString() });
+					FSBL.Logger.Error(new JToken[] { "Error when retrieving spawn data: ", res.error.ToString() });
 				}
 				else if (res.response != null)
 				{
@@ -263,21 +261,20 @@ namespace WinformExample
 						datavalue.Text = value.ToString();
 						input.Text = value.ToString();
 						datasource.Text = "via Spawndata";
-						saveState();
+                        await SaveStateAsync();
 					}
 				}
-			});
+			}));
 		}
 
 		private void handlePubSub(object sender, FinsembleEventArgs state)
 		{
-			Dispatcher.CurrentDispatcher.Invoke((System.Windows.Forms.MethodInvoker)delegate //main thread
-			{
+			this.Invoke(new Action(async () => {
 				try
 				{
 					if (state.error != null)
 					{
-						FSBL.RPC("Logger.error", new List<JToken> { "Error when retrieving spawn data: ", state.error.ToString() });
+						FSBL.Logger.Error(new JToken[] { "Error when retrieving spawn data: ", state.error.ToString() });
 					}
 					else if (state.response != null)
 					{
@@ -288,24 +285,23 @@ namespace WinformExample
 							datavalue.Text = theData;
 							input.Text = theData;
 							datasource.Text = "via PubSub";
-							saveState();
+                            await SaveStateAsync();
 						}
 					}
 				}
 				catch (Exception ex)
 				{
-					FSBL.RPC("Logger.error", new List<JToken> { "Error when retrieving linker channels: ", ex.Message });
+					FSBL.Logger.Error(new JToken[] { "Error when retrieving linker channels: ", ex.Message });
 				}
-			});
+			}));
 		}
 
 		private void handleDragAndDropReceive(object sender, FinsembleEventArgs args) 
 		{
-			Dispatcher.CurrentDispatcher.Invoke((System.Windows.Forms.MethodInvoker)delegate //main thread
-			{
+			this.Invoke(new Action(async () => {
 				if (args.error != null)
 				{
-					FSBL.RPC("Logger.error", new List<JToken> { "Error when receiving drag and drop data: ", args.error.ToString() });
+					FSBL.Logger.Error(new JToken[] { "Error when receiving drag and drop data: ", args.error.ToString() });
 				}
 				else if (args.response != null)
 				{
@@ -319,11 +315,11 @@ namespace WinformExample
 							datavalue.Text = data.ToString();
 							input.Text = data.ToString();
 							datasource.Text = "via Drag and Drop";
-							saveState();
+                            await SaveStateAsync();
 						}
 					}
 				}
-			});
+			}));
 		}
 
 		private JObject handleDragAndDropEmit() 
@@ -337,11 +333,10 @@ namespace WinformExample
 
 		private void handleLinkerData(object sender, FinsembleEventArgs response) 
 		{
-			Dispatcher.CurrentDispatcher.Invoke((System.Windows.Forms.MethodInvoker)delegate //main thread
-			{
+			this.Invoke(new Action(async () => {
 				if (response.error != null)
 				{
-					FSBL.RPC("Logger.error", new List<JToken> { "Error when receiving linker data: ", response.error.ToString() });
+					FSBL.Logger.Error(new JToken[] { "Error when receiving linker data: ", response.error.ToString() });
 				}
 				else if (response.response != null)
 				{
@@ -349,18 +344,17 @@ namespace WinformExample
 					datavalue.Text = value;
 					datasource.Text = "via Linker";
 					input.Text = value;
-					saveState();
+                    await SaveStateAsync();
 				}
-			});
+			}));
 		}
 
 		private void handleComponentsList(Object sender, FinsembleEventArgs response)
 		{
-			Dispatcher.CurrentDispatcher.Invoke((System.Windows.Forms.MethodInvoker)delegate //main thread
-			{
+			this.Invoke(new Action(() => {
 				if (response.error != null)
 				{
-					FSBL.RPC("Logger.error", new List<JToken> { "Error when receiving spawnable component list: ", response.error.ToString() });
+					FSBL.Logger.Error(new JToken[] { "Error when receiving spawnable component list: ", response.error.ToString() });
 				}
 				else if (response.response != null)
 				{
@@ -374,31 +368,30 @@ namespace WinformExample
 						}
 					}
 				}
-			});
+			}));
 		}
 
 		private void handleKeyPresses(object sender, System.Windows.Forms.KeyPressEventArgs e)
 		{
 			if (e.KeyChar == (char)Keys.Return)
 			{
-				Dispatcher.CurrentDispatcher.Invoke((System.Windows.Forms.MethodInvoker)delegate //main thread
-				{
+				this.Invoke(new Action(async () => {
 					datavalue.Text = input.Text;
 					datasource.Text = "via Text input";
-					saveState();
-				});
+                    await SaveStateAsync();
+				}));
 				e.Handled = true;
 			}
 		}
 
 		// Example for saving component state
-		private void saveState()
+		private async Task SaveStateAsync()
 		{
-			FSBL.WindowClient.SetComponentState(new JObject
+			await FSBL.WindowClient.SetComponentState(new JObject
 			{
 				["field"] = "symbol",
 				["value"] = datavalue.Text
-			}, delegate (object s, FinsembleEventArgs e) { });
+			});
 		}
 
 		// Example for publishing to RouterClient

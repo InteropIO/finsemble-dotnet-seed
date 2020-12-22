@@ -7,7 +7,6 @@ using System.Threading;
 using System.Windows;
 using System.Windows.Threading;
 using ChartIQ.Finsemble;
-using log4net;
 using Microsoft.Shell;
 
 namespace MultiWindowExample
@@ -17,10 +16,6 @@ namespace MultiWindowExample
 	/// </summary>
 	public partial class App : Application, ISingleInstanceApp
 	{
-		/// <summary>
-		/// The logger
-		/// </summary>
-		private static readonly ILog Logger = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
 
 		private static readonly object lockObj = new object();
 
@@ -67,7 +62,6 @@ namespace MultiWindowExample
                 // then ensure that we always release the mutex
                 if (SingleInstance<App>.InitializeAsFirstInstance(Unique))
                 {
-
                     application = new App();
 
                     // If window type passed for initial launch, add listener to launch window when connected.
@@ -94,9 +88,7 @@ namespace MultiWindowExample
                     // Allow single instance code to perform cleanup operations
                     SingleInstance<App>.Cleanup();
                 }
-
             }
-
 		}
 
 		/// <summary>
@@ -146,7 +138,7 @@ namespace MultiWindowExample
 
 			if (window == null)
 			{
-				Logger.Error($"Could not create window: {name}");
+				Debug.Write($"Could not create window: {name}");
 			}
 			else
 			{
@@ -158,7 +150,7 @@ namespace MultiWindowExample
 					IIntegratable fsblWin = window as IIntegratable;
 					if (fsblWin == null)
 					{
-						Logger.Warn($"The window \"{name}\" is not a window that can be integrated into Finsemble.");
+						Debug.Write($"The window \"{name}\" is not a window that can be integrated into Finsemble.");
 					}
 					else
 					{

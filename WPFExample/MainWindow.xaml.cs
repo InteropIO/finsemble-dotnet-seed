@@ -1,11 +1,11 @@
-﻿using System;
+﻿using ChartIQ.Finsemble;
+using Newtonsoft.Json.Linq;
+using System;
 using System.Collections.Generic;
-using System.Reflection;
+using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Media;
-using ChartIQ.Finsemble;
-using log4net;
-using Newtonsoft.Json.Linq;
+using ChartIQ.Finsemble.Models;
 
 namespace WPFExample
 {
@@ -17,7 +17,6 @@ namespace WPFExample
 		/// <summary>
 		/// The logger
 		/// </summary>
-		private static readonly ILog Logger = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
 
 		private Finsemble FSBL;
 
@@ -27,37 +26,127 @@ namespace WPFExample
 			if (selected != null)
 			{
 				string componentName = selected.ToString();
-				FSBL.LauncherClient.Spawn(componentName, new JObject { ["addToWorkspace"] = true }, (s, a) => { });
+
+				if (FSBL.FDC3Client is object)
+				{
+					//FDC3 Usage example 
+					//open
+					FSBL.FDC3Client.fdc3.open(componentName, new JObject
+					{
+						["type"] = "fdc3.instrument",
+						["name"] = DataToSend.Text,
+						["id"] = new JObject
+						{
+							["ticker"] = DataToSend.Text
+						}
+					}, (s, args) => { });
+
+					//Intent 
+					//FSBL.FDC3Client.fdc3.raiseIntent("ViewChart", new JObject
+					//{
+					//	["type"] = "fdc3.instrument",
+					//	["name"] = DataToSend.Text,
+					//	["id"] = new JObject
+					//	{
+					//		["ticker"] = DataToSend.Text
+					//	}
+					//}, (s, args) => { });
+
+					//FSBL.FDC3Client.fdc3.findIntent("ViewChart", (s, intent) =>
+					//{
+					//	FSBL.Logger.Log(new JToken[] { "WPF FDC3 Usage Example, findIntent.", intent });
+					//});
+
+					//FSBL.FDC3Client.fdc3.findIntent("ViewChart", new JObject
+					//	{
+					//		["type"] = "fdc3.instrument"
+					//	}, (s, intent) =>
+					//	{
+					//		FSBL.Logger.Log(new JToken[] { "WPF FDC3 Usage Example, findIntent.", intent });
+					//	}
+					//);
+
+					//FSBL.FDC3Client.fdc3.findIntentsByContext(new JObject
+					//	{
+					//		["type"] = "fdc3.instrument"
+					//	}, (s, intents) =>
+					//	{
+					//		FSBL.Logger.Log(new JToken[] { "WPF FDC3 Usage Example, findIntentsByContext.", intents });
+					//	}
+					//);
+
+					//Context
+					//FSBL.FDC3Client.fdc3.getCurrentChannel((s, channel) => {
+					//	channel.getCurrentContext("fdc3.instrument", (sender, context) => {
+					//		FSBL.Logger.Log(new JToken[] { "WPF FDC3 Usage Example: getCurrentContext.", context });
+					//	});
+					//});
+
+					//Channels
+					//FSBL.FDC3Client.fdc3.getOrCreateChannel("test", (s, args) => { });
+
+					//FSBL.FDC3Client.fdc3.getSystemChannels((s, channelList) =>
+					//{
+					//	foreach (IChannel channel in channelList)
+					//	{
+					//		FSBL.Logger.Log(new JToken[] { "WPF FDC3 Usage Example: getSystemChannels.", channel.id });
+					//	}
+					//});
+
+					//FSBL.FDC3Client.fdc3.getCurrentChannel((s, channel) => {
+					//	FSBL.Logger.Log(new JToken[] { "WPF FDC3 Usage Example: getCurrentChannel.", channel.id });
+					//});
+				}
+				else
+				{
+					FSBL.LauncherClient.Spawn(componentName, new JObject { ["addToWorkspace"] = true }, (s, a) => { });
+				}
 			}
 		}
 
 		private void Send_Click(object sender, RoutedEventArgs e)
 		{
-			//set state on click
-			Application.Current.Dispatcher.Invoke(delegate //main thread
+			if (FSBL.FDC3Client is object)
+			{
+				//FDC3 Usage example 
+				//Broadcast
+				FSBL.FDC3Client.fdc3.broadcast(new JObject
+				{
+					["type"] = "fdc3.instrument",
+					["name"] = DataToSend.Text,
+					["id"] = new JObject
+					{
+						["ticker"] = DataToSend.Text
+					}
+				});
+			}
+			else
+			{
+				// Use Default Linker
+				FSBL.LinkerClient.Publish(new JObject
+				{
+					["dataType"] = "symbol",
+					["data"] = DataToSend.Text
+				});
+			}
+
+			Application.Current.Dispatcher.Invoke(async delegate //main thread
 			{
 				DroppedData.Content = DataToSend.Text;
-				DroppedDataSource.Content = "via Linker";
-				SaveState();
+				DroppedDataSource.Content = "via Text entry";
+				await SaveStateAsync();
 			});
-
-			FSBL.LinkerClient.Publish(new JObject
-			{ 
-				["dataType"] = "symbol",
-				["data"] = DataToSend.Text
-			});
-
 		}
 
-	/// <summary>
-	/// The MainWindow is created by the App so that we can get command line arguments passed from Finsemble.
-	/// </summary>
-	/// <param name="args"></param>
-	public MainWindow(string[] args)
+		/// <summary>
+		/// The MainWindow is created by the App so that we can get command line arguments passed from Finsemble.
+		/// </summary>
+		/// <param name="args"></param>
+		public MainWindow(string[] args)
 		{
-
-			// Trigger actions on close when requested by Finsemble, e.g.:
+			// Trigger actions on close when requested by Finsemble, e.g.:	
 			this.Closing += MainWindow_Closing;
+
 			//Ensure that your window has been created (so that its window handle exists) before connecting to Finsemble.
 			FSBL = new Finsemble(args, this); // Finsemble needs the command line arguments to connect and also this Window to manage snapping, docking etc.
 			FSBL.Connected += Finsemble_Connected;
@@ -73,60 +162,73 @@ namespace WPFExample
 				FinsembleHeader.SetBridge(FSBL); // The Header Control needs a connected finsemble instance
 
 				//Styling the Finsemble Header
-				FinsembleHeader.SetActiveBackground(new SolidColorBrush((Color)ColorConverter.ConvertFromString("#22262F")));
-				FinsembleHeader.SetInactiveBackground(new SolidColorBrush((Color)ColorConverter.ConvertFromString("#22262F")));
-				FinsembleHeader.SetButtonHoverBackground(new SolidColorBrush((Color)ColorConverter.ConvertFromString("#0A8CF4")));
-				FinsembleHeader.SetInactiveButtonHoverBackground(new SolidColorBrush((Color)ColorConverter.ConvertFromString("#0A8CF4")));
-				FinsembleHeader.SetCloseButtonHoverBackground(new SolidColorBrush((Color)ColorConverter.ConvertFromString("#F26666")));
-				FinsembleHeader.SetInactiveCloseButtonHoverBackground(new SolidColorBrush((Color)ColorConverter.ConvertFromString("#F26666")));
-				FinsembleHeader.SetDockingButtonDockedBackground(new SolidColorBrush((Color)ColorConverter.ConvertFromString("#0A8CF4")));
-				FinsembleHeader.SetTitleForeground(new SolidColorBrush((Color)ColorConverter.ConvertFromString("#ACB2C0")));
-                FinsembleHeader.SetButtonForeground(new SolidColorBrush((Color)ColorConverter.ConvertFromString("#ACB2C0")));
 
-                FinsembleHeader.SetButtonFont(null, 8, FontStyles.Normal, FontWeights.Normal);
-				FinsembleHeader.SetTitleFont(null, 12, FontStyles.Normal, FontWeights.SemiBold);
+				FinsembleHeader.GetHandlingService().ActiveBackground = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#22262F"));
+				FinsembleHeader.GetHandlingService().InactiveBackground = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#22262F"));
+				FinsembleHeader.GetHandlingService().ButtonHoverBackground = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#0A8CF4"));
+				FinsembleHeader.GetHandlingService().InactiveButtonHoverBackground = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#0A8CF4"));
+				FinsembleHeader.GetHandlingService().CloseButtonHoverBackground = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#F26666"));
+				FinsembleHeader.GetHandlingService().InactiveCloseButtonHoverBackground = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#F26666"));
+				FinsembleHeader.GetHandlingService().DockingButtonDockedBackground = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#0A8CF4"));
+				FinsembleHeader.GetHandlingService().TitleForeground = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#ACB2C0"));
+				FinsembleHeader.GetHandlingService().ButtonForeground = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#ACB2C0"));
+
+				FinsembleHeader.GetHandlingService().ButtonFont = new TitlebarFontConfiguration()
+				{
+					FontFamily = null,
+					FontSize = 8,
+					FontStyle = FontStyles.Normal,
+					FontWeight = FontWeights.Normal
+				};
+				FinsembleHeader.GetHandlingService().TitleFont = new TitlebarFontConfiguration()
+				{
+					FontFamily = null,
+					FontSize = 12,
+					FontStyle = FontStyles.Normal,
+					FontWeight = FontWeights.SemiBold
+				};
 
 				//Set window title
-				FinsembleHeader.SetTitle("WPF Example Component");
+				FinsembleHeader.GetHandlingService().Title = "WPF Example Component";
 
 				FSBL.DragAndDropClient.SetScrim(Scrim); // The Scrim Label Control is used for drag and drop.
 
-                // Receivers for dropped data.
-                FSBL.DragAndDropClient.AddReceivers(new List<KeyValuePair<string, EventHandler<FinsembleEventArgs>>>()
-                {
-                    new KeyValuePair<string, EventHandler<FinsembleEventArgs>>("symbol", (s, args) =>
-                    {
-                        var data = args.response["data"]?["symbol"];
-                        if(data != null)
-                        {
-						    //Check if we received an object (so data.symbol.symbol) or a string (data.symbol) to support variations in the format
-						    if(data.HasValues) {
-                                data = data?["symbol"];
-                            }
-                            Application.Current.Dispatcher.Invoke((Action)delegate //main thread
-						    {
-                                Application.Current.Dispatcher.Invoke((Action)delegate //main thread
-							    {
-                                    DroppedData.Content = data.ToString();
-                                    DataToSend.Text = data.ToString();
-                                    DroppedDataSource.Content = "via Drag and Drop";
-                                    SaveState();
-                                });
-                            });
-                        }
-                    })
-                });
+				// Receivers for dropped data.
+				FSBL.DragAndDropClient.AddReceivers(new List<KeyValuePair<string, EventHandler<FinsembleEventArgs>>>()
+				{
+					new KeyValuePair<string, EventHandler<FinsembleEventArgs>>("symbol", (s, args) =>
+					{
+						var data = args.response["data"]?["symbol"];
+						if(data != null)
+						{
+							//Check if we received an object (so data.symbol.symbol) or a string (data.symbol) to support variations in the format
+							if(data.HasValues) {
+								data = data?["symbol"];
+							}
+							Application.Current.Dispatcher.Invoke((Action)delegate //main thread
+							{
+								Application.Current.Dispatcher.Invoke((Action)async delegate //main thread
+								{
+									DroppedData.Content = data.ToString();
+									DataToSend.Text = data.ToString();
+									DroppedDataSource.Content = "via Drag and Drop";
+									await SaveStateAsync();
+								});
+							});
+						}
+					})
+				});
 
-                // Emitters for data that can be dragged using the drag icon.
-                FSBL.DragAndDropClient.SetEmitters(new List<KeyValuePair<string, DragAndDropClient.emitter>>()
+				// Emitters for data that can be dragged using the drag icon.
+				FSBL.DragAndDropClient.SetEmitters(new List<KeyValuePair<string, DragAndDropClient.emitter>>()
 				{
 					new KeyValuePair<string, DragAndDropClient.emitter>("symbol", () =>
 					{
 						//set state on drag so correct symbol is displayed
-						Application.Current.Dispatcher.Invoke(delegate //main thread
+						Application.Current.Dispatcher.Invoke(async delegate //main thread
 						{
 							DroppedData.Content = DataToSend.Text;
-							SaveState();
+							await SaveStateAsync();
 						});
 						return new JObject
 						{
@@ -145,7 +247,6 @@ namespace WPFExample
 				{
 					if (response.error != null)
 					{
-						Logger.Error(response.error);
 						return;
 					}
 
@@ -169,40 +270,76 @@ namespace WPFExample
 				this.Show();
 			});
 
-			// Subscribe to Finsemble Linker Channels
-			FSBL.LinkerClient.Subscribe("symbol", (error, response) =>
+			if (FSBL.FDC3Client is object)
 			{
-				Application.Current.Dispatcher.Invoke(delegate //main thread
+				//FDC3 Usage example	
+				Application.Current.Dispatcher.Invoke(delegate //main thread	
 				{
-					DataToSend.Text = response.response?["data"]?.ToString();
-					DroppedData.Content = response.response?["data"]?.ToString();
-					DroppedDataSource.Content = "via Linker";
-					SaveState();
+					FDC3Label.Visibility = Visibility.Visible;
 				});
-			});
+
+				//Context handler
+				EventHandler<JObject> contextHandler = (s, context) =>
+				{
+					FSBL.Logger.Log(new JToken[] { "WPF FDC3 Usage Example, context received by contextHandler.", context });
+					if (context["type"].ToString().Equals("fdc3.instrument"))
+					{
+						Application.Current.Dispatcher.Invoke(async delegate //main thread
+						{
+							DataToSend.Text = context?["id"]?["ticker"]?.ToString();
+							DroppedData.Content = context?["id"]?["ticker"]?.ToString();
+							DroppedDataSource.Content = "context shared via FDC3";
+							await SaveStateAsync();
+						});
+					}
+				};
+				FSBL.FDC3Client.fdc3.addContextListener(contextHandler);
+				//FSBL.FDC3Client.fdc3.addContextListener("fdc3.instrument", contextHandler);
 
 
+				EventHandler<JObject> intentHandler = (s, context) =>
+				{
+					FSBL.Logger.Log(new JToken[] { "WPF FDC3 Usage Example: context received by intentHandler.", context });
+					if (context["type"].ToString().Equals("fdc3.instrument"))
+					{
+						Application.Current.Dispatcher.Invoke(async delegate //main thread
+						{
+							DataToSend.Text = context?["id"]?["ticker"]?.ToString();
+							DroppedData.Content = context?["id"]?["ticker"]?.ToString();
+							DroppedDataSource.Content = "context shared via FDC3 intent";
+							await SaveStateAsync();
+						});
+					}
+				};
+				FSBL.FDC3Client.fdc3.addIntentListener("ViewChart", intentHandler);
+			}
+			else
+			{
+				//Use Default linker
+				//Subscribe to Finsemble Linker Channels
+				FSBL.LinkerClient.Subscribe("symbol", (error, response) =>
+				{
+					Application.Current.Dispatcher.Invoke(async delegate //main thread
+					{
+						DataToSend.Text = response.response?["data"]?.ToString();
+						DroppedData.Content = response.response?["data"]?.ToString();
+						DroppedDataSource.Content = "via Linker";
+						await SaveStateAsync();
+					});
+				});
+			}
 
 			// Logging to the Finsemble Central Console
-			/*FSBL.RPC("Logger.error", new List<JToken> {
-				"Error Test"
-			});
+			/*
+			FSBL.Logger.Error(new JToken[] {"Error Test"});
 
-			FSBL.RPC("Logger.log", new List<JToken> {
-				"Log Test"
-			});
+			FSBL.Logger.Log(new JToken[] {"Log Test"});
 
-			FSBL.RPC("Logger.debug", new List<JToken> {
-				"Debug Test"
-			});
+			FSBL.Logger.Debug(new JToken[] {"Debug Test"});
 
-			FSBL.RPC("Logger.info", new List<JToken> {
-				"Info Test"
-			});
+			FSBL.Logger.Info(new JToken[] {"Info Test"});
 
-			FSBL.RPC("Logger.verbose", new List<JToken> {
-				"Verbose Test"
-			});
+			FSBL.Logger.Verbose(new JToken[] {"Verbose Test"});
 			*/
 
 			////Sample code to execute LauncherClient.getActiveDescriptors()
@@ -212,65 +349,87 @@ namespace WPFExample
 			//});
 		}
 
-		/// <summary>
-		/// Example window close handler
-		/// </summary>
-		/// <param name="sender"></param>
-		/// <param name="e"></param>
+		/// <summary>	
+		/// Example window close handler	
+		/// </summary>	
+		/// <param name="sender"></param>	
+		/// <param name="e"></param>	
 		private void MainWindow_Closing(object sender, System.ComponentModel.CancelEventArgs e)
 		{
-			/*if (MessageBox.Show("Close Application?", "Question", MessageBoxButton.YesNo, MessageBoxImage.Warning) == MessageBoxResult.No)
-			{
-				// Cancel Closing
-				e.Cancel = true;
-				return;
+			/*if (MessageBox.Show("Close Application?", "Question", MessageBoxButton.YesNo, MessageBoxImage.Warning) == MessageBoxResult.No)	
+			{	
+				// Cancel Closing	
+				e.Cancel = true;	
+				return;	
 			}*/
 		}
 
 		private void LinkToGroup_Click(object sender, RoutedEventArgs e)
 		{
-			FSBL.LinkerClient.LinkToChannel("group1", null, (s, r) =>
-            {
-                FSBL.RPC("Logger.log", new List<JToken> {
-                    "Link to Group1", r.response
-                });
-
-            });
+			if (FSBL.FDC3Client is null)
+			{
+				FSBL.LinkerClient.LinkToChannel("group1", null, (s, r) =>
+				{
+					FSBL.Logger.Log(new JToken[] { "Link to Group1", r.response });
+				});
+			}
+			else
+			{
+				//FDC3 Usage example
+				//joinChannel
+				FSBL.FDC3Client.fdc3.joinChannel("group1");
+			}
 		}
 
-		private void SaveState()
+		private async Task SaveStateAsync()
 		{
 			try
 			{
-				FSBL.WindowClient.SetComponentState(new JObject
+				await FSBL.WindowClient.SetComponentState(new JObject
 				{
 					["field"] = "symbol",
 					["value"] = DataToSend.Text
-				}, delegate (object s, FinsembleEventArgs e) { });
+				});
+			}
+			catch (ApplicationException e)
+			{
+				FSBL.Logger.Warn(new JToken[] { "WPFExample SaveState Warn", e.Message, e.StackTrace });
 			}
 			catch (Exception e)
 			{
-				//MessageBox.Show(e.Message);
+				FSBL.Logger.Error(new JToken[] { "WPFExample SaveState Error", e.Message, e.StackTrace });
 			}
 		}
 
-        private void UnLinkFromGroup_Click(object sender, RoutedEventArgs e)
-        {
-            FSBL.LinkerClient.UnlinkFromChannel("group1", null, (s, r) =>
-            {
-                FSBL.RPC("Logger.log", new List<JToken> {
-                    "Unlinked from Group1", r.response
-                });
-            });
-        }
+		private void UnLinkFromGroup_Click(object sender, RoutedEventArgs e)
+		{
+			if (FSBL.FDC3Client is null)
+			{
+				FSBL.LinkerClient.UnlinkFromChannel("group1", null, (s, r) =>
+				{
+					FSBL.Logger.Log(new JToken[] { "Unlinked from Group1", r.response });
+				});
+			}
+			else
+			{
+				//FDC3 Usage Example
+				//leaveCurrentChannel
+				FSBL.FDC3Client.fdc3.leaveCurrentChannel((s, args) =>
+				{
+					FSBL.Logger.Log(new JToken[] { "WPF FDC3 Usage Example: leaveCurrentChannel.", args });
+				});
+			}
+		}
 
-        private void UpdateDisplayData()
+
+		private void UpdateDisplayData()
 		{
 			FSBL.WindowClient.GetComponentState(
 				new JObject { ["field"] = "symbol" },
 				delegate (object s, FinsembleEventArgs state)
 				{
-					try {
+					try
+					{
 						string symbolTxt = state.response == null ? null : state.response?.ToString();
 						if (!string.IsNullOrEmpty(symbolTxt) && !symbolTxt.Equals("{}"))
 						{
@@ -284,8 +443,9 @@ namespace WPFExample
 						else
 						{
 							//Get SpawnData if no previous state
-							FSBL.WindowClient.getSpawnData((sender, r) => {
-								Application.Current.Dispatcher.Invoke(delegate //main thread
+							FSBL.WindowClient.GetSpawnData((sender, r) =>
+							{
+								Application.Current.Dispatcher.Invoke(async delegate //main thread
 								{
 									symbolTxt = r.response == null ? null : r.response?["symbol"]?.ToString();
 									if (!string.IsNullOrEmpty(symbolTxt) && !symbolTxt.Equals("{}"))
@@ -300,14 +460,14 @@ namespace WPFExample
 										DroppedData.Content = "MSFT";
 										DroppedDataSource.Content = "via default value";
 									}
-									SaveState();
+									await SaveStateAsync();
 								});
 							});
 						}
 					}
 					catch (Exception e)
 					{
-						//MessageBox.Show(e.Message);
+						FSBL.Logger.Error(new JToken[] { "WPFExample UpdateDisplayData Error", e.Message, e.StackTrace });
 					}
 				}
 			);
@@ -316,18 +476,20 @@ namespace WPFExample
 		private void Publish_Click(object sender, RoutedEventArgs e)
 		{
 			//set state on click
-			Application.Current.Dispatcher.Invoke(delegate //main thread
+			Application.Current.Dispatcher.Invoke(async delegate //main thread
 			{
 				DroppedData.Content = DataToSend.Text;
-				SaveState();
+				await SaveStateAsync();
 			});
 
 			//N.B. You must add a PubSub responder before publishing or subscribing to any topic that doesn't start with 'Finsemble'
 			// This is not currently supported in the .Net RouterClient implementation and will need to done in a Finsemble HTML5 service
-			FSBL.RouterClient.Publish("Finsemble.TestWPFPubSubSymbol", new JObject {
-					["symbol"] = DataToSend.Text
+			FSBL.RouterClient.Publish("Finsemble.TestWPFPubSubSymbol", new JObject
+			{
+				["symbol"] = DataToSend.Text
 			});
 		}
+
 
 		private void Subscribe_to_pubsub()
 		{
@@ -338,26 +500,27 @@ namespace WPFExample
 					if (state.response != null)
 					{
 						var pubSubData = (JObject)state.response;
-						Application.Current.Dispatcher.Invoke(delegate //main thread
+						Application.Current.Dispatcher.Invoke(async delegate //main thread
 						{
 							// The initial publish will always be an empty object.
 							// Therefore, we need these null operators to handle that case.
 							var theData = ((JValue)pubSubData?["data"]?["symbol"])?.ToString();
-							if (theData != null) {
+							if (theData != null)
+							{
 								DataToSend.Text = theData;
 								DroppedData.Content = theData;
 								DroppedDataSource.Content = "via PubSub";
 
-								SaveState();
+								await SaveStateAsync();
 							}
 						});
 					}
 				}
 				catch (Exception ex)
 				{
-					MessageBox.Show(ex.Message);
+					FSBL.Logger.Error(new JToken[] { "WPFExample Subscribe_to_Publish Error", ex.Message, ex.StackTrace });
 				}
 			});
 		}
-    }
+	}
 }
