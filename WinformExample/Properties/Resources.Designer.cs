@@ -61,6 +61,26 @@ namespace WinformExample.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap chevron_arrow_down {
+            get {
+                object obj = ResourceManager.GetObject("chevron-arrow-down", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap chevron_arrow_up {
+            get {
+                object obj = ResourceManager.GetObject("chevron-arrow-up", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized resource of type System.Byte[].
         /// </summary>
         internal static byte[] finfont {
@@ -77,6 +97,16 @@ namespace WinformExample.Properties {
             get {
                 object obj = ResourceManager.GetObject("font_finance", resourceCulture);
                 return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap winformsLogo {
+            get {
+                object obj = ResourceManager.GetObject("winformsLogo", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
             }
         }
     }

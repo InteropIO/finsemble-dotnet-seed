@@ -22,7 +22,7 @@ namespace WPFExample
 
 		private void SpawnComponent_Click(object sender, RoutedEventArgs e)
 		{
-			object selected = ComponentSelect.SelectedValue;
+			object selected = ComponentSelect.ItemsComboBox.SelectedValue;
 			if (selected != null)
 			{
 				string componentName = selected.ToString();
@@ -34,10 +34,10 @@ namespace WPFExample
 					FSBL.FDC3Client.fdc3.open(componentName, new JObject
 					{
 						["type"] = "fdc3.instrument",
-						["name"] = DataToSend.Text,
+						["name"] = DataToSend.TextBox.Text,
 						["id"] = new JObject
 						{
-							["ticker"] = DataToSend.Text
+							["ticker"] = DataToSend.TextBox.Text
 						}
 					}, (s, args) => { });
 
@@ -45,10 +45,10 @@ namespace WPFExample
 					//FSBL.FDC3Client.fdc3.raiseIntent("ViewChart", new JObject
 					//{
 					//	["type"] = "fdc3.instrument",
-					//	["name"] = DataToSend.Text,
+					//	["name"] = DataToSend.TextBox.Text,
 					//	["id"] = new JObject
 					//	{
-					//		["ticker"] = DataToSend.Text
+					//		["ticker"] = DataToSend.TextBox.Text
 					//	}
 					//}, (s, args) => { });
 
@@ -113,10 +113,10 @@ namespace WPFExample
 				FSBL.FDC3Client.fdc3.broadcast(new JObject
 				{
 					["type"] = "fdc3.instrument",
-					["name"] = DataToSend.Text,
+					["name"] = DataToSend.TextBox.Text,
 					["id"] = new JObject
 					{
-						["ticker"] = DataToSend.Text
+						["ticker"] = DataToSend.TextBox.Text
 					}
 				});
 			}
@@ -126,13 +126,13 @@ namespace WPFExample
 				FSBL.LinkerClient.Publish(new JObject
 				{
 					["dataType"] = "symbol",
-					["data"] = DataToSend.Text
+					["data"] = DataToSend.TextBox.Text
 				});
 			}
 
 			Application.Current.Dispatcher.Invoke(async delegate //main thread
 			{
-				DroppedData.Content = DataToSend.Text;
+				DroppedData.Content = DataToSend.TextBox.Text;
 				DroppedDataSource.Content = "via Text entry";
 				await SaveStateAsync();
 			});
@@ -210,7 +210,7 @@ namespace WPFExample
 								Application.Current.Dispatcher.Invoke((Action)async delegate //main thread
 								{
 									DroppedData.Content = data.ToString();
-									DataToSend.Text = data.ToString();
+									DataToSend.TextBox.Text = data.ToString();
 									DroppedDataSource.Content = "via Drag and Drop";
 									await SaveStateAsync();
 								});
@@ -227,13 +227,13 @@ namespace WPFExample
 						//set state on drag so correct symbol is displayed
 						Application.Current.Dispatcher.Invoke(async delegate //main thread
 						{
-							DroppedData.Content = DataToSend.Text;
+							DroppedData.Content = DataToSend.TextBox.Text;
 							await SaveStateAsync();
 						});
 						return new JObject
 						{
-							["symbol"] = DataToSend.Text,
-							["description"] = "Symbol " + DataToSend.Text
+							["symbol"] = DataToSend.TextBox.Text,
+							["description"] = "Symbol " + DataToSend.TextBox.Text
 						};
 					})
 				});
@@ -258,7 +258,7 @@ namespace WPFExample
 						{
 							Application.Current.Dispatcher.Invoke(delegate //main thread
 							{
-								ComponentSelect.Items.Add(property.Name);
+								ComponentSelect.ItemsComboBox.Items.Add(property.Name);
 							});
 						}
 					}
@@ -275,7 +275,7 @@ namespace WPFExample
 				//FDC3 Usage example	
 				Application.Current.Dispatcher.Invoke(delegate //main thread	
 				{
-					FDC3Label.Visibility = Visibility.Visible;
+					//	FDC3Label.Visibility = Visibility.Visible;
 				});
 
 				//Context handler
@@ -286,7 +286,7 @@ namespace WPFExample
 					{
 						Application.Current.Dispatcher.Invoke(async delegate //main thread
 						{
-							DataToSend.Text = context?["id"]?["ticker"]?.ToString();
+							DataToSend.TextBox.Text = context?["id"]?["ticker"]?.ToString();
 							DroppedData.Content = context?["id"]?["ticker"]?.ToString();
 							DroppedDataSource.Content = "context shared via FDC3";
 							await SaveStateAsync();
@@ -300,11 +300,11 @@ namespace WPFExample
 				EventHandler<JObject> intentHandler = (s, context) =>
 				{
 					FSBL.Logger.Log(new JToken[] { "WPF FDC3 Usage Example: context received by intentHandler.", context });
-					if (context["type"].ToString().Equals("fdc3.instrument"))
+					if (context["type"]!=null && context["type"].ToString().Equals("fdc3.instrument"))
 					{
 						Application.Current.Dispatcher.Invoke(async delegate //main thread
 						{
-							DataToSend.Text = context?["id"]?["ticker"]?.ToString();
+							DataToSend.TextBox.Text = context?["id"]?["ticker"]?.ToString();
 							DroppedData.Content = context?["id"]?["ticker"]?.ToString();
 							DroppedDataSource.Content = "context shared via FDC3 intent";
 							await SaveStateAsync();
@@ -321,13 +321,17 @@ namespace WPFExample
 				{
 					Application.Current.Dispatcher.Invoke(async delegate //main thread
 					{
-						DataToSend.Text = response.response?["data"]?.ToString();
+						DataToSend.TextBox.Text = response.response?["data"]?.ToString();
 						DroppedData.Content = response.response?["data"]?.ToString();
 						DroppedDataSource.Content = "via Linker";
 						await SaveStateAsync();
 					});
 				});
 			}
+			FSBL.Logger.OnLog += Logger_OnLog;
+			FSBL.Logger.System.OnLog += Logger_OnLog;
+			FSBL.Logger.Perf.OnLog += Logger_OnLog;
+
 
 			// Logging to the Finsemble Central Console
 			/*
@@ -347,6 +351,14 @@ namespace WPFExample
 			//{
 			//	System.Diagnostics.Debug.Write(args.response.ToString());
 			//});
+		}
+
+		private void Logger_OnLog(object sender, JObject e)
+		{
+			Application.Current.Dispatcher.Invoke(() =>
+			{
+				LogsTextBox.Text += e + "\n";
+			});
 		}
 
 		/// <summary>	
@@ -388,7 +400,7 @@ namespace WPFExample
 				await FSBL.WindowClient.SetComponentState(new JObject
 				{
 					["field"] = "symbol",
-					["value"] = DataToSend.Text
+					["value"] = DataToSend.TextBox.Text
 				});
 			}
 			catch (ApplicationException e)
@@ -435,7 +447,7 @@ namespace WPFExample
 						{
 							Application.Current.Dispatcher.Invoke(delegate //main thread
 							{
-								DataToSend.Text = symbolTxt;
+								DataToSend.TextBox.Text = symbolTxt;
 								DroppedData.Content = symbolTxt;
 								DroppedDataSource.Content = "via component state";
 							});
@@ -450,13 +462,13 @@ namespace WPFExample
 									symbolTxt = r.response == null ? null : r.response?["symbol"]?.ToString();
 									if (!string.IsNullOrEmpty(symbolTxt) && !symbolTxt.Equals("{}"))
 									{
-										DataToSend.Text = symbolTxt;
+										DataToSend.TextBox.Text = symbolTxt;
 										DroppedData.Content = symbolTxt;
 										DroppedDataSource.Content = "via SpawnData";
 									}
 									else
 									{
-										DataToSend.Text = "MSFT";
+										DataToSend.TextBox.Text = "MSFT";
 										DroppedData.Content = "MSFT";
 										DroppedDataSource.Content = "via default value";
 									}
@@ -478,7 +490,7 @@ namespace WPFExample
 			//set state on click
 			Application.Current.Dispatcher.Invoke(async delegate //main thread
 			{
-				DroppedData.Content = DataToSend.Text;
+				DroppedData.Content = DataToSend.TextBox.Text;
 				await SaveStateAsync();
 			});
 
@@ -486,7 +498,7 @@ namespace WPFExample
 			// This is not currently supported in the .Net RouterClient implementation and will need to done in a Finsemble HTML5 service
 			FSBL.RouterClient.Publish("Finsemble.TestWPFPubSubSymbol", new JObject
 			{
-				["symbol"] = DataToSend.Text
+				["symbol"] = DataToSend.TextBox.Text
 			});
 		}
 
@@ -507,7 +519,7 @@ namespace WPFExample
 							var theData = ((JValue)pubSubData?["data"]?["symbol"])?.ToString();
 							if (theData != null)
 							{
-								DataToSend.Text = theData;
+								DataToSend.TextBox.Text = theData;
 								DroppedData.Content = theData;
 								DroppedDataSource.Content = "via PubSub";
 

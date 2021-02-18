@@ -5,33 +5,71 @@
 	xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
 	xmlns:local="clr-namespace:WPFExample"
 	xmlns:Finsemble="clr-namespace:ChartIQ.Finsemble;assembly=Finsemble"
+    xmlns:customControls="clr-namespace:WPFExample.CustomControls"
 	xmlns:Custom="http://schemas.microsoft.com/winfx/2006/xaml/presentation/ribbon" x:Class="WPFExample.MainWindow" 
 	mc:Ignorable="d" 
-	Title="MainWindow" Height="350" 
-	Width="525" WindowStyle="None" Background="{x:Null}" 
+	Title="MainWindow" Height="600" 
+	Width="600" WindowStyle="None" Background="{x:Null}" 
 	AllowsTransparency="True">
 
-	<WindowChrome.WindowChrome>
-		<WindowChrome 
+    <WindowChrome.WindowChrome>
+        <WindowChrome 
 			CaptionHeight="1"
         	CornerRadius ="0" 
 			ResizeBorderThickness="4" 
 			GlassFrameThickness="0"/>
-	</WindowChrome.WindowChrome>
-	<Border x:Name="WindowBorder">
-		<Grid Background="White">
-			<Finsemble:WPFWindowTitleBar x:Name="FinsembleHeader" Height="25" VerticalAlignment="Top" Margin="0"/>
-			<Button x:Name="Send" Content="Send Symbol" HorizontalAlignment="Left" Margin="10,76,0,0" VerticalAlignment="Top" Width="120" Height="23" Click="Send_Click" Panel.ZIndex="1"/>
-			<TextBox Text="MSFT" x:Name="DataToSend" HorizontalAlignment="Left" Height="23" Margin="10,48,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="120" Panel.ZIndex="1"/>
-			<Label x:Name="Scrim" Margin="0,25,0,0" AllowDrop="True" Visibility="Hidden" Panel.ZIndex="1000" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" />
-			<Label x:Name="DroppedData" Margin="0" HorizontalContentAlignment="Center" FontSize="50" VerticalAlignment="Center" Content="MSFT"/>
-			<Label x:Name="DroppedDataSource" Margin="0,219,0,119" HorizontalContentAlignment="Center" FontSize="12" VerticalAlignment="Center" Content="via Default value"/>
-			<Button x:Name="SpawnComponent" Content="Spawn Component" HorizontalAlignment="Left" Margin="10,169,0,0" VerticalAlignment="Top" Width="121" Height="23" Click="SpawnComponent_Click"/>
-			<Button x:Name="LinkToGroup" Content="Link to Group 1" HorizontalAlignment="Left" Margin="8,206,0,0" VerticalAlignment="Top" Width="121" Height="23" Click="LinkToGroup_Click"/>
-			<Button x:Name="UnLinkFromGroup" Content="Unlink from Group 1" HorizontalAlignment="Left" Margin="8,236,0,0" VerticalAlignment="Top" Width="121" Height="23" Click="UnLinkFromGroup_Click"/>
-			<Button x:Name="Publish" Content="Publish to PubSub" HorizontalAlignment="Left" Margin="8,275,0,0" VerticalAlignment="Top" Width="121" Height="23" Click="Publish_Click"/>
-			<ComboBox x:Name="ComponentSelect" HorizontalAlignment="Left" Margin="11,142,0,0" VerticalAlignment="Top" Width="120"/>
-			<Label x:Name="FDC3Label" Content="FDC3" HorizontalAlignment="Right" Margin="456,30,0,0" VerticalAlignment="Top" Visibility="Hidden"/>
-		</Grid>
-	</Border>
+    </WindowChrome.WindowChrome>
+    <Border x:Name="WindowBorder">
+        <Grid Background="#171a20">
+            <Finsemble:WPFWindowTitleBar x:Name="FinsembleHeader" Height="25" VerticalAlignment="Top" Margin="0"/>
+            <Label x:Name="Scrim" Visibility="Hidden" Panel.ZIndex="1000" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" />
+            <Grid Margin="15,25,15,0">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="5*"></RowDefinition>
+                    <RowDefinition Height="*"></RowDefinition>
+                    <RowDefinition Height="*"></RowDefinition>
+                    <RowDefinition Height="3*"></RowDefinition>
+                </Grid.RowDefinitions>
+                <Grid Grid.Row="0" HorizontalAlignment="Center">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="5*"></RowDefinition>
+                        <RowDefinition Height="*"></RowDefinition>
+                        <RowDefinition Height="*"></RowDefinition>
+                        <RowDefinition Height="*"></RowDefinition>
+                    </Grid.RowDefinitions>
+                    <Image Grid.Row="0" Width="200" HorizontalAlignment="Center" Source="Assets/ic_WPFLogo.png"></Image>
+                    <Label Grid.Row="1" Foreground="White" FontSize="16" FontWeight="Bold" HorizontalAlignment="Center" x:Name="DroppedData" Content="MSFT"/>
+                    <Label Grid.Row="2" Foreground="White" FontSize="14" FontWeight="Bold" HorizontalAlignment="Center" x:Name="DroppedDataSource" Content=" via Default value"/>
+                    <Label Grid.Row="3" x:Name="FDC3Label" Content="FDC3" Foreground="White" FontSize="14" FontWeight="Bold" HorizontalAlignment="Center" Visibility="Hidden"/>
+
+                </Grid>
+                <Grid Grid.Row="1" >
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="2*"></ColumnDefinition>
+                        <ColumnDefinition Width="*"></ColumnDefinition>
+                        <ColumnDefinition Width="0.5*"></ColumnDefinition>
+                    </Grid.ColumnDefinitions>
+                    <Label VerticalAlignment="Center" Foreground="#039bff" FontSize="16" FontWeight="Bold"  Grid.Column="0" Content="Send a Symbol"></Label>
+                    <customControls:FinsembleInput  Grid.Column="1" x:Name="DataToSend"/>
+                    <customControls:FinsembleButton  Grid.Column="2" ButtonContent="Send" x:Name="Send" Click="Send_Click"/>
+                </Grid>
+                <Grid Grid.Row="2" >
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="2*"></ColumnDefinition>
+                        <ColumnDefinition Width="*"></ColumnDefinition>
+                        <ColumnDefinition Width="0.5*"></ColumnDefinition>
+                    </Grid.ColumnDefinitions>
+                    <Label VerticalAlignment="Center" Foreground="#039bff" FontSize="16" FontWeight="Bold" Grid.Column="0" Content="Spawn a Component"></Label>
+                    <customControls:FinsembleDropDown x:Name="ComponentSelect" Grid.Column="1"></customControls:FinsembleDropDown>
+                    <customControls:FinsembleButton Grid.Column="2" x:Name="SpawnComponent" ButtonContent="Launch"  Click="SpawnComponent_Click"/>
+                </Grid>
+                <Expander Margin="0,10" Grid.Row="3" Name="Expander" Foreground="#039bff" FontWeight="Bold" FontSize="16" Header="Show Messages">
+                    <TextBox x:Name="LogsTextBox" IsReadOnly="True" Text="Logs will show here" Margin="0,10,0,0" Background="Transparent" Foreground="White" BorderThickness="0" FontWeight="Normal" FontSize="14" VerticalScrollBarVisibility="Visible" TextWrapping="Wrap"></TextBox>
+                </Expander>
+
+
+            </Grid>
+
+        </Grid>
+    </Border>
 </Window>
