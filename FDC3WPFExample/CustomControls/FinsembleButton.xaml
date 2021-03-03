@@ -1,0 +1,49 @@
+﻿<UserControl x:Class="FDC3WPFExample.CustomControls.FinsembleButton"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:FDC3WPFExample.CustomControls"
+             mc:Ignorable="d" 
+             d:DesignHeight="450" d:DesignWidth="800">
+    <UserControl.Resources>
+      
+        <Style x:Key="FinsembleButton" TargetType="{x:Type Button}">
+            <Setter Property="Background" Value="#22262f"></Setter>
+            <Setter Property="BorderThickness" Value="0"></Setter>
+            <Setter Property="Foreground" Value="White"></Setter>
+            <Setter Property="FontSize" Value="14"></Setter>
+            <Setter Property="Padding" Value="0"></Setter>
+            <Setter Property="FontWeight" Value="Bold"></Setter>
+
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="{x:Type Button}">
+                        <Border Background="{TemplateBinding Background}">
+                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                        </Border>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+            <Style.Triggers>
+                <Trigger Property="IsMouseOver" Value="True">
+                    <Setter Property="Background" Value="#171a20"/>
+                </Trigger>
+            </Style.Triggers>
+        </Style>
+        <Style x:Key="FinsembleButtonBorder" TargetType="{x:Type Border}">
+            <Setter Property="Margin" Value="5"></Setter>
+            <Setter Property="CornerRadius" Value="25"></Setter>
+            <Setter Property="Padding" Value="10"></Setter>
+            <Setter Property="Background" Value="#22262f"></Setter>
+            <Style.Triggers>
+                <DataTrigger Binding="{Binding IsMouseOver, ElementName=Button }" Value="True">
+                    <Setter Property="Background" Value="#171a20"/>
+                </DataTrigger>
+            </Style.Triggers>
+        </Style>
+    </UserControl.Resources>
+    <Border Name="ButtonBorder" Style="{StaticResource FinsembleButtonBorder}">
+        <Button Style="{StaticResource FinsembleButton}" Name="Button" Click="Button_OnClick" Content="{Binding ButtonContent, Mode=TwoWay}"></Button>
+ </Border>
+</UserControl>
