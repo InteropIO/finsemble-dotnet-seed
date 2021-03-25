@@ -332,7 +332,6 @@ namespace WPFExample
 			FSBL.Logger.System.OnLog += Logger_OnLog;
 			FSBL.Logger.Perf.OnLog += Logger_OnLog;
 
-
 			// Logging to the Finsemble Central Console
 			/*
 			FSBL.Logger.Error(new JToken[] {"Error Test"});

@@ -56,7 +56,6 @@ namespace WinformExample
 
 		private void FinsembleConnected(object sender, EventArgs e)
 		{
-
 			FSBL.Logger.Log(new JToken[] { "Winform example connected to Finsemble." });
 			System.Diagnostics.Debug.WriteLine("FSBL Ready.");
 
