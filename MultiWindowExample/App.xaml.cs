@@ -1,14 +1,13 @@
-﻿using System;
+﻿using ChartIQ.Finsemble;
+using Microsoft.Shell;
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
-using System.Reflection;
+
 using System.Threading;
 using System.Windows;
 using System.Windows.Threading;
-using ChartIQ.Finsemble;
-using Microsoft.Shell;
-
 namespace MultiWindowExample
 {
 	/// <summary>
@@ -138,7 +137,7 @@ namespace MultiWindowExample
 
 			if (window == null)
 			{
-				Debug.Write($"Could not create window: {name}");
+				Debug.Print($"Could not create window: {name}");
 			}
 			else
 			{
@@ -150,7 +149,7 @@ namespace MultiWindowExample
 					IIntegratable fsblWin = window as IIntegratable;
 					if (fsblWin == null)
 					{
-						Debug.Write($"The window \"{name}\" is not a window that can be integrated into Finsemble.");
+						Debug.Print($"The window \"{name}\" is not a window that can be integrated into Finsemble.");
 					}
 					else
 					{

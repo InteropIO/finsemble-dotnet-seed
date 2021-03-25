@@ -2,18 +2,20 @@
 using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Drawing;
-using System.Drawing.Text;
+using System.Linq;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.Windows.Threading;
+using Newtonsoft.Json.Bson;
+using WinformExample.Controls;
+using Color = System.Drawing.Color;
 
 namespace WinformExample
 {
 	public partial class FormExample : Form
 	{
-		private SortedDictionary<string, Label> LinkerGroups = new SortedDictionary<string, Label>();
+		private SortedDictionary<string, RoundedButton> LinkerGroups = new SortedDictionary<string, RoundedButton>();
 
 		private System.Drawing.Text.PrivateFontCollection finfont = new System.Drawing.Text.PrivateFontCollection();
 		public FormExample(String[] args)
@@ -23,7 +25,7 @@ namespace WinformExample
 #endif
 			InitializeComponent();
 
-			this.input.KeyPress += new System.Windows.Forms.KeyPressEventHandler(handleKeyPresses);
+			//this.input.KeyPress += new System.Windows.Forms.KeyPressEventHandler(handleKeyPresses);
 
 			//connect to Finsemble
 			//Ensure that your window has been created (so that its window handle exists) before connecting to Finsemble.
@@ -33,8 +35,17 @@ namespace WinformExample
 			// FSBL = new Finsemble(args, this.Handle);
 			//----
 
+			ArrangeComponents();
+
 			FSBL.Connected += FinsembleConnected;
 			FSBL.Connect();
+		}
+
+		private void ArrangeComponents()
+		{
+			Activate();
+			ComponentSelect.BringToFront();
+			MessagesRichBox.SendToBack();
 		}
 
 		//If you encounter issues with the initial window placement (due to the handling of window borders in Windows 10) SetBoundsCore can be overridden to implement custom logic 
@@ -45,62 +56,80 @@ namespace WinformExample
 
 		private void FinsembleConnected(object sender, EventArgs e)
 		{
-			
 			FSBL.Logger.Log(new JToken[] { "Winform example connected to Finsemble." });
 			System.Diagnostics.Debug.WriteLine("FSBL Ready.");
 
+			// Handle Window grouping
+			FSBL.RouterClient.Subscribe("Finsemble.WorkspaceService.groupUpdate", HandleWindowGrouping);
+
 			//setup linker channels
-			FSBL.LinkerClient.GetAllChannels(handleLinkerChannelLabels);
+			FSBL.LinkerClient.GetAllChannels(HandleLinkerChannelLabels);
 
 			// Listen to Linker state change to render connected channels
-			FSBL.LinkerClient.OnStateChange(handleLinkerStateChange);
-
-			// Handle Window grouping
-			FSBL.RouterClient.Subscribe("Finsemble.WorkspaceService.groupUpdate", handleWindowGrouping);
+			FSBL.LinkerClient.OnStateChange(HandleLinkerStateChange);
 
 			//Example for handling component state in a workspace (and hand-off to getSpawnData if no state found)
-			FSBL.WindowClient.GetComponentState(new JObject { ["field"] = "symbol" }, handleGetComponentState);
+			FSBL.WindowClient.GetComponentState(new JObject { ["field"] = "symbol" }, HandleGetComponentState);
 
 
 			// Example for Handling PubSub data
-			FSBL.RouterClient.Subscribe("Finsemble.TestWPFPubSubSymbol", handlePubSub);
+			FSBL.RouterClient.Subscribe("Finsemble.TestWPFPubSubSymbol", HandlePubSub);
 
-			// If you passed a window handle to initiate FSBL, you have to comment the following code to disable drag and drop function
-			// Example for handling Drag and Drop
 			finfont.AddFontFile(@"Resources\finfont.ttf");
-			var font = new System.Drawing.Font(finfont.Families[0], 100);
-			scrim.Font = font;
+			finfont.AddFontFile(@"Resources\font-finance.ttf");
+			var finFont = new System.Drawing.Font(finfont.Families[0], 100);
+			var fontFinance = new System.Drawing.Font(finfont.Families[1], 7);
+			Invoke(new Action(() =>
+			{
+				scrim.Font = finFont;
+
+				LinkerButton.Font = fontFinance;
+				DragNDropEmittingButton.Font = fontFinance;
+				AlwaysOnTopButton.Font = fontFinance;
+				DockingButton.Font = fontFinance;
+			}));
 
 			FSBL.DragAndDropClient.SetScrim(scrim);
 			FSBL.DragAndDropClient.AddReceivers(new List<KeyValuePair<string, EventHandler<FinsembleEventArgs>>>()
 			{
-				new KeyValuePair<string, EventHandler<FinsembleEventArgs>>("symbol", handleDragAndDropReceive)
+				new KeyValuePair<string, EventHandler<FinsembleEventArgs>>("symbol", HandleDragAndDropReceive)
 			});
 
 			// Emitters for data that can be dragged using the drag icon.
 			FSBL.DragAndDropClient.SetEmitters(new List<KeyValuePair<string, DragAndDropClient.emitter>>()
 			{
-				new KeyValuePair<string, DragAndDropClient.emitter>("symbol", handleDragAndDropEmit)
+				new KeyValuePair<string, DragAndDropClient.emitter>("symbol", HandleDragAndDropEmit)
 			});
 
 			// Example for LinkerClient subscribe
-			FSBL.LinkerClient.Subscribe("symbol", handleLinkerData);
+			FSBL.LinkerClient.Subscribe("symbol", HandleLinkerData);
 
 			// Example for getting Spawnable component list
-			FSBL.ConfigClient.GetValue(new JObject { ["field"] = "finsemble.components" }, handleComponentsList);
+			FSBL.ConfigClient.GetValue(new JObject { ["field"] = "finsemble.components" }, HandleComponentsList);
+
+			FSBL.Logger.OnLog += Logger_OnLog;
+
+			SetInitialWindowGrouping(FSBL.WindowClient.GetWindowGroups());
+
 		}
 
-		private void handleLinkerChannelLabels(object sender, FinsembleEventArgs args)
+		private void Logger_OnLog(object sender, JObject log)
 		{
-			this.Invoke(new Action(() => {
+			MessagesRichBox.Invoke((MethodInvoker)delegate { MessagesRichBox.Text += log + "\n"; });
+		}
+
+		private void HandleLinkerChannelLabels(object sender, FinsembleEventArgs args)
+		{
+			this.Invoke(new Action(() =>
+			{
 				if (args.error == null)
 				{
-					Label[] groupLabels = new Label[] { group1, group2, group3, group4, group5, group6 };
+					var groupLabels = new RoundedButton[] { GroupButton1, GroupButton2, GroupButton3, GroupButton4, GroupButton5, GroupButton6 };
 					var allChannels = args.response as JArray;
 					int labelcount = 0;
 					foreach (JObject item in allChannels)
 					{
-						Label theLabel = groupLabels[labelcount++];
+						var theLabel = groupLabels[labelcount++];
 						theLabel.Visible = false;
 						LinkerGroups.Add(item["name"].ToString(), theLabel);
 						//limit channels to ones we enough labels for
@@ -117,15 +146,18 @@ namespace WinformExample
 			}));
 		}
 
-		private void handleLinkerStateChange(Object sender, FinsembleEventArgs response)
+		private void HandleLinkerStateChange(Object sender, FinsembleEventArgs response)
 		{
-			this.Invoke(new Action(() => {
+			this.Invoke(new Action(() =>
+			{
 				if (response.error != null)
 				{
 					FSBL.Logger.Error(new JToken[] { "Error when receiving linker state change data: ", response.error.ToString() });
 				}
 				else if (response.response != null)
 				{
+					var visiblePillsBeforeChange = LinkerGroups.Count(x => x.Value.Visible);
+
 					var channels = response.response["channels"] as JArray;
 					var allChannels = response.response["allChannels"] as JArray;
 					foreach (JObject obj in allChannels)
@@ -138,83 +170,142 @@ namespace WinformExample
 					{
 						LinkerGroups[channel.Value.ToString()].Visible = true;
 					}
+
+					var visiblePillsAfterChange = LinkerGroups.Count(x => x.Value.Visible);
+					AlignAllLinkerPills();
+					DragNDropEmittingButton.Location = new Point(DragNDropEmittingButton.Location.X + CalculateDragNDropLeftMarginShift(visiblePillsBeforeChange, visiblePillsAfterChange), DragNDropEmittingButton.Location.Y);
 				}
 			}));
 		}
 
-		private void handleWindowGrouping(object s, FinsembleEventArgs res)
+		private void AlignAllLinkerPills()
 		{
-			this.Invoke(new Action(() => {
+			var initialX = GroupButton1.Location.X;
+			var counter = 0;
+
+			foreach (var visiblePill in LinkerGroups.Where(x => x.Value.Visible))
+			{
+				visiblePill.Value.Location = new Point(initialX + (counter * (GroupButton1.Width)), visiblePill.Value.Location.Y);
+				++counter;
+			}
+		}
+
+		private int CalculateDragNDropLeftMarginShift(int visiblePillsBeforeShift, int visiblePillsAfterShift)
+		{
+			return (visiblePillsAfterShift - visiblePillsBeforeShift) * (GroupButton1.Width + 5);
+		}
+
+		private void HandleWindowGrouping(object s, FinsembleEventArgs res)
+		{
+			this.Invoke(new Action(() =>
+			{
 				if (res.error != null)
 				{
 					return;
 				}
-				else
+
+				var groupData = res.response["data"]["groupData"] as JObject;
+				var thisWindowGroups = new JObject();
+
+				foreach (var obj in groupData)
 				{
-					JObject groupData = res.response["data"]["groupData"] as JObject;
-					String currentWindowName = FSBL.WindowClient.GetWindowIdentifier()["windowName"].ToString();
-					JObject thisWindowGroups = new JObject();
-					thisWindowGroups.Add("dockingGroup", "");
-					thisWindowGroups.Add("snappingGroup", "");
-					thisWindowGroups.Add("topRight", false);
+					var windowgroupid = obj.Key;
+					var windowgroup = groupData[windowgroupid] as JObject;
+					var windownames = windowgroup["windowNames"] as JArray;
 
-					foreach (var obj in groupData)
-					{
-						string windowgroupid = obj.Key;
-						JObject windowgroup = groupData[windowgroupid] as JObject;
-						JArray windownames = windowgroup["windowNames"] as JArray;
-
-						bool windowingroup = false;
-						for (int i = 0; i < windownames.Count; i++)
-						{
-							string windowname = windownames[i].ToString();
-							if (windowname == currentWindowName)
-							{
-								windowingroup = true;
-							}
-						}
-
-						if (windowingroup)
-						{
-							bool isMovable = (bool)windowgroup["isMovable"];
-							if (isMovable)
-							{
-								thisWindowGroups["dockingGroup"] = windowgroupid;
-								if (windowgroup["topRightWindow"].ToString() == currentWindowName)
-								{
-									thisWindowGroups["topRight"] = true;
-								}
-							}
-							else
-							{
-								thisWindowGroups["snappingGroup"] = windowgroupid;
-							}
-						}
-					}
-
-					if (thisWindowGroups["dockingGroup"].ToString() != "")
-					{
-						// docked
-						groupCb.Checked = true;
-					}
-					else if (thisWindowGroups["snappingGroup"].ToString() != "")
-					{
-						// Snapped
-						groupCb.Enabled = true;
-					}
-					else
-					{
-						// unsnapped/undocked
-						groupCb.Checked = false;
-						groupCb.Enabled = false;
-					}
+					thisWindowGroups = FormWindowGroupsTo(windowgroup, windownames);
 				}
+
+				UpdateViewDueToWindowGroups(thisWindowGroups);
 			}));
 		}
 
-		private void handleGetComponentState(object s, FinsembleEventArgs state)
+		private void SetInitialWindowGrouping(JArray groupdWindowBelongsTo)
 		{
-			this.Invoke(new Action(() => {
+			this.Invoke(new Action(() =>
+			{
+				var thisWindowGroups = new JObject();
+
+				foreach (var group in groupdWindowBelongsTo)
+				{
+					var windowNames = group["windowNames"] as JArray;
+					thisWindowGroups = FormWindowGroupsTo(group, windowNames);
+				}
+
+				UpdateViewDueToWindowGroups(thisWindowGroups);
+			}));
+		}
+
+		private JObject FormWindowGroupsTo(JToken group, JArray windowNames)
+		{
+			var thisWindowGroups = new JObject
+			{
+				["dockingGroup"] = "",
+				["snappingGroup"] = "",
+				["topRight"] = false
+			};
+
+			var currentWindowName = FSBL.WindowClient.GetWindowIdentifier()["windowName"].ToString();
+
+			var windowingGroup = false;
+			for (int i = 0; i < windowNames.Count; i++)
+			{
+				var windowName = windowNames[i].ToString();
+				if (windowName == currentWindowName)
+				{
+					windowingGroup = true;
+				}
+			}
+
+			if (windowingGroup)
+			{
+				var isMovable = (bool)group["isMovable"];
+				if (isMovable)
+				{
+					thisWindowGroups["dockingGroup"] = group;
+					if (group["topRightWindow"].ToString() == currentWindowName)
+					{
+						thisWindowGroups["topRight"] = true;
+					}
+				}
+				else
+				{
+					thisWindowGroups["snappingGroup"] = group;
+				}
+			}
+
+			return thisWindowGroups;
+		}
+
+		private void UpdateViewDueToWindowGroups(JObject thisWindowGroups)
+		{
+			if (!string.IsNullOrEmpty(thisWindowGroups?["dockingGroup"]?.ToString()))
+			{
+				// docked
+				DockingButton.Text = "@";
+				DockingButton.ButtonColor = Color.FromArgb(3, 155, 255);
+				DockingButton.OnHoverButtonColor = Color.FromArgb(3, 155, 255);
+				DockingButton.Visible = true;
+			}
+			else if (!string.IsNullOrEmpty(thisWindowGroups?["snappingGroup"]?.ToString()))
+			{
+				// Snapped
+				DockingButton.Text = ">";
+				DockingButton.ButtonColor = Color.FromArgb(34, 38, 47);
+				DockingButton.OnHoverButtonColor = Color.FromArgb(40, 45, 56);
+				DockingButton.Visible = true;
+			}
+			else
+			{
+				// unsnapped/undocked
+				DockingButton.Visible = false;
+			}
+		}
+
+		private void HandleGetComponentState(object s, FinsembleEventArgs state)
+		{
+			this.Invoke(new Action(() =>
+			{
 				if (state.response != null)
 				{
 					// Example for restoring state
@@ -226,28 +317,30 @@ namespace WinformExample
 							var symbolTxt = symbol?.ToString();
 							if (!string.IsNullOrEmpty(symbolTxt))
 							{
-								datavalue.Text = symbolTxt;
-								input.Text = symbolTxt;
-								datasource.Text = "via component state";
+								DataLabel.Text = symbolTxt;
+								DataToSendInput.Text = symbolTxt;
+								SourceLabel.Text = "via component state";
 							}
 						}
-					} else
+					}
+					else
 					{
 						// Example for Handling Spawn data
-						FSBL.WindowClient.getSpawnData(handleSpawnData);
+						FSBL.WindowClient.GetSpawnData(HandleSpawnData);
 					}
 				}
 				else
 				{
 					// Example for Handling Spawn data
-					FSBL.WindowClient.getSpawnData(handleSpawnData);
+					FSBL.WindowClient.GetSpawnData(HandleSpawnData);
 				}
 			}));
 		}
 
-		private void handleSpawnData(Object sender, FinsembleEventArgs res) 
+		private void HandleSpawnData(Object sender, FinsembleEventArgs res)
 		{
-			this.Invoke(new Action(async () => {
+			this.Invoke(new Action(async () =>
+			{
 				var receivedData = (JObject)res.response;
 				if (res.error != null)
 				{
@@ -258,18 +351,19 @@ namespace WinformExample
 					JToken value = receivedData.GetValue("spawndata");
 					if (value != null)
 					{
-						datavalue.Text = value.ToString();
-						input.Text = value.ToString();
-						datasource.Text = "via Spawndata";
-                        await SaveStateAsync();
+						DataLabel.Text = value.ToString();
+						DataToSendInput.Text = value.ToString();
+						SourceLabel.Text = "via Spawndata";
+						await SaveStateAsync();
 					}
 				}
 			}));
 		}
 
-		private void handlePubSub(object sender, FinsembleEventArgs state)
+		private void HandlePubSub(object sender, FinsembleEventArgs state)
 		{
-			this.Invoke(new Action(async () => {
+			this.Invoke(new Action(async () =>
+			{
 				try
 				{
 					if (state.error != null)
@@ -282,10 +376,10 @@ namespace WinformExample
 						var theData = ((JValue)pubSubData?["data"]?["symbol"])?.ToString();
 						if (theData != null)
 						{
-							datavalue.Text = theData;
-							input.Text = theData;
-							datasource.Text = "via PubSub";
-                            await SaveStateAsync();
+							DataLabel.Text = theData;
+							DataToSendInput.Text = theData;
+							SourceLabel.Text = "via PubSub";
+							await SaveStateAsync();
 						}
 					}
 				}
@@ -296,9 +390,10 @@ namespace WinformExample
 			}));
 		}
 
-		private void handleDragAndDropReceive(object sender, FinsembleEventArgs args) 
+		private void HandleDragAndDropReceive(object sender, FinsembleEventArgs args)
 		{
-			this.Invoke(new Action(async () => {
+			this.Invoke(new Action(async () =>
+			{
 				if (args.error != null)
 				{
 					FSBL.Logger.Error(new JToken[] { "Error when receiving drag and drop data: ", args.error.ToString() });
@@ -312,28 +407,29 @@ namespace WinformExample
 						if (data.HasValues)
 						{
 							data = data?["symbol"];
-							datavalue.Text = data.ToString();
-							input.Text = data.ToString();
-							datasource.Text = "via Drag and Drop";
-                            await SaveStateAsync();
+							DataLabel.Text = data.ToString();
+							DataToSendInput.Text = data.ToString();
+							SourceLabel.Text = "via Drag and Drop";
+							await SaveStateAsync();
 						}
 					}
 				}
 			}));
 		}
 
-		private JObject handleDragAndDropEmit() 
+		private JObject HandleDragAndDropEmit()
 		{
 			return new JObject
 			{
-				["symbol"] = datavalue.Text,
-				["description"] = "Symbol " + datavalue.Text
+				["symbol"] = DataToSendInput.Text,
+				["description"] = "Symbol " + DataToSendInput.Text
 			};
 		}
 
-		private void handleLinkerData(object sender, FinsembleEventArgs response) 
+		private void HandleLinkerData(object sender, FinsembleEventArgs response)
 		{
-			this.Invoke(new Action(async () => {
+			this.Invoke(new Action(async () =>
+			{
 				if (response.error != null)
 				{
 					FSBL.Logger.Error(new JToken[] { "Error when receiving linker data: ", response.error.ToString() });
@@ -341,17 +437,18 @@ namespace WinformExample
 				else if (response.response != null)
 				{
 					string value = response.response?["data"]?.ToString();
-					datavalue.Text = value;
-					datasource.Text = "via Linker";
-					input.Text = value;
-                    await SaveStateAsync();
+					DataLabel.Text = value;
+					SourceLabel.Text = "via Linker";
+					DataToSendInput.Text = value;
+					await SaveStateAsync();
 				}
 			}));
 		}
 
-		private void handleComponentsList(Object sender, FinsembleEventArgs response)
+		private void HandleComponentsList(Object sender, FinsembleEventArgs response)
 		{
-			this.Invoke(new Action(() => {
+			this.Invoke(new Action(() =>
+			{
 				if (response.error != null)
 				{
 					FSBL.Logger.Error(new JToken[] { "Error when receiving spawnable component list: ", response.error.ToString() });
@@ -364,7 +461,13 @@ namespace WinformExample
 						object value = components?[property.Name]?["foreign"]?["components"]?["App Launcher"]?["launchableByUser"];
 						if ((value != null) && bool.Parse(value.ToString()))
 						{
-							componentList.Items.Add(property.Name);
+							//	componentList.Items.Add(property.Name);
+							//	(Controls.Find("SpawnSelect", true).FirstOrDefault() as RoundedSelect).AddElementToList(property.Name);
+
+							Dispatcher.CurrentDispatcher.Invoke(() =>
+							{
+								ComponentSelect.AddElementToList(property.Name);
+							});
 						}
 					}
 				}
@@ -375,10 +478,11 @@ namespace WinformExample
 		{
 			if (e.KeyChar == (char)Keys.Return)
 			{
-				this.Invoke(new Action(async () => {
-					datavalue.Text = input.Text;
-					datasource.Text = "via Text input";
-                    await SaveStateAsync();
+				this.Invoke(new Action(async () =>
+				{
+					DataLabel.Text = DataToSendInput.Text;
+					SourceLabel.Text = "via Text input";
+					await SaveStateAsync();
 				}));
 				e.Handled = true;
 			}
@@ -390,63 +494,98 @@ namespace WinformExample
 			await FSBL.WindowClient.SetComponentState(new JObject
 			{
 				["field"] = "symbol",
-				["value"] = datavalue.Text
+				//["value"] = datavalue.Text
 			});
 		}
 
-		// Example for publishing to RouterClient
-		private void pubsub_Click(object sender, EventArgs e)
+		private void LaunchButton_Click(object sender, EventArgs e)
 		{
-			FSBL.RouterClient.Publish("Finsemble.TestWPFPubSubSymbol", new JObject
-			{
-				["symbol"] = input.Text
-			});
+			object selected = ComponentSelect.Text;
+			if (selected == null) return;
+
+			var componentName = selected.ToString();
+			FSBL.LauncherClient.Spawn(componentName, new JObject { ["addToWorkspace"] = true }, (s, a) => { });
 		}
 
-		// Example for starting a drag
-		private void datavalue_MouseDown(object sender, MouseEventArgs e)
+		private void LinkerButton_Click(object sender, EventArgs e)
+		{
+			FSBL.LinkerClient.OpenLinkerWindow();
+		}
+
+		private async void AlwaysOnTopButton_Click(object sender, EventArgs e)
+		{
+			var newAlwaysOnTop = !(await FSBL.WindowClient.IsAlwaysOnTop())["data"].ToObject<bool>();
+			FSBL.WindowClient.SetAlwaysOnTop(newAlwaysOnTop);
+
+			if (newAlwaysOnTop)
+			{
+				AlwaysOnTopButton.ButtonColor = Color.FromArgb(3, 155, 255);
+				AlwaysOnTopButton.OnHoverButtonColor = Color.FromArgb(3, 155, 255);
+			}
+			else
+			{
+				AlwaysOnTopButton.ButtonColor = Color.FromArgb(34, 38, 47);
+				AlwaysOnTopButton.OnHoverButtonColor = Color.FromArgb(40, 45, 56);
+			}
+		}
+
+		private void DockingButton_Click(object sender, EventArgs e)
+		{
+			var currentWindowName = FSBL.WindowClient.GetWindowIdentifier()["windowName"].ToString();
+			if (DockingButton.Text == ">")
+			{
+				FSBL.RouterClient.Transmit("DockingService.formGroup", new JObject { ["windowName"] = currentWindowName });
+
+
+			}
+			else
+			{
+				FSBL.RouterClient.Query("DockingService.leaveGroup", new JObject { ["name"] = currentWindowName }, delegate (object s, FinsembleEventArgs res) { });
+			}
+		}
+
+		private void SendButton_Click(object sender, EventArgs e)
+		{
+			if (FSBL.FDC3Client is object)
+			{
+				//FDC3 Usage example 
+				//Broadcast
+				FSBL.FDC3Client.fdc3.broadcast(new JObject
+				{
+					["type"] = "fdc3.instrument",
+					["name"] = DataToSendInput.Text,
+					["id"] = new JObject
+					{
+						["ticker"] = DataToSendInput.Text
+					}
+				});
+			}
+			else
+			{
+				// Use Default Linker
+				FSBL.LinkerClient.Publish(new JObject
+				{
+					["dataType"] = "symbol",
+					["data"] = DataToSendInput.Text
+				});
+			}
+
+			//	Invoke(new Action(() => //main thread
+			//	{
+			//		DroppedData.Content = DataToSendInput.Text;
+			//		DroppedDataSource.Content = "via Text entry";
+			//		await SaveStateAsync();
+			//	});
+		}
+
+		private void DragNDropEmittingButton_MouseDown(object sender, MouseEventArgs e)
 		{
 			FSBL.DragAndDropClient.DragStartWithData(sender);
 		}
 
-		private void linker_Click(object sender, EventArgs e)
+		private void DragNDropEmittingButton_Click(object sender, EventArgs e)
 		{
-			FSBL.LinkerClient.ShowLinkerWindow(linker.Location.X, linker.Location.Y + linker.Height);
-		}
 
-		// Example for Publishing to LinkerClient
-		private void pubLinker_Click(object sender, EventArgs e)
-		{
-			FSBL.LinkerClient.Publish(new JObject
-			{
-				["dataType"] = "symbol",
-				["data"] = input.Text
-			});
-		}
-
-		private void spawnBtn_Click(object sender, EventArgs e)
-		{
-			object selected = componentList.SelectedItem;
-			if (selected != null)
-			{
-				string componentName = selected.ToString();
-				FSBL.LauncherClient.Spawn(componentName, new JObject { ["addToWorkspace"] = true }, (s, a) => { });
-			}
-		}
-
-		private void groupCb_CheckedChanged(object sender, EventArgs e)
-		{
-			String currentWindowName = FSBL.WindowClient.windowIdentifier["windowName"].ToString();
-			if (groupCb.Checked)
-			{
-				FSBL.RouterClient.Transmit("DockingService.formGroup", new JObject { ["windowName"] = currentWindowName });
-			}
-			else
-			{
-				FSBL.RouterClient.Query("DockingService.leaveGroup", new JObject { ["name"] = currentWindowName }, delegate (object s, FinsembleEventArgs res) {
-					groupCb.Enabled = false;
-				});
-			}
 		}
 	}
 }
