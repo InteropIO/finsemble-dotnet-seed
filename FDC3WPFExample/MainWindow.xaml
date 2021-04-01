@@ -1,0 +1,96 @@
+﻿<Window 
+	xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+	xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+	xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+	xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+	xmlns:local="clr-namespace:FDC3WPFExample"
+	xmlns:Finsemble="clr-namespace:ChartIQ.Finsemble;assembly=Finsemble"
+    xmlns:customControls="clr-namespace:FDC3WPFExample.CustomControls"
+	xmlns:Custom="http://schemas.microsoft.com/winfx/2006/xaml/presentation/ribbon" x:Class="FDC3WPFExample.MainWindow" 
+	mc:Ignorable="d" 
+	Title="MainWindow" Height="600" 
+	Width="600" WindowStyle="None" Background="{x:Null}" 
+	AllowsTransparency="True">
+
+    <WindowChrome.WindowChrome>
+        <WindowChrome 
+			CaptionHeight="1"
+        	CornerRadius ="0" 
+			ResizeBorderThickness="4" 
+			GlassFrameThickness="0"/>
+    </WindowChrome.WindowChrome>
+    <Border x:Name="WindowBorder">
+        <Grid Background="#171a20">
+            <Finsemble:WPFWindowTitleBar x:Name="FinsembleHeader" Height="25" VerticalAlignment="Top" Margin="0"/>
+            <Label x:Name="Scrim" Visibility="Hidden" Panel.ZIndex="1000" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" />
+            <Grid Margin="15,35,15,0">
+                <Grid.RowDefinitions>
+                    <RowDefinition MinHeight="180" MaxHeight="350" Height="3*"></RowDefinition>
+                    <RowDefinition Height="55"></RowDefinition>
+                    <RowDefinition Height="55"></RowDefinition>
+                    <RowDefinition Height="55"></RowDefinition>
+                    <RowDefinition Height="3*"></RowDefinition>
+                </Grid.RowDefinitions>
+                <Grid Grid.Row="0" HorizontalAlignment="Center">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="*"></RowDefinition>
+                        <RowDefinition Height="34"></RowDefinition>
+                        <RowDefinition Height="28"></RowDefinition>
+                        <RowDefinition Height="28"></RowDefinition>
+                    </Grid.RowDefinitions>
+                    <Grid Grid.Row="0" HorizontalAlignment="Center" >
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="1*"></ColumnDefinition>
+                            <ColumnDefinition Width="1*"></ColumnDefinition>
+                        </Grid.ColumnDefinitions>
+                        <Image Grid.Column="0" Width="200" Margin="0,0,20,5" HorizontalAlignment="Right" Source="Assets/ic_WPFLogo.png"></Image>
+                        <Image Grid.Column="1" Width="200" Margin="20,0,0,5" HorizontalAlignment="Left" Source="Assets/fdc3-icon.png"></Image>
+                    </Grid>
+                    
+                    
+                    
+                    <Label Grid.Row="1" Foreground="White" FontSize="18" FontWeight="Bold" HorizontalAlignment="Center" x:Name="DroppedData" Content="MSFT"/>
+                    <Label Grid.Row="2" Foreground="White" FontSize="14" FontWeight="Bold" HorizontalAlignment="Center" x:Name="DroppedDataSource" Content=" via Default value"/>
+                    <Label Grid.Row="3" x:Name="FDC3Label" Content="FDC3" Foreground="White" FontSize="14" FontWeight="Bold" HorizontalAlignment="Center" Visibility="Hidden"/>
+
+                </Grid>
+                <Grid Grid.Row="1" >
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="190"></ColumnDefinition>
+                        <ColumnDefinition Width="*"></ColumnDefinition>
+                        <ColumnDefinition Width="85"></ColumnDefinition>
+                    </Grid.ColumnDefinitions>
+                    <Label VerticalAlignment="Center" Foreground="#039bff" FontSize="16" FontWeight="Bold"  Grid.Column="0" Content="Send a Symbol"></Label>
+                    <customControls:FinsembleInput  Grid.Column="1" x:Name="DataToSend"/>
+                    <customControls:FinsembleButton  Grid.Column="2" ButtonContent="Send" x:Name="Send" Click="Send_Click"/>
+                </Grid>
+                <Grid Grid.Row="2" >
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="190"></ColumnDefinition>
+                        <ColumnDefinition Width="*"></ColumnDefinition>
+                        <ColumnDefinition Width="85"></ColumnDefinition>
+                    </Grid.ColumnDefinitions>
+                    <Label VerticalAlignment="Center" Foreground="#039bff" FontSize="16" FontWeight="Bold" Grid.Column="0" Content="Spawn a Component"></Label>
+                    <customControls:FinsembleDropDown x:Name="ComponentSelect" Grid.Column="1"></customControls:FinsembleDropDown>
+                    <customControls:FinsembleButton Grid.Column="2" x:Name="SpawnComponent" ButtonContent="Launch"  Click="SpawnComponent_Click"/>
+                </Grid>
+                <Grid Grid.Row="3" >
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="190"></ColumnDefinition>
+                        <ColumnDefinition Width="*"></ColumnDefinition>
+                        <ColumnDefinition Width="85"></ColumnDefinition>
+                    </Grid.ColumnDefinitions>
+                    <Label VerticalAlignment="Center" Foreground="#039bff" FontSize="16" FontWeight="Bold" Grid.Column="0" Content="Raise Intent"></Label>
+                    <customControls:FinsembleInput  Grid.Column="1" x:Name="IntentToRaise"/>
+                    <customControls:FinsembleButton Grid.Column="2" x:Name="RaiseIntent" ButtonContent="Raise"  Click="RaiseIntent_Click"/>
+                </Grid>
+                <Expander Margin="0,10" Grid.Row="4" Name="Expander" Foreground="#039bff" FontWeight="Bold" FontSize="16" Header="Show Messages">
+                    <TextBox x:Name="LogsTextBox" IsReadOnly="True" Text="Logs will show here" Margin="0,10,0,0" Background="Transparent" Foreground="White" BorderThickness="0" FontWeight="Normal" FontSize="14" VerticalScrollBarVisibility="Visible" TextWrapping="Wrap"></TextBox>
+                </Expander>
+
+
+            </Grid>
+
+        </Grid>
+    </Border>
+</Window>

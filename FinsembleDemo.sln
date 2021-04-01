@@ -15,6 +15,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MultiWindowExample", "Multi
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WinformMultiWindowExample", "WinformMultiWindowExample\WinformMultiWindowExample.csproj", "{1F1B2448-A665-4086-9D8C-B45CBE0C7146}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FDC3WPFExample", "FDC3WPFExample\FDC3WPFExample.csproj", "{BF74BA2A-C3DB-4CDE-9C35-3684F88EB0E3}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -97,6 +99,18 @@ Global
 		{1F1B2448-A665-4086-9D8C-B45CBE0C7146}.Release|x64.Build.0 = Release|Any CPU
 		{1F1B2448-A665-4086-9D8C-B45CBE0C7146}.Release|x86.ActiveCfg = Release|Any CPU
 		{1F1B2448-A665-4086-9D8C-B45CBE0C7146}.Release|x86.Build.0 = Release|Any CPU
+		{BF74BA2A-C3DB-4CDE-9C35-3684F88EB0E3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{BF74BA2A-C3DB-4CDE-9C35-3684F88EB0E3}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{BF74BA2A-C3DB-4CDE-9C35-3684F88EB0E3}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{BF74BA2A-C3DB-4CDE-9C35-3684F88EB0E3}.Debug|x64.Build.0 = Debug|Any CPU
+		{BF74BA2A-C3DB-4CDE-9C35-3684F88EB0E3}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{BF74BA2A-C3DB-4CDE-9C35-3684F88EB0E3}.Debug|x86.Build.0 = Debug|Any CPU
+		{BF74BA2A-C3DB-4CDE-9C35-3684F88EB0E3}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{BF74BA2A-C3DB-4CDE-9C35-3684F88EB0E3}.Release|Any CPU.Build.0 = Release|Any CPU
+		{BF74BA2A-C3DB-4CDE-9C35-3684F88EB0E3}.Release|x64.ActiveCfg = Release|Any CPU
+		{BF74BA2A-C3DB-4CDE-9C35-3684F88EB0E3}.Release|x64.Build.0 = Release|Any CPU
+		{BF74BA2A-C3DB-4CDE-9C35-3684F88EB0E3}.Release|x86.ActiveCfg = Release|Any CPU
+		{BF74BA2A-C3DB-4CDE-9C35-3684F88EB0E3}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
