@@ -1,0 +1,45 @@
+{
+  "components": {
+    "DotNet Authentication Example": {
+      "window": {
+        "id": "DotNetAuthExample",
+        "windowType": "FinsembleNativeWindow",
+        "path": "$dotNetAuthExampleRoot/AuthenticationExample.exe",
+        "url": "",
+        "arguments": "",
+        "defaultHeight": 350,
+        "autoShow": true,
+        "resizable": true,
+        "showTaskbarIcon": false,
+        "contextMenu": true,
+        "addToWorkspace": true,
+        "options": {
+          "alwaysOnTop": false
+        }
+      },
+      "component": {
+        "spawnOnStartup": false,
+        "useFdc3": false
+      },
+      "foreign": {
+        "services": {
+          "workspaceService": {
+            "isArrangable": true
+          }
+        },
+        "components": {
+          "App Launcher": {
+            "launchableByUser": true
+          },
+          "Window Manager": {
+            "persistWindowState": false,
+            "FSBLHeader": true
+          },
+          "Toolbar": {
+            "iconURL": "$applicationRoot/assets/img/notepad.png"
+          }
+        }
+      }
+    }
+  }
+}

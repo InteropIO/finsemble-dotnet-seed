@@ -146,7 +146,6 @@ namespace WPFExample
 		{
 			// Trigger actions on close when requested by Finsemble, e.g.:	
 			this.Closing += MainWindow_Closing;
-
 			//Ensure that your window has been created (so that its window handle exists) before connecting to Finsemble.
 			FSBL = new Finsemble(args, this); // Finsemble needs the command line arguments to connect and also this Window to manage snapping, docking etc.
 			FSBL.Connected += Finsemble_Connected;
@@ -328,6 +327,7 @@ namespace WPFExample
 					});
 				});
 			}
+
 			FSBL.Logger.OnLog += Logger_OnLog;
 			FSBL.Logger.System.OnLog += Logger_OnLog;
 			FSBL.Logger.Perf.OnLog += Logger_OnLog;
@@ -354,7 +354,7 @@ namespace WPFExample
 
 		private void Logger_OnLog(object sender, JObject e)
 		{
-			Application.Current.Dispatcher.Invoke(() =>
+			Application.Current?.Dispatcher.Invoke(() =>
 			{
 				LogsTextBox.Text += e + "\n";
 			});

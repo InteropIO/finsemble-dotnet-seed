@@ -44,7 +44,6 @@ namespace WinformExample
 		private void ArrangeComponents()
 		{
 			Activate();
-			ComponentSelect.BringToFront();
 			MessagesRichBox.SendToBack();
 		}
 
@@ -56,6 +55,8 @@ namespace WinformExample
 
 		private void FinsembleConnected(object sender, EventArgs e)
 		{
+			FSBL.Logger.OnLog += Logger_OnLog;
+
 			FSBL.Logger.Log(new JToken[] { "Winform example connected to Finsemble." });
 			System.Diagnostics.Debug.WriteLine("FSBL Ready.");
 
@@ -87,6 +88,8 @@ namespace WinformExample
 				DragNDropEmittingButton.Font = fontFinance;
 				AlwaysOnTopButton.Font = fontFinance;
 				DockingButton.Font = fontFinance;
+				DockingButton.UseEllipse = true;
+				AlwaysOnTopButton.UseEllipse = true;
 			}));
 
 			FSBL.DragAndDropClient.SetScrim(scrim);
@@ -107,15 +110,19 @@ namespace WinformExample
 			// Example for getting Spawnable component list
 			FSBL.ConfigClient.GetValue(new JObject { ["field"] = "finsemble.components" }, HandleComponentsList);
 
-			FSBL.Logger.OnLog += Logger_OnLog;
-
 			SetInitialWindowGrouping(FSBL.WindowClient.GetWindowGroups());
-
 		}
 
 		private void Logger_OnLog(object sender, JObject log)
 		{
-			MessagesRichBox.Invoke((MethodInvoker)delegate { MessagesRichBox.Text += log + "\n"; });
+			try
+			{
+				this.Invoke((MethodInvoker)delegate { MessagesRichBox.Text += log + "\n"; });
+			}
+			catch (Exception ex)
+			{
+				System.Diagnostics.Debug.WriteLine(ex.Message);
+			}
 		}
 
 		private void HandleLinkerChannelLabels(object sender, FinsembleEventArgs args)
@@ -131,7 +138,8 @@ namespace WinformExample
 					{
 						var theLabel = groupLabels[labelcount++];
 						theLabel.Visible = false;
-						LinkerGroups.Add(item["name"].ToString(), theLabel);
+						if(!LinkerGroups.ContainsKey(item["name"].ToString()))
+							LinkerGroups.Add(item["name"].ToString(), theLabel);
 						//limit channels to ones we enough labels for
 						if (labelcount == groupLabels.Length)
 						{
@@ -192,7 +200,7 @@ namespace WinformExample
 
 		private int CalculateDragNDropLeftMarginShift(int visiblePillsBeforeShift, int visiblePillsAfterShift)
 		{
-			return (visiblePillsAfterShift - visiblePillsBeforeShift) * (GroupButton1.Width + 5);
+			return (visiblePillsAfterShift - visiblePillsBeforeShift) * (GroupButton1.Width+2);
 		}
 
 		private void HandleWindowGrouping(object s, FinsembleEventArgs res)
@@ -461,12 +469,14 @@ namespace WinformExample
 						object value = components?[property.Name]?["foreign"]?["components"]?["App Launcher"]?["launchableByUser"];
 						if ((value != null) && bool.Parse(value.ToString()))
 						{
-							//	componentList.Items.Add(property.Name);
-							//	(Controls.Find("SpawnSelect", true).FirstOrDefault() as RoundedSelect).AddElementToList(property.Name);
-
 							Dispatcher.CurrentDispatcher.Invoke(() =>
 							{
-								ComponentSelect.AddElementToList(property.Name);
+								//elimination of duplicate names of components after Finsemble restart
+								if (!ComponentDropDown.Items.Contains(property.Name))
+								{
+									ComponentDropDown.Items.Add(property.Name);
+									ComponentDropDown.SelectedIndex = 0;
+								}
 							});
 						}
 					}
@@ -500,7 +510,7 @@ namespace WinformExample
 
 		private void LaunchButton_Click(object sender, EventArgs e)
 		{
-			object selected = ComponentSelect.Text;
+			object selected = ComponentDropDown.Text;
 			if (selected == null) return;
 
 			var componentName = selected.ToString();
@@ -514,8 +524,12 @@ namespace WinformExample
 
 		private async void AlwaysOnTopButton_Click(object sender, EventArgs e)
 		{
-			var newAlwaysOnTop = !(await FSBL.WindowClient.IsAlwaysOnTop())["data"].ToObject<bool>();
-			FSBL.WindowClient.SetAlwaysOnTop(newAlwaysOnTop);
+			var response= (await FSBL.WindowClient.IsAlwaysOnTop())?["data"]?.ToObject<bool>();
+
+			if (response == null) return;
+
+			var newAlwaysOnTop = !response.Value;
+			await FSBL.WindowClient.SetAlwaysOnTop(newAlwaysOnTop);
 
 			if (newAlwaysOnTop)
 			{
@@ -535,8 +549,6 @@ namespace WinformExample
 			if (DockingButton.Text == ">")
 			{
 				FSBL.RouterClient.Transmit("DockingService.formGroup", new JObject { ["windowName"] = currentWindowName });
-
-
 			}
 			else
 			{
@@ -586,6 +598,13 @@ namespace WinformExample
 		private void DragNDropEmittingButton_Click(object sender, EventArgs e)
 		{
 
+		}
+
+		protected override void OnFormClosing(FormClosingEventArgs e)
+		{
+			//Dispose of the FSSBL object when the form is closed so that Finsemble is aware we've closed
+			FSBL.Dispose();
+			base.OnFormClosing(e);
 		}
 	}
 }

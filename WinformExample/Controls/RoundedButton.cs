@@ -13,10 +13,10 @@ namespace WinformExample.Controls
 		private Color _textColor = Color.White;
 		private Color _onHoverTextColor = Color.White;
 		private int _cornerRadius = 1;
-		private Margins _imageMargins = new Margins(0,0,0,0);
+		private Margins _imageMargins = new Margins(0, 0, 0, 0);
 
 		private bool _isHovering;
-
+		private bool _useEllipse;
 
 		public RoundedButton()
 		{
@@ -69,16 +69,25 @@ namespace WinformExample.Controls
 		GraphicsPath GetRoundPath(RectangleF Rect, int radius)
 		{
 			var r2 = radius / 2f;
+
 			var graphPath = new GraphicsPath();
-			graphPath.AddArc(Rect.X, Rect.Y, radius, radius, 180, 90);
-			graphPath.AddLine(Rect.X + r2, Rect.Y, Rect.Width - r2, Rect.Y);
-			graphPath.AddArc(Rect.X + Rect.Width - radius, Rect.Y, radius, radius, 270, 90);
-			graphPath.AddLine(Rect.Width, Rect.Y + r2, Rect.Width, Rect.Height - r2);
-			graphPath.AddArc(Rect.X + Rect.Width - radius,
-				Rect.Y + Rect.Height - radius, radius, radius, 0, 90);
-			graphPath.AddLine(Rect.Width - r2, Rect.Height, Rect.X + r2, Rect.Height);
-			graphPath.AddArc(Rect.X, Rect.Y + Rect.Height - radius, radius, radius, 90, 90);
-			graphPath.AddLine(Rect.X, Rect.Height - r2, Rect.X, Rect.Y + r2);
+			if (_useEllipse)
+			{
+				graphPath.AddEllipse(Rect);
+			}
+			else
+			{
+				graphPath.AddArc(Rect.X, Rect.Y, radius, radius, 180, 90);
+				graphPath.AddLine(Rect.X + r2, Rect.Y, Rect.Width - r2, Rect.Y);
+				graphPath.AddArc(Rect.X + Rect.Width - radius, Rect.Y, radius, radius, 270, 90);
+				graphPath.AddLine(Rect.Width, Rect.Y + r2, Rect.Width, Rect.Height - r2);
+				graphPath.AddArc(Rect.X + Rect.Width - radius,
+					Rect.Y + Rect.Height - radius, radius, radius, 0, 90);
+				graphPath.AddLine(Rect.Width - r2, Rect.Height, Rect.X + r2, Rect.Height);
+				graphPath.AddArc(Rect.X, Rect.Y + Rect.Height - radius, radius, radius, 90, 90);
+				graphPath.AddLine(Rect.X, Rect.Height - r2, Rect.X, Rect.Y + r2);
+			}
+
 			graphPath.CloseFigure();
 			return graphPath;
 		}
@@ -139,6 +148,16 @@ namespace WinformExample.Controls
 			set
 			{
 				_onHoverTextColor = value;
+				Invalidate();
+			}
+		}
+
+		public bool UseEllipse
+		{
+			get => _useEllipse;
+			set
+			{
+				_useEllipse = value;
 				Invalidate();
 			}
 		}

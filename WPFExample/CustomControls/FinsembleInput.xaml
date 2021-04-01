@@ -37,7 +37,7 @@
             <RowDefinition Height="5*"></RowDefinition>
             <RowDefinition Height="*"></RowDefinition>
         </Grid.RowDefinitions>
-        <TextBox Grid.Row="0" Name="TextBox"></TextBox>
+        <TextBox Grid.Row="0" Name="TextBox" TextAlignment="Right"></TextBox>
         <Grid Style="{StaticResource Underline}"  Grid.Row="1"></Grid>
     </Grid>
 </UserControl>
