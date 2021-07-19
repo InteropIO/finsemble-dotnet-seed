@@ -1,7 +1,6 @@
-﻿using System.Windows;
-using ChartIQ.Finsemble;
+﻿using ChartIQ.Finsemble;
 
-namespace MultiWiformExample
+namespace WinformMultiWindowExample
 {
 	/// <summary>
 	/// 
