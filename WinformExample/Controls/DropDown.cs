@@ -24,7 +24,7 @@ namespace WinformExample.Controls
 		{
 			DoubleBuffered = true;
 			DropDownStyle = ComboBoxStyle.DropDownList;
-			MaxDropDownItems = 100;
+			MaxDropDownItems = 10;
 			BackColor = _buttonColor;
 			FlatStyle = FlatStyle.Popup;
 
