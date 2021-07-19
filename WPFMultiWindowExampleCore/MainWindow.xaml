@@ -1,0 +1,30 @@
+﻿<Window x:Class="WPFMultiWindowExampleCore.MainWindow"
+		xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+		xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+		xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+		xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+		xmlns:local="clr-namespace:WPFMultiWindowExampleCore" 
+		xmlns:headerControl="clr-namespace:Finsemble.WPF.Core.HeaderControl;assembly=Finsemble.WPF.Core"
+		mc:Ignorable="d"
+		Title="MainWindow" 
+		Height="450" 
+		Width="800"
+		WindowStyle="None" 
+		Background="{x:Null}"
+		AllowsTransparency="True">
+
+	<WindowChrome.WindowChrome>
+		<WindowChrome
+		CaptionHeight="1"
+		CornerRadius ="0"
+		ResizeBorderThickness="4"
+		GlassFrameThickness="0"/>
+	</WindowChrome.WindowChrome>
+	<Border x:Name="WindowBorder" BorderBrush="#FF233958" BorderThickness="1">
+		<Grid Background="White">
+			<headerControl:WPFWindowTitleBar x:Name="FinsembleHeader" Height="25" VerticalAlignment="Top" Margin="0"/>
+			<Label x:Name="Scrim" Margin="0,25,0,0" AllowDrop="True" Visibility="Hidden"  Panel.ZIndex="1000" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" />
+			<Label x:Name="LabelWindowName" Content="Window1" HorizontalAlignment="Left" Margin="109,114,0,0" VerticalAlignment="Top" Height="73" Width="135"/>
+		</Grid>
+	</Border>
+</Window>
