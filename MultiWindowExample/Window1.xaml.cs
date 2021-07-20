@@ -2,6 +2,7 @@
 using System.Windows;
 using System.Windows.Media;
 using ChartIQ.Finsemble.Models;
+using ChartIQ.Finsemble.TitlebarService.Models;
 
 namespace MultiWindowExample
 {

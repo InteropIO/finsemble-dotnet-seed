@@ -7,9 +7,12 @@ using System.Linq;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.Windows.Threading;
+using ChartIQ.Finsemble.DragAndDrop;
+using ChartIQ.Finsemble.Router;
 using Newtonsoft.Json.Bson;
 using WinformExample.Controls;
 using Color = System.Drawing.Color;
+using ChartIQ.Finsemble.FDC3.Types;
 
 namespace WinformExample
 {
@@ -18,6 +21,7 @@ namespace WinformExample
 		private SortedDictionary<string, RoundedButton> LinkerGroups = new SortedDictionary<string, RoundedButton>();
 
 		private System.Drawing.Text.PrivateFontCollection finfont = new System.Drawing.Text.PrivateFontCollection();
+
 		public FormExample(String[] args)
 		{
 #if DEBUG
@@ -53,7 +57,7 @@ namespace WinformExample
 		//	base.SetBoundsCore(x, y, width, height, specified);
 		//}
 
-		private void FinsembleConnected(object sender, EventArgs e)
+		private async void FinsembleConnected(object sender, EventArgs e)
 		{
 			FSBL.Logger.OnLog += Logger_OnLog;
 
@@ -63,11 +67,29 @@ namespace WinformExample
 			// Handle Window grouping
 			FSBL.RouterClient.Subscribe("Finsemble.WorkspaceService.groupUpdate", HandleWindowGrouping);
 
-			//setup linker channels
-			FSBL.LinkerClient.GetAllChannels(HandleLinkerChannelLabels);
+			if (FSBL.LinkerClient != null)
+			{
+				//setup linker channels
+				FSBL.LinkerClient.GetAllChannels(HandleLinkerChannelLabels);
 
-			// Listen to Linker state change to render connected channels
-			FSBL.LinkerClient.OnStateChange(HandleLinkerStateChange);
+				// Listen to Linker state change to render connected channels
+				FSBL.LinkerClient.OnStateChange(HandleLinkerStateChange);
+
+				// Example for LinkerClient subscribe
+				FSBL.LinkerClient.Subscribe("symbol", HandleLinkerData);
+			}
+			else //use default FDC3 client
+			{
+				//setup linker channels
+				var systemChannels = await FSBL.FDC3Client.DesktopAgentClient.GetSystemChannels();
+				var data = new JArray(systemChannels.Select(x => new JObject { ["name"] = x.Id }));
+				HandleLinkerChannelLabels(null, new FinsembleEventArgs(null, data));
+
+				FSBL.FDC3Client.StateChanged += HandleLinkerStateChange;
+
+				// Example for Fdc3Client subscribe to specific context. The "*" for subscription to all contexts.
+				var listener = FSBL.FDC3Client.DesktopAgentClient.AddContextListener("fdc3.instrument", HandleContext);
+			}
 
 			//Example for handling component state in a workspace (and hand-off to getSpawnData if no state found)
 			FSBL.WindowClient.GetComponentState(new JObject { ["field"] = "symbol" }, HandleGetComponentState);
@@ -104,13 +126,32 @@ namespace WinformExample
 				new KeyValuePair<string, DragAndDropClient.emitter>("symbol", HandleDragAndDropEmit)
 			});
 
-			// Example for LinkerClient subscribe
-			FSBL.LinkerClient.Subscribe("symbol", HandleLinkerData);
 
 			// Example for getting Spawnable component list
 			FSBL.ConfigClient.GetValue(new JObject { ["field"] = "finsemble.components" }, HandleComponentsList);
 
 			SetInitialWindowGrouping(FSBL.WindowClient.GetWindowGroups());
+		}
+
+		private void HandleContext(Context context)
+		{
+
+			FSBL.Logger.Debug($"Context received: {context.Value}");
+
+			if (context == null)
+			{
+				FSBL.Logger.Error(new JToken[] { "Error when receiving context. Context is null " });
+			}
+			else
+			{
+				this.Invoke(new Action(() =>
+				{
+					string value = context.Name;
+					SourceLabel.Text = "via FDC3";
+					DataLabel.Text = value;
+					DataToSendInput.Text = value;
+				}));
+			}
 		}
 
 		private void Logger_OnLog(object sender, JObject log)
@@ -138,7 +179,7 @@ namespace WinformExample
 					{
 						var theLabel = groupLabels[labelcount++];
 						theLabel.Visible = false;
-						if(!LinkerGroups.ContainsKey(item["name"].ToString()))
+						if (!LinkerGroups.ContainsKey(item["name"].ToString()))
 							LinkerGroups.Add(item["name"].ToString(), theLabel);
 						//limit channels to ones we enough labels for
 						if (labelcount == groupLabels.Length)
@@ -200,7 +241,7 @@ namespace WinformExample
 
 		private int CalculateDragNDropLeftMarginShift(int visiblePillsBeforeShift, int visiblePillsAfterShift)
 		{
-			return (visiblePillsAfterShift - visiblePillsBeforeShift) * (GroupButton1.Width+2);
+			return (visiblePillsAfterShift - visiblePillsBeforeShift) * (GroupButton1.Width + 2);
 		}
 
 		private void HandleWindowGrouping(object s, FinsembleEventArgs res)
@@ -508,23 +549,50 @@ namespace WinformExample
 			});
 		}
 
-		private void LaunchButton_Click(object sender, EventArgs e)
+		private async void LaunchButton_Click(object sender, EventArgs e)
 		{
 			object selected = ComponentDropDown.Text;
 			if (selected == null) return;
 
 			var componentName = selected.ToString();
-			FSBL.LauncherClient.Spawn(componentName, new JObject { ["addToWorkspace"] = true }, (s, a) => { });
+			
+			if(FSBL.FDC3Client != null)
+			{
+				var targetApp = new TargetApp() { Name = componentName };
+				var context = new Context(new JObject
+				{
+					["type"] = "fdc3.instrument",
+					["name"] = DataToSendInput.Text,
+					["id"] = new JObject
+					{
+						["ticker"] = DataToSendInput.Text
+					}
+				});
+
+				var openError = await FSBL.FDC3Client.DesktopAgentClient.Open(targetApp, context);
+				if (openError.HasValue) MessageBox.Show(openError.ToString());
+			}
+			else
+			{
+				FSBL.LauncherClient.Spawn(componentName, new JObject { ["addToWorkspace"] = true }, (s, a) => { });
+			}
 		}
 
 		private void LinkerButton_Click(object sender, EventArgs e)
 		{
-			FSBL.LinkerClient.OpenLinkerWindow();
+			if (FSBL.LinkerClient != null)
+			{
+				FSBL.LinkerClient.OpenLinkerWindow();
+			}
+			else
+			{
+				FSBL.Util.OpenLinkerWindow();
+			}
 		}
 
 		private async void AlwaysOnTopButton_Click(object sender, EventArgs e)
 		{
-			var response= (await FSBL.WindowClient.IsAlwaysOnTop())?["data"]?.ToObject<bool>();
+			var response = (await FSBL.WindowClient.IsAlwaysOnTop())?["data"]?.ToObject<bool>();
 
 			if (response == null) return;
 
@@ -558,11 +626,19 @@ namespace WinformExample
 
 		private void SendButton_Click(object sender, EventArgs e)
 		{
-			if (FSBL.FDC3Client is object)
+			if (FSBL.LinkerClient != null)
 			{
-				//FDC3 Usage example 
+				FSBL.LinkerClient.Publish(new JObject
+				{
+					["dataType"] = "symbol",
+					["data"] = DataToSendInput.Text
+				});
+			}
+			else
+			{
+				// Use Default FDC3
 				//Broadcast
-				FSBL.FDC3Client.fdc3.broadcast(new JObject
+				var context = new Context(new JObject
 				{
 					["type"] = "fdc3.instrument",
 					["name"] = DataToSendInput.Text,
@@ -571,23 +647,9 @@ namespace WinformExample
 						["ticker"] = DataToSendInput.Text
 					}
 				});
-			}
-			else
-			{
-				// Use Default Linker
-				FSBL.LinkerClient.Publish(new JObject
-				{
-					["dataType"] = "symbol",
-					["data"] = DataToSendInput.Text
-				});
-			}
 
-			//	Invoke(new Action(() => //main thread
-			//	{
-			//		DroppedData.Content = DataToSendInput.Text;
-			//		DroppedDataSource.Content = "via Text entry";
-			//		await SaveStateAsync();
-			//	});
+				FSBL.FDC3Client.DesktopAgentClient.Broadcast(context);
+			}
 		}
 
 		private void DragNDropEmittingButton_MouseDown(object sender, MouseEventArgs e)

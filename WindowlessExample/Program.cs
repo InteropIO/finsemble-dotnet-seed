@@ -1,10 +1,11 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Threading;
 using ChartIQ.Finsemble;
+using ChartIQ.Finsemble.Events;
+using ChartIQ.Finsemble.Router;
 using Newtonsoft.Json.Linq;
 
-namespace ConsoleAppExample
+namespace WindowlessExample
 {
 	class Program
 	{

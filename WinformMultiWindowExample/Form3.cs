@@ -1,5 +1,4 @@
 ﻿using ChartIQ.Finsemble;
-using MultiWiformExample;
 using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
