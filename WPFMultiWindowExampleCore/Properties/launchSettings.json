@@ -1,0 +1,8 @@
+{
+  "profiles": {
+    "WPFMultiWindowExampleCore": {
+      "commandName": "Project",
+      "commandLineArgs": "Window1"
+    }
+  }
+}

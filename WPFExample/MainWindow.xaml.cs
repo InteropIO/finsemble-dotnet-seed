@@ -4,8 +4,12 @@ using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using System.Windows;
+using System.Linq;
 using System.Windows.Media;
-using ChartIQ.Finsemble.Models;
+using ChartIQ.Finsemble.DragAndDrop;
+using ChartIQ.Finsemble.Router;
+using ChartIQ.Finsemble.TitlebarService.Models;
+using ChartIQ.Finsemble.FDC3.Types;
 
 namespace WPFExample
 {
@@ -20,7 +24,7 @@ namespace WPFExample
 
 		private Finsemble FSBL;
 
-		private void SpawnComponent_Click(object sender, RoutedEventArgs e)
+		private async void SpawnComponent_Click(object sender, RoutedEventArgs e)
 		{
 			object selected = ComponentSelect.ItemsComboBox.SelectedValue;
 			if (selected != null)
@@ -31,7 +35,8 @@ namespace WPFExample
 				{
 					//FDC3 Usage example 
 					//open
-					FSBL.FDC3Client.fdc3.open(componentName, new JObject
+
+					var context = new Context(new JObject
 					{
 						["type"] = "fdc3.instrument",
 						["name"] = DataToSend.TextBox.Text,
@@ -39,10 +44,13 @@ namespace WPFExample
 						{
 							["ticker"] = DataToSend.TextBox.Text
 						}
-					}, (s, args) => { });
+					});
+
+					var targetApp = new TargetApp(componentName);
+					await FSBL.FDC3Client.DesktopAgentClient.Open(targetApp, context);
 
 					//Intent 
-					//FSBL.FDC3Client.fdc3.raiseIntent("ViewChart", new JObject
+					//var context = new Context(new JObject
 					//{
 					//	["type"] = "fdc3.instrument",
 					//	["name"] = DataToSend.TextBox.Text,
@@ -50,52 +58,43 @@ namespace WPFExample
 					//	{
 					//		["ticker"] = DataToSend.TextBox.Text
 					//	}
-					//}, (s, args) => { });
-
-					//FSBL.FDC3Client.fdc3.findIntent("ViewChart", (s, intent) =>
-					//{
-					//	FSBL.Logger.Log(new JToken[] { "WPF FDC3 Usage Example, findIntent.", intent });
 					//});
 
-					//FSBL.FDC3Client.fdc3.findIntent("ViewChart", new JObject
-					//	{
-					//		["type"] = "fdc3.instrument"
-					//	}, (s, intent) =>
-					//	{
-					//		FSBL.Logger.Log(new JToken[] { "WPF FDC3 Usage Example, findIntent.", intent });
-					//	}
-					//);
+					//await FSBL.FDC3Client.DesktopAgentClient.RaiseIntent("ViewChart", context, null);
 
-					//FSBL.FDC3Client.fdc3.findIntentsByContext(new JObject
-					//	{
-					//		["type"] = "fdc3.instrument"
-					//	}, (s, intents) =>
-					//	{
-					//		FSBL.Logger.Log(new JToken[] { "WPF FDC3 Usage Example, findIntentsByContext.", intents });
-					//	}
-					//);
+					//var intent = await FSBL.FDC3Client.DesktopAgentClient.FindIntent("ViewChart", null); 
+					//FSBL.Logger.Log(new JToken[] { "WPF FDC3 Usage Example, findIntent.", JsonConvert.SerializeObject(intent, Formatting.Indented)});
+
+					//var intent = await FSBL.FDC3Client.DesktopAgentClient.FindIntent("ViewChart", new Context(new JObject
+					//{
+					//	["type"] = "fdc3.instrument"
+					//}));
+					//FSBL.Logger.Log(new JToken[] { "WPF FDC3 Usage Example, findIntent.", JsonConvert.SerializeObject(intent, Formatting.Indented) });
+
+					//var context = new Context(new JObject
+					//{
+					//	["type"] = "fdc3.instrument"
+					//});
+
+					//var intents = await FSBL.FDC3Client.DesktopAgentClient.FindIntentsByContext(context);
+					//FSBL.Logger.Log(new JToken[] { "WPF FDC3 Usage Example, findIntentsByContext.", JsonConvert.SerializeObject(intents, Formatting.Indented)});
 
 					//Context
-					//FSBL.FDC3Client.fdc3.getCurrentChannel((s, channel) => {
-					//	channel.getCurrentContext("fdc3.instrument", (sender, context) => {
-					//		FSBL.Logger.Log(new JToken[] { "WPF FDC3 Usage Example: getCurrentContext.", context });
-					//	});
-					//});
+					//var channel = await FSBL.FDC3Client.DesktopAgentClient.GetCurrentChannel();
+					//var context = await channel.GetCurrentContext("fdc3.instrument");, 
+					//FSBL.Logger.Log(new JToken[] { "WPF FDC3 Usage Example: getCurrentContext.", context.Value.ToString() });
 
 					//Channels
-					//FSBL.FDC3Client.fdc3.getOrCreateChannel("test", (s, args) => { });
+					//var channel = await FSBL.FDC3Client.DesktopAgentClient.GetOrCreateChannel("test");
 
-					//FSBL.FDC3Client.fdc3.getSystemChannels((s, channelList) =>
+					//var channels = await FSBL.FDC3Client.DesktopAgentClient.GetSystemChannels();
+					//foreach (IChannel channel in channels)
 					//{
-					//	foreach (IChannel channel in channelList)
-					//	{
-					//		FSBL.Logger.Log(new JToken[] { "WPF FDC3 Usage Example: getSystemChannels.", channel.id });
-					//	}
-					//});
+					//	FSBL.Logger.Log(new JToken[] { "WPF FDC3 Usage Example: getSystemChannels.", channel.Id });
+					//}
 
-					//FSBL.FDC3Client.fdc3.getCurrentChannel((s, channel) => {
-					//	FSBL.Logger.Log(new JToken[] { "WPF FDC3 Usage Example: getCurrentChannel.", channel.id });
-					//});
+					//var channel = await FSBL.FDC3Client.DesktopAgentClient.GetCurrentChannel();
+					//FSBL.Logger.Log(new JToken[] { "WPF FDC3 Usage Example: getCurrentChannel.", channel.Id });
 				}
 				else
 				{
@@ -110,7 +109,7 @@ namespace WPFExample
 			{
 				//FDC3 Usage example 
 				//Broadcast
-				FSBL.FDC3Client.fdc3.broadcast(new JObject
+				var context = new Context(new JObject
 				{
 					["type"] = "fdc3.instrument",
 					["name"] = DataToSend.TextBox.Text,
@@ -119,11 +118,13 @@ namespace WPFExample
 						["ticker"] = DataToSend.TextBox.Text
 					}
 				});
+
+				FSBL.FDC3Client.DesktopAgentClient.Broadcast(context);
 			}
 			else
 			{
 				// Use Default Linker
-				FSBL.LinkerClient.Publish(new JObject
+				FSBL.LinkerClient?.Publish(new JObject
 				{
 					["dataType"] = "symbol",
 					["data"] = DataToSend.TextBox.Text
@@ -263,7 +264,7 @@ namespace WPFExample
 					}
 				});
 
-				//FSBL.LinkerClient.LinkToChannel("group2", null, (s, a) => { });
+				//FSBL.LinkerClient?.LinkToChannel("group2", null, (s, a) => { });
 				//restore state if one exists
 				UpdateDisplayData();
 				this.Show();
@@ -278,45 +279,45 @@ namespace WPFExample
 				});
 
 				//Context handler
-				EventHandler<JObject> contextHandler = (s, context) =>
+				ContextHandler contextHandler = (context) =>
 				{
-					FSBL.Logger.Log(new JToken[] { "WPF FDC3 Usage Example, context received by contextHandler.", context });
-					if (context["type"].ToString().Equals("fdc3.instrument"))
+					FSBL.Logger.Log(new JToken[] { "WPF FDC3 Usage Example, context received by contextHandler.", context.Value });
+					if (context.Type.Equals("fdc3.instrument"))
 					{
 						Application.Current.Dispatcher.Invoke(async delegate //main thread
 						{
-							DataToSend.TextBox.Text = context?["id"]?["ticker"]?.ToString();
-							DroppedData.Content = context?["id"]?["ticker"]?.ToString();
+							DataToSend.TextBox.Text = context.Id?["ticker"]?.ToString();
+							DroppedData.Content = context.Id?["ticker"]?.ToString();
 							DroppedDataSource.Content = "context shared via FDC3";
 							await SaveStateAsync();
 						});
 					}
 				};
-				FSBL.FDC3Client.fdc3.addContextListener(contextHandler);
-				//FSBL.FDC3Client.fdc3.addContextListener("fdc3.instrument", contextHandler);
+				FSBL.FDC3Client.DesktopAgentClient.AddContextListener(contextHandler);
+				//FSBL.FDC3Client.DesktopAgentClient.AddContextListener("fdc3.instrument", contextHandler);
 
 
-				EventHandler<JObject> intentHandler = (s, context) =>
+				ContextHandler intentHandler = (context) =>
 				{
-					FSBL.Logger.Log(new JToken[] { "WPF FDC3 Usage Example: context received by intentHandler.", context });
-					if (context["type"]!=null && context["type"].ToString().Equals("fdc3.instrument"))
+					FSBL.Logger.Log(new JToken[] { "WPF FDC3 Usage Example: context received by intentHandler.", context.Value });
+					if (context.Type !=null && context.Type.Equals("fdc3.instrument"))
 					{
 						Application.Current.Dispatcher.Invoke(async delegate //main thread
 						{
-							DataToSend.TextBox.Text = context?["id"]?["ticker"]?.ToString();
-							DroppedData.Content = context?["id"]?["ticker"]?.ToString();
+							DataToSend.TextBox.Text = context.Id?["ticker"]?.ToString();
+							DroppedData.Content = context.Id?["ticker"]?.ToString();
 							DroppedDataSource.Content = "context shared via FDC3 intent";
 							await SaveStateAsync();
 						});
 					}
 				};
-				FSBL.FDC3Client.fdc3.addIntentListener("ViewChart", intentHandler);
+				FSBL.FDC3Client.DesktopAgentClient.AddIntentListener("ViewChart", intentHandler);
 			}
 			else
 			{
 				//Use Default linker
 				//Subscribe to Finsemble Linker Channels
-				FSBL.LinkerClient.Subscribe("symbol", (error, response) =>
+				FSBL.LinkerClient?.Subscribe("symbol", (error, response) =>
 				{
 					Application.Current.Dispatcher.Invoke(async delegate //main thread
 					{
@@ -375,9 +376,9 @@ namespace WPFExample
 			}*/
 		}
 
-		private void LinkToGroup_Click(object sender, RoutedEventArgs e)
+		private async void LinkToGroup_Click(object sender, RoutedEventArgs e)
 		{
-			if (FSBL.FDC3Client is null)
+			if (FSBL.LinkerClient != null)
 			{
 				FSBL.LinkerClient.LinkToChannel("group1", null, (s, r) =>
 				{
@@ -388,7 +389,7 @@ namespace WPFExample
 			{
 				//FDC3 Usage example
 				//joinChannel
-				FSBL.FDC3Client.fdc3.joinChannel("group1");
+				await FSBL.FDC3Client.DesktopAgentClient.JoinChannel("group1");
 			}
 		}
 
@@ -412,9 +413,9 @@ namespace WPFExample
 			}
 		}
 
-		private void UnLinkFromGroup_Click(object sender, RoutedEventArgs e)
+		private async void UnLinkFromGroup_Click(object sender, RoutedEventArgs e)
 		{
-			if (FSBL.FDC3Client is null)
+			if (FSBL.LinkerClient != null)
 			{
 				FSBL.LinkerClient.UnlinkFromChannel("group1", null, (s, r) =>
 				{
@@ -425,10 +426,8 @@ namespace WPFExample
 			{
 				//FDC3 Usage Example
 				//leaveCurrentChannel
-				FSBL.FDC3Client.fdc3.leaveCurrentChannel((s, args) =>
-				{
-					FSBL.Logger.Log(new JToken[] { "WPF FDC3 Usage Example: leaveCurrentChannel.", args });
-				});
+				await FSBL.FDC3Client.DesktopAgentClient.LeaveCurrentChannel();
+				FSBL.Logger.Log(new JToken[] { "WPF FDC3 Usage Example: leaveCurrentChannel.", "" });
 			}
 		}
 

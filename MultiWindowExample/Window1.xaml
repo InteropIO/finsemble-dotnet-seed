@@ -6,6 +6,7 @@
         xmlns:local="clr-namespace:MultiWindowExample"
         xmlns:Finsemble="clr-namespace:ChartIQ.Finsemble;assembly=Finsemble"
         xmlns:Custom="http://schemas.microsoft.com/winfx/2006/xaml/presentation/ribbon"
+        xmlns:headerControl="clr-namespace:ChartIQ.Finsemble.HeaderControl;assembly=Finsemble"
         mc:Ignorable="d"
         Title="MainWindow" Height="350"
         Width="525" WindowStyle="None" Background="{x:Null}"
@@ -20,7 +21,7 @@
 	</WindowChrome.WindowChrome>
 	<Border x:Name="WindowBorder" BorderBrush="#FF233958" BorderThickness="1">
 		<Grid Background="White">
-			<Finsemble:WPFWindowTitleBar x:Name="FinsembleHeader" Height="25" VerticalAlignment="Top" Margin="0"/>
+			<headerControl:WPFWindowTitleBar x:Name="FinsembleHeader" Height="25" VerticalAlignment="Top" Margin="0"/>
 			<Label x:Name="Scrim" Margin="0,25,0,0" AllowDrop="True" Visibility="Hidden"  Panel.ZIndex="1000" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" />
 			<Label Content="Window1" HorizontalAlignment="Left" Margin="109,114,0,0" VerticalAlignment="Top" Height="73" Width="135"/>
 		</Grid>

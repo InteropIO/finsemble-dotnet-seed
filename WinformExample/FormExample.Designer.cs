@@ -179,7 +179,7 @@ namespace WinformExample
 			this.ComponentDropDown.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
 			this.ComponentDropDown.Location = new System.Drawing.Point(212, 318);
 			this.ComponentDropDown.Margin = new System.Windows.Forms.Padding(2);
-			this.ComponentDropDown.MaxDropDownItems = 100;
+			this.ComponentDropDown.MaxDropDownItems = 10;
 			this.ComponentDropDown.Name = "ComponentDropDown";
 			this.ComponentDropDown.Size = new System.Drawing.Size(203, 31);
 			this.ComponentDropDown.TabIndex = 35;
@@ -466,7 +466,6 @@ namespace WinformExample
 			this.Controls.Add(this.DataToSendInput);
 			this.Controls.Add(this.LaunchButton);
 			this.Controls.Add(this.scrim);
-			this.MinimumSize = new System.Drawing.Size(568, 623);
 			this.Name = "FormExample";
 			this.Text = "Winform Example";
 			this.panel2.ResumeLayout(false);

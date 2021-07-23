@@ -2,7 +2,6 @@
 {
 	using ChartIQ.Finsemble;
 	using Microsoft.VisualBasic.ApplicationServices;
-	using MultiWiformExample;
 	using System;
 	using System.Collections.Generic;
 	using System.Diagnostics;
@@ -31,8 +30,15 @@
 			public ApplicationContext(string[] args)
 			{
 				var nonFSBLArgs = GetNonFinsembleArgs(args);
-				string name = nonFSBLArgs.First();
+				string name = nonFSBLArgs.FirstOrDefault();
 				Form form = CreateForm(name);
+
+				if(form == null)
+				{
+					MessageBox.Show($"\"{name}\" unknown name of form!");
+					return;
+				}
+
 				var fsbl = new Finsemble(args.ToArray(), form);
 				fsbl.Connected += (s, e) =>
 				{

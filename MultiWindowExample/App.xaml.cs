@@ -1,13 +1,12 @@
 ﻿using ChartIQ.Finsemble;
-using Microsoft.Shell;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
-
 using System.Threading;
 using System.Windows;
 using System.Windows.Threading;
+
 namespace MultiWindowExample
 {
 	/// <summary>
@@ -15,7 +14,6 @@ namespace MultiWindowExample
 	/// </summary>
 	public partial class App : Application, ISingleInstanceApp
 	{
-
 		private static readonly object lockObj = new object();
 
 		private const string Unique = "6bea6fc4-5d9c-4961-b39d-89addcd65a73";
@@ -113,7 +111,7 @@ namespace MultiWindowExample
 			Debugger.Launch();
 #endif
 
-			if (args.Count < 2)
+			if (!args.Any())
 			{
 				// Invalid number of arguments
 				return true;

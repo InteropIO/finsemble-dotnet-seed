@@ -6,7 +6,7 @@
 	xmlns:local="clr-namespace:FDC3WPFExample"
 	xmlns:Finsemble="clr-namespace:ChartIQ.Finsemble;assembly=Finsemble"
     xmlns:customControls="clr-namespace:FDC3WPFExample.CustomControls"
-	xmlns:Custom="http://schemas.microsoft.com/winfx/2006/xaml/presentation/ribbon" x:Class="FDC3WPFExample.MainWindow" 
+	xmlns:Custom="http://schemas.microsoft.com/winfx/2006/xaml/presentation/ribbon" xmlns:Finsemble1="clr-namespace:ChartIQ.Finsemble.HeaderControl;assembly=Finsemble" x:Class="FDC3WPFExample.MainWindow" 
 	mc:Ignorable="d" 
 	Title="MainWindow" Height="600" 
 	Width="600" WindowStyle="None" Background="{x:Null}" 
@@ -21,7 +21,7 @@
     </WindowChrome.WindowChrome>
     <Border x:Name="WindowBorder">
         <Grid Background="#171a20">
-            <Finsemble:WPFWindowTitleBar x:Name="FinsembleHeader" Height="25" VerticalAlignment="Top" Margin="0"/>
+            <Finsemble1:WPFWindowTitleBar x:Name="FinsembleHeader" Height="25" VerticalAlignment="Top" Margin="0"/>
             <Label x:Name="Scrim" Visibility="Hidden" Panel.ZIndex="1000" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" />
             <Grid Margin="15,35,15,0">
                 <Grid.RowDefinitions>
