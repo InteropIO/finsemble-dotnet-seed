@@ -1,0 +1,1231 @@
+{
+	"comment": "AppD component config",
+	"$schema": "../../../../core/configs/schemas/fileBasedSchemas/appdConfigFile.schema.json",
+	"appd": {
+		"WPFExampleCore": {
+			"appId": "WPFExampleCore",
+			"name": "WPFExampleCore",
+			"intents": [
+				{
+					"name": "ViewChart",
+					"displayName": "View Chart",
+					"contexts": [
+						"fdc3.instrument"
+					]
+				}
+			],
+			"manifest": {
+				"signatureKey": {
+					"e": "AQAB",
+					"ext": true,
+					"key_ops": [
+						"verify"
+					],
+					"kty": "RSA",
+					"n": "zPOxYfLiAd3rM7KOLDBIeLl0kjQ7fk43mTTc1Nm9BDaSNVWqvOshSMCHmqOrKZX_WwA67Y6CQxWI5rZ6WNzoLHQU3PyqOvAdB7RgXCHlSeVYZ2haTcbWRjAXQ89H1WfnW96VwAbZn5nccxQGYlZIl3AMcwNRqV4hmiKtJVq4-2OzA-zs9Yg4Pfs6TbKR1XbNKz6EAPHDev0-7Xdnb6x1-qr4uL2Bq0ZwgfnyKQIRLc3zhD5kwqiJ5N7uZAZomLRkMFMXwy1UftD6fQUlFT2yoISn403RwN7YHEL8KoA9X7Jgs-dtlBh8c38QzQ1vbdMBzPuyRb07GMMKb6bdjdBV1w"
+				},
+				"window": {
+					"id": "WPFExampleCore",
+					"windowType": "FinsembleNativeWindow",
+					"path": "$wpfExampleCoreRoot/WPFExampleCore.exe",
+					"url": "",
+					"minHeight": 300,
+					"minWidth": 300,
+					"autoShow": true,
+					"resizable": true,
+					"showTaskbarIcon": false,
+					"contextMenu": true,
+					"addToWorkspace": true,
+					"options": {
+						"alwaysOnTop": false
+					}
+				},
+				"component": {
+					"mode": "native",
+					"category": "system"
+				},
+				"foreign": {
+					"services": {
+						"workspaceService": {
+							"isArrangable": true
+						}
+					},
+					"components": {
+						"App Launcher": {
+							"launchableByUser": true
+						},
+						"Window Manager": {
+							"persistWindowState": false,
+							"FSBLHeader": true
+						},
+						"Toolbar": {
+							"iconURL": "$applicationRoot/assets/img/Finsemble_Taskbar_Icon.png"
+						}
+					}
+				},
+				"interop": {
+					"selectConnect": [
+						{
+							"contextType": "fdc3.instrument",
+							"cc": "#Workspace"
+						}
+					]
+				}
+			}
+		},
+		"WinformExampleCore": {
+			"appId": "WinformExampleCore",
+			"name": "WinformExampleCore",
+			"intents": [],
+			"manifest": {
+				"signatureKey": {
+					"e": "AQAB",
+					"ext": true,
+					"key_ops": [
+						"verify"
+					],
+					"kty": "RSA",
+					"n": "zPOxYfLiAd3rM7KOLDBIeLl0kjQ7fk43mTTc1Nm9BDaSNVWqvOshSMCHmqOrKZX_WwA67Y6CQxWI5rZ6WNzoLHQU3PyqOvAdB7RgXCHlSeVYZ2haTcbWRjAXQ89H1WfnW96VwAbZn5nccxQGYlZIl3AMcwNRqV4hmiKtJVq4-2OzA-zs9Yg4Pfs6TbKR1XbNKz6EAPHDev0-7Xdnb6x1-qr4uL2Bq0ZwgfnyKQIRLc3zhD5kwqiJ5N7uZAZomLRkMFMXwy1UftD6fQUlFT2yoISn403RwN7YHEL8KoA9X7Jgs-dtlBh8c38QzQ1vbdMBzPuyRb07GMMKb6bdjdBV1w"
+				},
+				"window": {
+					"id": "WinformExampleCore",
+					"windowType": "FinsembleNativeWindow",
+					"path": "$winformExampleCoreRoot/WinformExampleCore.FDC3.exe",
+					"url": "",
+					"minHeight": 300,
+					"minWidth": 300,
+					"autoShow": true,
+					"resizable": true,
+					"showTaskbarIcon": false,
+					"contextMenu": true,
+					"addToWorkspace": true,
+					"options": {
+						"alwaysOnTop": false
+					}
+				},
+				"component": {
+					"mode": "native",
+					"category": "system"
+				},
+				"foreign": {
+					"services": {
+						"workspaceService": {
+							"isArrangable": true
+						}
+					},
+					"components": {
+						"App Launcher": {
+							"launchableByUser": true
+						},
+						"Window Manager": {
+							"persistWindowState": false,
+							"FSBLHeader": true
+						},
+						"Toolbar": {
+							"iconURL": "$applicationRoot/assets/img/Finsemble_Taskbar_Icon.png"
+						}
+					}
+				},
+				"interop": {
+					"selectConnect": [
+						{
+							"contextType": "fdc3.instrument",
+							"cc": "#Workspace"
+						}
+					]
+				}
+			}
+		},
+		"WPFExample": {
+			"appId": "WPFExample",
+			"name": "WPFExample",
+			"intents": [
+				{
+					"name": "ViewChart",
+					"displayName": "View Chart",
+					"contexts": [
+						"fdc3.instrument"
+					]
+				}
+			],
+			"manifest": {
+				"signatureKey": {
+					"e": "AQAB",
+					"ext": true,
+					"key_ops": [
+						"verify"
+					],
+					"kty": "RSA",
+					"n": "zPOxYfLiAd3rM7KOLDBIeLl0kjQ7fk43mTTc1Nm9BDaSNVWqvOshSMCHmqOrKZX_WwA67Y6CQxWI5rZ6WNzoLHQU3PyqOvAdB7RgXCHlSeVYZ2haTcbWRjAXQ89H1WfnW96VwAbZn5nccxQGYlZIl3AMcwNRqV4hmiKtJVq4-2OzA-zs9Yg4Pfs6TbKR1XbNKz6EAPHDev0-7Xdnb6x1-qr4uL2Bq0ZwgfnyKQIRLc3zhD5kwqiJ5N7uZAZomLRkMFMXwy1UftD6fQUlFT2yoISn403RwN7YHEL8KoA9X7Jgs-dtlBh8c38QzQ1vbdMBzPuyRb07GMMKb6bdjdBV1w"
+				},
+				"window": {
+					"id": "WPFExample",
+					"windowType": "FinsembleNativeWindow",
+					"path": "$wpfExampleRoot/WPFExample.exe",
+					"url": "",
+					"minHeight": 300,
+					"minWidth": 300,
+					"autoShow": true,
+					"resizable": true,
+					"showTaskbarIcon": false,
+					"contextMenu": true,
+					"addToWorkspace": true,
+					"options": {
+						"alwaysOnTop": false
+					}
+				},
+				"component": {
+					"mode": "native",
+					"category": "system"
+				},
+				"foreign": {
+					"services": {
+						"workspaceService": {
+							"isArrangable": true
+						}
+					},
+					"components": {
+						"App Launcher": {
+							"launchableByUser": true
+						},
+						"Window Manager": {
+							"persistWindowState": false,
+							"FSBLHeader": true
+						},
+						"Toolbar": {
+							"iconURL": "$applicationRoot/assets/img/Finsemble_Taskbar_Icon.png"
+						}
+					}
+				},
+				"interop": {
+					"selectConnect": [
+						{
+							"contextType": "fdc3.instrument",
+							"cc": "#Workspace"
+						}
+					]
+				}
+			}
+		},
+		"WinformExample": {
+			"appId": "WinformExample",
+			"name": "WinformExample",
+			"intents": [],
+			"manifest": {
+				"signatureKey": {
+					"e": "AQAB",
+					"ext": true,
+					"key_ops": [
+						"verify"
+					],
+					"kty": "RSA",
+					"n": "zPOxYfLiAd3rM7KOLDBIeLl0kjQ7fk43mTTc1Nm9BDaSNVWqvOshSMCHmqOrKZX_WwA67Y6CQxWI5rZ6WNzoLHQU3PyqOvAdB7RgXCHlSeVYZ2haTcbWRjAXQ89H1WfnW96VwAbZn5nccxQGYlZIl3AMcwNRqV4hmiKtJVq4-2OzA-zs9Yg4Pfs6TbKR1XbNKz6EAPHDev0-7Xdnb6x1-qr4uL2Bq0ZwgfnyKQIRLc3zhD5kwqiJ5N7uZAZomLRkMFMXwy1UftD6fQUlFT2yoISn403RwN7YHEL8KoA9X7Jgs-dtlBh8c38QzQ1vbdMBzPuyRb07GMMKb6bdjdBV1w"
+				},
+				"window": {
+					"id": "WinformExample",
+					"windowType": "FinsembleNativeWindow",
+					"path": "$winformExampleRoot/WinformExample.exe",
+					"url": "",
+					"minHeight": 300,
+					"minWidth": 300,
+					"autoShow": true,
+					"resizable": true,
+					"showTaskbarIcon": false,
+					"contextMenu": true,
+					"addToWorkspace": true,
+					"options": {
+						"alwaysOnTop": false
+					}
+				},
+				"component": {
+					"mode": "native",
+					"category": "system"
+				},
+				"foreign": {
+					"services": {
+						"workspaceService": {
+							"isArrangable": true
+						}
+					},
+					"components": {
+						"App Launcher": {
+							"launchableByUser": true
+						},
+						"Window Manager": {
+							"persistWindowState": false,
+							"FSBLHeader": true
+						},
+						"Toolbar": {
+							"iconURL": "$applicationRoot/assets/img/Finsemble_Taskbar_Icon.png"
+						}
+					}
+				},
+				"interop": {
+					"selectConnect": [
+						{
+							"contextType": "fdc3.instrument",
+							"cc": "#Workspace"
+						}
+					]
+				}
+			}
+		},
+		"AuthenticationExample": {
+			"appId": "AuthenticationExample",
+			"name": "AuthenticationExample",
+			"intents": [],
+			"manifest": {
+				"signatureKey": {
+					"e": "AQAB",
+					"ext": true,
+					"key_ops": [
+						"verify"
+					],
+					"kty": "RSA",
+					"n": "zPOxYfLiAd3rM7KOLDBIeLl0kjQ7fk43mTTc1Nm9BDaSNVWqvOshSMCHmqOrKZX_WwA67Y6CQxWI5rZ6WNzoLHQU3PyqOvAdB7RgXCHlSeVYZ2haTcbWRjAXQ89H1WfnW96VwAbZn5nccxQGYlZIl3AMcwNRqV4hmiKtJVq4-2OzA-zs9Yg4Pfs6TbKR1XbNKz6EAPHDev0-7Xdnb6x1-qr4uL2Bq0ZwgfnyKQIRLc3zhD5kwqiJ5N7uZAZomLRkMFMXwy1UftD6fQUlFT2yoISn403RwN7YHEL8KoA9X7Jgs-dtlBh8c38QzQ1vbdMBzPuyRb07GMMKb6bdjdBV1w"
+				},
+				"window": {
+					"id": "AuthenticationExample",
+					"windowType": "FinsembleNativeWindow",
+					"path": "$dotNetAuthExampleRoot/AuthenticationExample.exe",
+					"arguments": "",
+					"defaultHeight": 350,
+					"autoShow": true,
+					"resizable": true,
+					"showTaskbarIcon": false,
+					"contextMenu": true,
+					"addToWorkspace": true,
+					"options": {
+						"alwaysOnTop": false
+					}
+				},
+				"component": {
+					"spawnOnStartup": false
+				},
+				"foreign": {
+					"services": {
+						"workspaceService": {
+							"isArrangable": true
+						}
+					},
+					"components": {
+						"App Launcher": {
+							"launchableByUser": true
+						},
+						"Window Manager": {
+							"persistWindowState": false,
+							"FSBLHeader": true
+						},
+						"Toolbar": {
+							"iconURL": "$applicationRoot/assets/img/Finsemble_Taskbar_Icon.png"
+						}
+					}
+				},
+				"interop": {
+					"selectConnect": [
+						{
+							"contextType": "fdc3.instrument",
+							"cc": "#Workspace"
+						}
+					]
+				}
+			}
+		},
+		"WindowlessExample": {
+			"appId": "WindowlessExample",
+			"name": "WindowlessExample",
+			"intents": [],
+			"manifest": {
+				"signatureKey": {
+					"e": "AQAB",
+					"ext": true,
+					"key_ops": [
+						"verify"
+					],
+					"kty": "RSA",
+					"n": "zPOxYfLiAd3rM7KOLDBIeLl0kjQ7fk43mTTc1Nm9BDaSNVWqvOshSMCHmqOrKZX_WwA67Y6CQxWI5rZ6WNzoLHQU3PyqOvAdB7RgXCHlSeVYZ2haTcbWRjAXQ89H1WfnW96VwAbZn5nccxQGYlZIl3AMcwNRqV4hmiKtJVq4-2OzA-zs9Yg4Pfs6TbKR1XbNKz6EAPHDev0-7Xdnb6x1-qr4uL2Bq0ZwgfnyKQIRLc3zhD5kwqiJ5N7uZAZomLRkMFMXwy1UftD6fQUlFT2yoISn403RwN7YHEL8KoA9X7Jgs-dtlBh8c38QzQ1vbdMBzPuyRb07GMMKb6bdjdBV1w"
+				},
+				"window": {
+					"id": "WindowlessExample",
+					"windowType": "FinsembleNativeWindow",
+					"path": "$windowlessRoot/WindowlessExample.exe",
+					"arguments": "",
+					"autoShow": false,
+					"addToWorkspace": false
+				},
+				"component": {
+					"spawnOnStartup": true
+				},
+				"foreign": {
+					"components": {
+						"App Launcher": {
+							"launchableByUser": false
+						}
+					}
+				}
+			}
+		},
+		"WindowlessExampleCore": {
+			"appId": "WindowlessExampleCore",
+			"name": "WindowlessExampleCore",
+			"intents": [],
+			"manifest": {
+				"signatureKey": {
+					"e": "AQAB",
+					"ext": true,
+					"key_ops": [
+						"verify"
+					],
+					"kty": "RSA",
+					"n": "zPOxYfLiAd3rM7KOLDBIeLl0kjQ7fk43mTTc1Nm9BDaSNVWqvOshSMCHmqOrKZX_WwA67Y6CQxWI5rZ6WNzoLHQU3PyqOvAdB7RgXCHlSeVYZ2haTcbWRjAXQ89H1WfnW96VwAbZn5nccxQGYlZIl3AMcwNRqV4hmiKtJVq4-2OzA-zs9Yg4Pfs6TbKR1XbNKz6EAPHDev0-7Xdnb6x1-qr4uL2Bq0ZwgfnyKQIRLc3zhD5kwqiJ5N7uZAZomLRkMFMXwy1UftD6fQUlFT2yoISn403RwN7YHEL8KoA9X7Jgs-dtlBh8c38QzQ1vbdMBzPuyRb07GMMKb6bdjdBV1w"
+				},
+				"window": {
+					"id": "WindowlessExampleCore",
+					"windowType": "FinsembleNativeWindow",
+					"path": "$windowlessCoreRoot/WindowlessExample.Core.exe",
+					"arguments": "",
+					"autoShow": false,
+					"addToWorkspace": false
+				},
+				"component": {
+					"spawnOnStartup": true
+				},
+				"foreign": {
+					"components": {
+						"App Launcher": {
+							"launchableByUser": false
+						}
+					}
+				}
+			}
+		},
+		"WPFExampleTesting": {
+			"appId": "WPFExampleTesting",
+			"name": "WPFExampleTesting",
+			"intents": [
+				{
+					"name": "fdc3.wpfExampleTesting",
+					"displayName": "WPFExampleTesting",
+					"contexts": [
+						"fdc3.wpfExampleTesting"
+					]
+				}
+			],
+			"manifest": {
+				"signatureKey": {
+					"e": "AQAB",
+					"ext": true,
+					"key_ops": [
+						"verify"
+					],
+					"kty": "RSA",
+					"n": "zPOxYfLiAd3rM7KOLDBIeLl0kjQ7fk43mTTc1Nm9BDaSNVWqvOshSMCHmqOrKZX_WwA67Y6CQxWI5rZ6WNzoLHQU3PyqOvAdB7RgXCHlSeVYZ2haTcbWRjAXQ89H1WfnW96VwAbZn5nccxQGYlZIl3AMcwNRqV4hmiKtJVq4-2OzA-zs9Yg4Pfs6TbKR1XbNKz6EAPHDev0-7Xdnb6x1-qr4uL2Bq0ZwgfnyKQIRLc3zhD5kwqiJ5N7uZAZomLRkMFMXwy1UftD6fQUlFT2yoISn403RwN7YHEL8KoA9X7Jgs-dtlBh8c38QzQ1vbdMBzPuyRb07GMMKb6bdjdBV1w"
+				},
+				"window": {
+					"id": "WPFExampleTesting",
+					"windowType": "FinsembleNativeWindow",
+					"path": "$wpfExampleTestingRoot/WPFExample.Testing.exe",
+					"url": "",
+					"arguments": "",
+					"defaultHeight": 400,
+					"autoShow": true,
+					"resizable": true,
+					"showTaskbarIcon": false,
+					"contextMenu": true,
+					"addToWorkspace": true,
+					"options": {
+						"alwaysOnTop": false
+					}
+				},
+				"component": {
+					"spawnOnStartup": false
+				},
+				"foreign": {
+					"services": {
+						"workspaceService": {
+							"isArrangable": true
+						}
+					},
+					"components": {
+						"App Launcher": {
+							"launchableByUser": true
+						},
+						"Window Manager": {
+							"persistWindowState": false,
+							"FSBLHeader": true
+						},
+						"Toolbar": {
+							"iconURL": "$applicationRoot/assets/img/notepad.png"
+						}
+					}
+				}
+			}
+		},
+		"WPFExampleCoreTesting": {
+			"appId": "WPFExampleCoreTesting",
+			"name": "WPFExampleCoreTesting",
+			"intents": [
+				{
+					"name": "fdc3.wpfCoreExampleTesting",
+					"displayName": "WPFCoreExampleTesting",
+					"contexts": [
+						"fdc3.wpfCoreExampleTesting"
+					]
+				}
+			],
+			"manifest": {
+				"signatureKey": {
+					"e": "AQAB",
+					"ext": true,
+					"key_ops": [
+						"verify"
+					],
+					"kty": "RSA",
+					"n": "zPOxYfLiAd3rM7KOLDBIeLl0kjQ7fk43mTTc1Nm9BDaSNVWqvOshSMCHmqOrKZX_WwA67Y6CQxWI5rZ6WNzoLHQU3PyqOvAdB7RgXCHlSeVYZ2haTcbWRjAXQ89H1WfnW96VwAbZn5nccxQGYlZIl3AMcwNRqV4hmiKtJVq4-2OzA-zs9Yg4Pfs6TbKR1XbNKz6EAPHDev0-7Xdnb6x1-qr4uL2Bq0ZwgfnyKQIRLc3zhD5kwqiJ5N7uZAZomLRkMFMXwy1UftD6fQUlFT2yoISn403RwN7YHEL8KoA9X7Jgs-dtlBh8c38QzQ1vbdMBzPuyRb07GMMKb6bdjdBV1w"
+				},
+				"window": {
+					"id": "WPFExampleCoreTesting",
+					"windowType": "FinsembleNativeWindow",
+					"path": "$wpfCoreExampleTestingRoot/WPFExampleCore.Testing.exe",
+					"url": "",
+					"arguments": "",
+					"defaultHeight": 400,
+					"autoShow": true,
+					"resizable": true,
+					"showTaskbarIcon": false,
+					"contextMenu": true,
+					"addToWorkspace": true,
+					"options": {
+						"alwaysOnTop": false
+					}
+				},
+				"component": {
+					"spawnOnStartup": false
+				},
+				"foreign": {
+					"services": {
+						"workspaceService": {
+							"isArrangable": true
+						}
+					},
+					"components": {
+						"App Launcher": {
+							"launchableByUser": true
+						},
+						"Window Manager": {
+							"persistWindowState": false,
+							"FSBLHeader": true
+						},
+						"Toolbar": {
+							"iconURL": "$applicationRoot/assets/img/notepad.png"
+						}
+					}
+				}
+			}
+		},
+		"MultiWindow-Parent": {
+			"appId": "MultiWindowExample",
+			"name": "MultiWindowExample",
+			"manifest": {
+				"window": {
+					"windowType": "FinsembleNativeWindow",
+					"path": "$multiWindowRoot/MultiWindowExample.exe",
+					"arguments": "",
+					"defaultHeight": 600,
+					"autoShow": true,
+					"alwaysOnTop": false,
+					"resizable": true,
+					"showTaskbarIcon": false,
+					"contextMenu": true,
+					"addToWorkspace": false
+				},
+				"component": {
+					"spawnOnStartup": true
+				},
+				"foreign": {
+					"services": {
+						"workspaceService": {
+							"isArrangable": true
+						}
+					},
+					"components": {
+						"App Launcher": {
+							"launchableByUser": false
+						},
+						"Window Manager": {
+							"persistWindowState": false,
+							"FSBLHeader": true
+						},
+						"Toolbar": {
+							"iconURL": "$applicationRoot/assets/img/notepad.png"
+						}
+					}
+				}
+			}
+		},
+		"MultiWindow-Window1": {
+			"appId": "MultiWindowExample",
+			"name": "MultiWindowExample",
+			"manifest": {
+				"window": {
+					"windowType": "FinsembleNativeWindow",
+					"path": "$multiWindowRoot/MultiWindowExample.exe",
+					"arguments": "Window1",
+					"defaultHeight": 600,
+					"autoShow": true,
+					"alwaysOnTop": false,
+					"resizable": true,
+					"showTaskbarIcon": false,
+					"contextMenu": true,
+					"addToWorkspace": true
+				},
+				"component": {},
+				"foreign": {
+					"services": {
+						"workspaceService": {
+							"isArrangable": true
+						}
+					},
+					"components": {
+						"App Launcher": {
+							"launchableByUser": true
+						},
+						"Window Manager": {
+							"persistWindowState": false,
+							"FSBLHeader": true
+						},
+						"Toolbar": {
+							"iconURL": "$applicationRoot/assets/img/notepad.png"
+						}
+					}
+				}
+			}
+		},
+		"MultiWindow-Window2": {
+			"appId": "MultiWindowExample",
+			"name": "MultiWindowExample",
+			"manifest": {
+				"window": {
+					"windowType": "FinsembleNativeWindow",
+					"path": "$multiWindowRoot/MultiWindowExample.exe",
+					"arguments": "Window2",
+					"defaultHeight": 600,
+					"autoShow": true,
+					"alwaysOnTop": false,
+					"resizable": true,
+					"showTaskbarIcon": false,
+					"contextMenu": true,
+					"addToWorkspace": true
+				},
+				"component": {},
+				"foreign": {
+					"services": {
+						"workspaceService": {
+							"isArrangable": true
+						}
+					},
+					"components": {
+						"App Launcher": {
+							"launchableByUser": true
+						},
+						"Window Manager": {
+							"persistWindowState": false,
+							"FSBLHeader": true
+						},
+						"Toolbar": {
+							"iconURL": "$applicationRoot/assets/img/notepad.png"
+						}
+					}
+				}
+			}
+		},
+		"MultiWindow-Window3": {
+			"appId": "MultiWindowExample",
+			"name": "MultiWindowExample",
+			"manifest": {
+				"window": {
+					"windowType": "FinsembleNativeWindow",
+					"path": "$multiWindowRoot/MultiWindowExample.exe",
+					"arguments": "Window3",
+					"defaultHeight": 600,
+					"autoShow": true,
+					"alwaysOnTop": false,
+					"resizable": true,
+					"showTaskbarIcon": false,
+					"contextMenu": true,
+					"addToWorkspace": true
+				},
+				"component": {},
+				"foreign": {
+					"services": {
+						"workspaceService": {
+							"isArrangable": true
+						}
+					},
+					"components": {
+						"App Launcher": {
+							"launchableByUser": true
+						},
+						"Window Manager": {
+							"persistWindowState": false,
+							"FSBLHeader": true
+						},
+						"Toolbar": {
+							"iconURL": "$applicationRoot/assets/img/notepad.png"
+						}
+					}
+				}
+			}
+		},
+		"MultiWindow-Window4": {
+			"appId": "MultiWindowExample",
+			"name": "MultiWindowExample",
+			"manifest": {
+				"window": {
+					"windowType": "FinsembleNativeWindow",
+					"path": "$multiWindowRoot/MultiWindowExample.exe",
+					"arguments": "Window4",
+					"defaultHeight": 600,
+					"autoShow": true,
+					"alwaysOnTop": false,
+					"resizable": true,
+					"showTaskbarIcon": false,
+					"contextMenu": true,
+					"addToWorkspace": true
+				},
+				"component": {},
+				"foreign": {
+					"services": {
+						"workspaceService": {
+							"isArrangable": true
+						}
+					},
+					"components": {
+						"App Launcher": {
+							"launchableByUser": true
+						},
+						"Window Manager": {
+							"persistWindowState": false,
+							"FSBLHeader": true
+						},
+						"Toolbar": {
+							"iconURL": "$applicationRoot/assets/img/notepad.png"
+						}
+					}
+				}
+			}
+		},
+		"MultiWindow-Core-Window1": {
+			"appId": "WPFMultiWindowExampleCore",
+			"name": "WPFMultiWindowExampleCore",
+			"manifest": {
+				"window": {
+					"windowType": "FinsembleNativeWindow",
+					"path": "$multiWindowCoreRoot/WPFMultiWindowExampleCore.exe",
+					"arguments": "Window1",
+					"defaultHeight": 600,
+					"autoShow": true,
+					"alwaysOnTop": false,
+					"resizable": true,
+					"showTaskbarIcon": false,
+					"contextMenu": true,
+					"addToWorkspace": true
+				},
+				"component": {},
+				"foreign": {
+					"services": {
+						"workspaceService": {
+							"isArrangable": true
+						}
+					},
+					"components": {
+						"App Launcher": {
+							"launchableByUser": true
+						},
+						"Window Manager": {
+							"persistWindowState": false,
+							"FSBLHeader": true
+						},
+						"Toolbar": {
+							"iconURL": "$applicationRoot/assets/img/notepad.png"
+						}
+					}
+				}
+			}
+		},
+		"MultiWindow-Core-Window2": {
+			"appId": "WPFMultiWindowExampleCore",
+			"name": "WPFMultiWindowExampleCore",
+			"manifest": {
+				"window": {
+					"windowType": "FinsembleNativeWindow",
+					"path": "$multiWindowCoreRoot/WPFMultiWindowExampleCore.exe",
+					"arguments": "Window2",
+					"defaultHeight": 600,
+					"autoShow": true,
+					"alwaysOnTop": false,
+					"resizable": true,
+					"showTaskbarIcon": false,
+					"contextMenu": true,
+					"addToWorkspace": true
+				},
+				"component": {},
+				"foreign": {
+					"services": {
+						"workspaceService": {
+							"isArrangable": true
+						}
+					},
+					"components": {
+						"App Launcher": {
+							"launchableByUser": true
+						},
+						"Window Manager": {
+							"persistWindowState": false,
+							"FSBLHeader": true
+						},
+						"Toolbar": {
+							"iconURL": "$applicationRoot/assets/img/notepad.png"
+						}
+					}
+				}
+			}
+		},
+		"MultiWindow-Core-Window3": {
+			"appId": "WPFMultiWindowExampleCore",
+			"name": "WPFMultiWindowExampleCore",
+			"manifest": {
+				"window": {
+					"windowType": "FinsembleNativeWindow",
+					"path": "$multiWindowCoreRoot/WPFMultiWindowExampleCore.exe",
+					"arguments": "Window3",
+					"defaultHeight": 600,
+					"autoShow": true,
+					"alwaysOnTop": false,
+					"resizable": true,
+					"showTaskbarIcon": false,
+					"contextMenu": true,
+					"addToWorkspace": true
+				},
+				"component": {},
+				"foreign": {
+					"services": {
+						"workspaceService": {
+							"isArrangable": true
+						}
+					},
+					"components": {
+						"App Launcher": {
+							"launchableByUser": true
+						},
+						"Window Manager": {
+							"persistWindowState": false,
+							"FSBLHeader": true
+						},
+						"Toolbar": {
+							"iconURL": "$applicationRoot/assets/img/notepad.png"
+						}
+					}
+				}
+			}
+		},
+		"MultiWindow-Core-Window4": {
+			"appId": "WPFMultiWindowExampleCore",
+			"name": "WPFMultiWindowExampleCore",
+			"manifest": {
+				"window": {
+					"windowType": "FinsembleNativeWindow",
+					"path": "$multiWindowCoreRoot/WPFMultiWindowExampleCore.exe",
+					"arguments": "Window4",
+					"defaultHeight": 600,
+					"autoShow": true,
+					"alwaysOnTop": false,
+					"resizable": true,
+					"showTaskbarIcon": false,
+					"contextMenu": true,
+					"addToWorkspace": true
+				},
+				"component": {},
+				"foreign": {
+					"services": {
+						"workspaceService": {
+							"isArrangable": true
+						}
+					},
+					"components": {
+						"App Launcher": {
+							"launchableByUser": true
+						},
+						"Window Manager": {
+							"persistWindowState": false,
+							"FSBLHeader": true
+						},
+						"Toolbar": {
+							"iconURL": "$applicationRoot/assets/img/notepad.png"
+						}
+					}
+				}
+			}
+		},
+		"Winform-MultiWindow-Form1": {
+			"appId": "WinformMultiWindowExample",
+			"name": "WinformMultiWindowExample",
+			"manifest": {
+				"window": {
+					"id": "WinformMultiWindowExample",
+					"windowType": "FinsembleNativeWindow",
+					"path": "$winformMultiwindowExampleRoot/WinformMultiWindowExample.exe",
+					"arguments": "Form1",
+					"top": "center",
+					"left": "center",
+					"width": 400,
+					"height": 432,
+					"autoShow": true,
+					"resizable": true,
+					"showTaskbarIcon": false,
+					"contextMenu": true,
+					"addToWorkspace": true,
+					"options": {
+						"alwaysOnTop": false
+					}
+				},
+				"component": {},
+				"foreign": {
+					"services": {
+						"windowService": {
+							"allowAutoArrange": true
+						}
+					},
+					"components": {
+						"App Launcher": {
+							"launchableByUser": true
+						},
+						"Window Manager": {
+							"persistWindowState": false,
+							"FSBLHeader": true,
+							"alwaysOnTop": false
+						},
+						"Toolbar": {
+							"iconURL": "$applicationRoot/assets/img/notepad.png"
+						}
+					}
+				}
+			}
+		},
+		"Winform-MultiWindow-Form2": {
+			"appId": "WinformMultiWindowExample",
+			"name": "WinformMultiWindowExample",
+			"manifest": {
+				"window": {
+					"id": "WinformMultiWindowExample",
+					"windowType": "FinsembleNativeWindow",
+					"path": "$winformMultiwindowExampleRoot/WinformMultiWindowExample.exe",
+					"arguments": "Form2",
+					"top": "center",
+					"left": "center",
+					"width": 400,
+					"height": 432,
+					"autoShow": true,
+					"resizable": true,
+					"showTaskbarIcon": false,
+					"contextMenu": true,
+					"addToWorkspace": true,
+					"options": {
+						"alwaysOnTop": false
+					}
+				},
+				"component": {},
+				"foreign": {
+					"services": {
+						"windowService": {
+							"allowAutoArrange": true
+						}
+					},
+					"components": {
+						"App Launcher": {
+							"launchableByUser": true
+						},
+						"Window Manager": {
+							"persistWindowState": false,
+							"FSBLHeader": true,
+							"alwaysOnTop": false
+						},
+						"Toolbar": {
+							"iconURL": "$applicationRoot/assets/img/notepad.png"
+						}
+					}
+				}
+			}
+		},
+		"Winform-MultiWindow-Form3": {
+			"appId": "WinformMultiWindowExample",
+			"name": "WinformMultiWindowExample",
+			"manifest": {
+				"window": {
+					"id": "WinformMultiWindowExample",
+					"windowType": "FinsembleNativeWindow",
+					"path": "$winformMultiwindowExampleRoot/WinformMultiWindowExample.exe",
+					"arguments": "Form3",
+					"top": "center",
+					"left": "center",
+					"width": 400,
+					"height": 432,
+					"autoShow": true,
+					"resizable": true,
+					"showTaskbarIcon": false,
+					"contextMenu": true,
+					"addToWorkspace": true,
+					"options": {
+						"alwaysOnTop": false
+					}
+				},
+				"component": {},
+				"foreign": {
+					"services": {
+						"windowService": {
+							"allowAutoArrange": true
+						}
+					},
+					"components": {
+						"App Launcher": {
+							"launchableByUser": true
+						},
+						"Window Manager": {
+							"persistWindowState": false,
+							"FSBLHeader": true,
+							"alwaysOnTop": false
+						},
+						"Toolbar": {
+							"iconURL": "$applicationRoot/assets/img/notepad.png"
+						}
+					}
+				}
+			}
+		},
+		"Winform-MultiWindow-Form4": {
+			"appId": "WinformMultiWindowExample",
+			"name": "WinformMultiWindowExample",
+			"manifest": {
+				"window": {
+					"id": "WinformMultiWindowExample",
+					"windowType": "FinsembleNativeWindow",
+					"path": "$winformMultiwindowExampleRoot/WinformMultiWindowExample.exe",
+					"arguments": "Form4",
+					"top": "center",
+					"left": "center",
+					"width": 400,
+					"height": 432,
+					"autoShow": true,
+					"resizable": true,
+					"showTaskbarIcon": false,
+					"contextMenu": true,
+					"addToWorkspace": true,
+					"options": {
+						"alwaysOnTop": false
+					}
+				},
+				"component": {},
+				"foreign": {
+					"services": {
+						"windowService": {
+							"allowAutoArrange": true
+						}
+					},
+					"components": {
+						"App Launcher": {
+							"launchableByUser": true
+						},
+						"Window Manager": {
+							"persistWindowState": false,
+							"FSBLHeader": true,
+							"alwaysOnTop": false
+						},
+						"Toolbar": {
+							"iconURL": "$applicationRoot/assets/img/notepad.png"
+						}
+					}
+				}
+			}
+		},
+		"Winform-MultiWindow-Core-Form1": {
+			"appId": "WinformMultiWindowExampleCore",
+			"name": "WinformMultiWindowExampleCore",
+			"manifest": {
+				"window": {
+					"id": "WinformMultiWindowExampleCore",
+					"windowType": "FinsembleNativeWindow",
+					"path": "$winformMultiwindowExampleCoreRoot/WinformMultiWindowExampleCore.exe",
+					"arguments": "Form1",
+					"top": "center",
+					"left": "center",
+					"width": 400,
+					"height": 432,
+					"autoShow": true,
+					"resizable": true,
+					"showTaskbarIcon": false,
+					"contextMenu": true,
+					"addToWorkspace": true,
+					"options": {
+						"alwaysOnTop": false
+					}
+				},
+				"component": {},
+				"foreign": {
+					"services": {
+						"windowService": {
+							"allowAutoArrange": true
+						}
+					},
+					"components": {
+						"App Launcher": {
+							"launchableByUser": true
+						},
+						"Window Manager": {
+							"persistWindowState": false,
+							"FSBLHeader": true,
+							"alwaysOnTop": false
+						},
+						"Toolbar": {
+							"iconURL": "$applicationRoot/assets/img/notepad.png"
+						}
+					}
+				}
+			}
+		},
+		"Winform-MultiWindow-Core-Form2": {
+			"appId": "WinformMultiWindowExampleCore",
+			"name": "WinformMultiWindowExampleCore",
+			"manifest": {
+				"window": {
+					"id": "WinformMultiWindowExampleCore",
+					"windowType": "FinsembleNativeWindow",
+					"path": "$winformMultiwindowExampleCoreRoot/WinformMultiWindowExampleCore.exe",
+					"arguments": "Form2",
+					"top": "center",
+					"left": "center",
+					"width": 400,
+					"height": 432,
+					"autoShow": true,
+					"resizable": true,
+					"showTaskbarIcon": false,
+					"contextMenu": true,
+					"addToWorkspace": true,
+					"options": {
+						"alwaysOnTop": false
+					}
+				},
+				"component": {},
+				"foreign": {
+					"services": {
+						"windowService": {
+							"allowAutoArrange": true
+						}
+					},
+					"components": {
+						"App Launcher": {
+							"launchableByUser": true
+						},
+						"Window Manager": {
+							"persistWindowState": false,
+							"FSBLHeader": true,
+							"alwaysOnTop": false
+						},
+						"Toolbar": {
+							"iconURL": "$applicationRoot/assets/img/notepad.png"
+						}
+					}
+				}
+			}
+		},
+		"Winform-MultiWindow-Core-Form3": {
+			"appId": "WinformMultiWindowExampleCore",
+			"name": "WinformMultiWindowExampleCore",
+			"manifest": {
+				"window": {
+					"id": "WinformMultiWindowExampleCore",
+					"windowType": "FinsembleNativeWindow",
+					"path": "$winformMultiwindowExampleCoreRoot/WinformMultiWindowExampleCore.exe",
+					"arguments": "Form3",
+					"top": "center",
+					"left": "center",
+					"width": 400,
+					"height": 432,
+					"autoShow": true,
+					"resizable": true,
+					"showTaskbarIcon": false,
+					"contextMenu": true,
+					"addToWorkspace": true,
+					"options": {
+						"alwaysOnTop": false
+					}
+				},
+				"component": {},
+				"foreign": {
+					"services": {
+						"windowService": {
+							"allowAutoArrange": true
+						}
+					},
+					"components": {
+						"App Launcher": {
+							"launchableByUser": true
+						},
+						"Window Manager": {
+							"persistWindowState": false,
+							"FSBLHeader": true,
+							"alwaysOnTop": false
+						},
+						"Toolbar": {
+							"iconURL": "$applicationRoot/assets/img/notepad.png"
+						}
+					}
+				}
+			}
+		},
+		"Winform-MultiWindow-Core-Form4": {
+			"appId": "WinformMultiWindowExampleCore",
+			"name": "WinformMultiWindowExampleCore",
+			"manifest": {
+				"window": {
+					"id": "WinformMultiWindowExampleCore",
+					"windowType": "FinsembleNativeWindow",
+					"path": "$winformMultiwindowExampleCoreRoot/WinformMultiWindowExampleCore.exe",
+					"arguments": "Form4",
+					"top": "center",
+					"left": "center",
+					"width": 400,
+					"height": 432,
+					"autoShow": true,
+					"resizable": true,
+					"showTaskbarIcon": false,
+					"contextMenu": true,
+					"addToWorkspace": true,
+					"options": {
+						"alwaysOnTop": false
+					}
+				},
+				"component": {},
+				"foreign": {
+					"services": {
+						"windowService": {
+							"allowAutoArrange": true
+						}
+					},
+					"components": {
+						"App Launcher": {
+							"launchableByUser": true
+						},
+						"Window Manager": {
+							"persistWindowState": false,
+							"FSBLHeader": true,
+							"alwaysOnTop": false
+						},
+						"Toolbar": {
+							"iconURL": "$applicationRoot/assets/img/notepad.png"
+						}
+					}
+				}
+			}
+		}
+	}
+}

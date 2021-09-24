@@ -1,9 +1,44 @@
 {
 	"comment": "Sample component configuration",
 	"components": {
+		"MultiWindow-Parent": {
+			"window": {
+				"windowType": "FinsembleNativeWindow",
+				"path": "$multiWindowRoot/MultiWindowExample.exe",
+				"arguments": "",
+				"defaultHeight": 600,
+				"autoShow": true,
+				"alwaysOnTop": false,
+				"resizable": true,
+				"showTaskbarIcon": false,
+				"contextMenu": true,
+				"addToWorkspace": false
+			},
+			"component": {
+				"spawnOnStartup": true
+			},
+			"foreign": {
+				"services": {
+					"workspaceService": {
+						"isArrangable": true
+					}
+				},
+				"components": {
+					"App Launcher": {
+						"launchableByUser": false
+					},
+					"Window Manager": {
+						"persistWindowState": false,
+						"FSBLHeader": true
+					},
+					"Toolbar": {
+						"iconURL": "$applicationRoot/assets/img/notepad.png"
+					}
+				}
+			}
+		},
 		"MultiWindow-Window1": {
 			"window": {
-				"id": "MultiWindow",
 				"windowType": "FinsembleNativeWindow",
 				"path": "$multiWindowRoot/MultiWindowExample.exe",
 				"arguments": "Window1",
@@ -39,7 +74,6 @@
 		},
 		"MultiWindow-Window2": {
 			"window": {
-				"id": "MultiWindow",
 				"windowType": "FinsembleNativeWindow",
 				"path": "$multiWindowRoot/MultiWindowExample.exe",
 				"arguments": "Window2",
@@ -75,7 +109,6 @@
 		},
 		"MultiWindow-Window3": {
 			"window": {
-				"id": "MultiWindow",
 				"windowType": "FinsembleNativeWindow",
 				"path": "$multiWindowRoot/MultiWindowExample.exe",
 				"arguments": "Window3",
@@ -111,7 +144,6 @@
 		},
 		"MultiWindow-Window4": {
 			"window": {
-				"id": "MultiWindow",
 				"windowType": "FinsembleNativeWindow",
 				"path": "$multiWindowRoot/MultiWindowExample.exe",
 				"arguments": "Window4",
