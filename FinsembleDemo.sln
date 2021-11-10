@@ -19,13 +19,13 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FDC3WPFExample", "FDC3WPFEx
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WindowlessExample.Core", "WindowlessExample.Core\WindowlessExample.Core.csproj", "{278D7BF3-F95C-4E7A-8932-DE48EAB03332}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WinformExampleCore.FDC3", "WinformExampleCore.FDC3\WinformExampleCore.FDC3.csproj", "{03988372-0705-46D0-9F92-027BAF076354}"
-EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WPFMultiWindowExampleCore", "WPFMultiWindowExampleCore\WPFMultiWindowExampleCore.csproj", "{428D6D8E-0C34-4EB8-BC23-43C58816AA5F}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WPFExampleCore", "WPFExampleCore\WPFExampleCore.csproj", "{E70B58B1-C31F-4788-AE6C-14FB6BDCB0FE}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FreestandingWPFExample", "FreestandingWPFExample\FreestandingWPFExample.csproj", "{6AEFEE8A-202F-4B3C-8BE8-DB478790541C}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WinformExampleCore", "WinformExampleCore\WinformExampleCore.csproj", "{0E0D48C5-CDDD-4A27-9FC3-982092B8096D}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -133,18 +133,6 @@ Global
 		{278D7BF3-F95C-4E7A-8932-DE48EAB03332}.Release|x64.Build.0 = Release|Any CPU
 		{278D7BF3-F95C-4E7A-8932-DE48EAB03332}.Release|x86.ActiveCfg = Release|Any CPU
 		{278D7BF3-F95C-4E7A-8932-DE48EAB03332}.Release|x86.Build.0 = Release|Any CPU
-		{03988372-0705-46D0-9F92-027BAF076354}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{03988372-0705-46D0-9F92-027BAF076354}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{03988372-0705-46D0-9F92-027BAF076354}.Debug|x64.ActiveCfg = Debug|Any CPU
-		{03988372-0705-46D0-9F92-027BAF076354}.Debug|x64.Build.0 = Debug|Any CPU
-		{03988372-0705-46D0-9F92-027BAF076354}.Debug|x86.ActiveCfg = Debug|Any CPU
-		{03988372-0705-46D0-9F92-027BAF076354}.Debug|x86.Build.0 = Debug|Any CPU
-		{03988372-0705-46D0-9F92-027BAF076354}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{03988372-0705-46D0-9F92-027BAF076354}.Release|Any CPU.Build.0 = Release|Any CPU
-		{03988372-0705-46D0-9F92-027BAF076354}.Release|x64.ActiveCfg = Release|Any CPU
-		{03988372-0705-46D0-9F92-027BAF076354}.Release|x64.Build.0 = Release|Any CPU
-		{03988372-0705-46D0-9F92-027BAF076354}.Release|x86.ActiveCfg = Release|Any CPU
-		{03988372-0705-46D0-9F92-027BAF076354}.Release|x86.Build.0 = Release|Any CPU
 		{428D6D8E-0C34-4EB8-BC23-43C58816AA5F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{428D6D8E-0C34-4EB8-BC23-43C58816AA5F}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{428D6D8E-0C34-4EB8-BC23-43C58816AA5F}.Debug|x64.ActiveCfg = Debug|Any CPU
@@ -181,6 +169,18 @@ Global
 		{6AEFEE8A-202F-4B3C-8BE8-DB478790541C}.Release|x64.Build.0 = Release|Any CPU
 		{6AEFEE8A-202F-4B3C-8BE8-DB478790541C}.Release|x86.ActiveCfg = Release|Any CPU
 		{6AEFEE8A-202F-4B3C-8BE8-DB478790541C}.Release|x86.Build.0 = Release|Any CPU
+		{0E0D48C5-CDDD-4A27-9FC3-982092B8096D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0E0D48C5-CDDD-4A27-9FC3-982092B8096D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0E0D48C5-CDDD-4A27-9FC3-982092B8096D}.Debug|x64.ActiveCfg = Debug|x64
+		{0E0D48C5-CDDD-4A27-9FC3-982092B8096D}.Debug|x64.Build.0 = Debug|x64
+		{0E0D48C5-CDDD-4A27-9FC3-982092B8096D}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{0E0D48C5-CDDD-4A27-9FC3-982092B8096D}.Debug|x86.Build.0 = Debug|Any CPU
+		{0E0D48C5-CDDD-4A27-9FC3-982092B8096D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0E0D48C5-CDDD-4A27-9FC3-982092B8096D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{0E0D48C5-CDDD-4A27-9FC3-982092B8096D}.Release|x64.ActiveCfg = Release|x64
+		{0E0D48C5-CDDD-4A27-9FC3-982092B8096D}.Release|x64.Build.0 = Release|x64
+		{0E0D48C5-CDDD-4A27-9FC3-982092B8096D}.Release|x86.ActiveCfg = Release|Any CPU
+		{0E0D48C5-CDDD-4A27-9FC3-982092B8096D}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

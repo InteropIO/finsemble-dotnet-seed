@@ -22,7 +22,7 @@ namespace WinformMultiWindowExample
 		public void SetFinsemble(Finsemble fsbl)
 		{
 			FSBL = fsbl;
-			FSBL.RPC("Logger.log", new List<JToken> { "Winform example connected to Finsemble. Form4" });
+			FSBL.Logger.Log(new JToken[] { "Winform example connected to Finsemble. Form4" });
 		}
 	}
 }

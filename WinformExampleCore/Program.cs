@@ -6,7 +6,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
-namespace WinformExampleCore.FDC3
+namespace WinformExampleCore
 {
 	static class Program
 	{

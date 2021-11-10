@@ -4,13 +4,13 @@
     <OutputType>WinExe</OutputType>
     <TargetFramework>net5.0-windows</TargetFramework>
     <UseWindowsForms>true</UseWindowsForms>
-    <Version>6.2.0</Version>
+    <Platforms>AnyCPU;x64</Platforms>
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Finsemble.Core" Version="6.2.0" />
-    <PackageReference Include="Finsemble.Winform.Core" Version="6.2.0" />
-    <PackageReference Include="Microsoft.IdentityModel.Tokens" Version="6.12.2" />
+    <PackageReference Include="Finsemble.Core" Version="6.3.0" />
+    <PackageReference Include="Finsemble.Winform.Core" Version="6.3.0" />
+    <PackageReference Include="Microsoft.IdentityModel.Tokens" Version="6.14.1" />
     <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
   </ItemGroup>
 

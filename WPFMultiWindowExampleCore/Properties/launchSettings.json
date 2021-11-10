@@ -1,8 +1,8 @@
 {
-  "profiles": {
-    "WPFMultiWindowExampleCore": {
-      "commandName": "Project",
-      "commandLineArgs": "Window1"
-    }
-  }
+	"profiles": {
+		"WPFMultiWindowExampleCore": {
+			"commandName": "Project",
+			"commandLineArgs": "Window1"
+		}
+	}
 }

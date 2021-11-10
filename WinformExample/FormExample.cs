@@ -607,11 +607,9 @@ namespace WinformExample
 
 		private async void AlwaysOnTopButton_Click(object sender, EventArgs e)
 		{
-			var response = (await FSBL.WindowClient.IsAlwaysOnTop())?["data"]?.ToObject<bool>();
+			var isAlwaysOnTop = await FSBL.WindowClient.IsAlwaysOnTop();
 
-			if (response == null) return;
-
-			var newAlwaysOnTop = !response.Value;
+			var newAlwaysOnTop = !isAlwaysOnTop;
 			await FSBL.WindowClient.SetAlwaysOnTop(newAlwaysOnTop);
 
 			if (newAlwaysOnTop)

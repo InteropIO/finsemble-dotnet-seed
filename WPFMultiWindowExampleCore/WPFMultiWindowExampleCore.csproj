@@ -5,13 +5,13 @@
     <TargetFramework>net5.0-windows</TargetFramework>
     <UseWPF>true</UseWPF>
     <StartupObject>WPFMultiWindowExampleCore.AppStartup</StartupObject>
-    <Version>6.2.0</Version>
+    <Platforms>AnyCPU;x64</Platforms>
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Finsemble.Core" Version="6.2.0" />
-    <PackageReference Include="Finsemble.WPF.Core" Version="6.2.0" />
-    <PackageReference Include="Microsoft.IdentityModel.Tokens" Version="6.12.2" />
+    <PackageReference Include="Finsemble.Core" Version="6.3.0" />
+    <PackageReference Include="Finsemble.WPF.Core" Version="6.3.0" />
+    <PackageReference Include="Microsoft.IdentityModel.Tokens" Version="6.14.1" />
     <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
   </ItemGroup>
 

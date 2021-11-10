@@ -13,7 +13,7 @@ using System.Drawing;
 using System.Linq;
 using System.Windows.Forms;
 
-namespace WinformExampleCore.FDC3
+namespace WinformExampleCore
 {
 	public partial class MainForm : Form
 	{
@@ -80,8 +80,6 @@ namespace WinformExampleCore.FDC3
 			// Listen to Fdc3Client state change to render connected channels
 			_bridge.Clients.Fdc3Client.StateChanged += Fdc3Client_StateChanged; ;
 
-			//setting initial state of linked channels
-			Fdc3Client_StateChanged(null, _bridge.Clients.Fdc3Client.LastStateChangedArgs);
 
 			// Example for Fdc3Client subscribe to specific context. The "*" for subscription to all contexts.
 			_contextListenter = _bridge.Clients.Fdc3Client.DesktopAgentClient.AddContextListener("fdc3.instrument", HandleContext);
@@ -471,7 +469,7 @@ namespace WinformExampleCore.FDC3
 
 		private async void AlwaysOnTopButton_Click(object sender, EventArgs e)
 		{
-			var newAlwaysOnTop = !(await _bridge.Clients.WindowClient.IsAlwaysOnTop()).response.Value<bool>("data");
+			var newAlwaysOnTop = !await _bridge.Clients.WindowClient.IsAlwaysOnTop();
 			await _bridge.Clients.WindowClient.SetAlwaysOnTop(newAlwaysOnTop);
 
 			if (newAlwaysOnTop)

@@ -2,7 +2,7 @@
 using System;
 using System.Windows.Forms;
 
-namespace WinformExampleCore.FDC3
+namespace WinformExampleCore
 {
 	partial class MainForm
 	{
@@ -33,27 +33,27 @@ namespace WinformExampleCore.FDC3
 		private void InitializeComponent()
 		{
 			this.ScrimLabel = new System.Windows.Forms.Label();
-			this.AlwaysOnTopButton = new WinformExampleCore.FDC3.Controls.RoundedButton();
-			this.DockingButton = new WinformExampleCore.FDC3.Controls.RoundedButton();
-			this.LinkerButton = new WinformExampleCore.FDC3.Controls.RoundedButton();
-			this.GroupButton1 = new WinformExampleCore.FDC3.Controls.RoundedButton();
-			this.GroupButton2 = new WinformExampleCore.FDC3.Controls.RoundedButton();
-			this.GroupButton3 = new WinformExampleCore.FDC3.Controls.RoundedButton();
-			this.GroupButton4 = new WinformExampleCore.FDC3.Controls.RoundedButton();
-			this.GroupButton5 = new WinformExampleCore.FDC3.Controls.RoundedButton();
-			this.GroupButton6 = new WinformExampleCore.FDC3.Controls.RoundedButton();
+			this.AlwaysOnTopButton = new WinformExampleCore.Controls.RoundedButton();
+			this.DockingButton = new WinformExampleCore.Controls.RoundedButton();
+			this.LinkerButton = new WinformExampleCore.Controls.RoundedButton();
+			this.GroupButton1 = new WinformExampleCore.Controls.RoundedButton();
+			this.GroupButton2 = new WinformExampleCore.Controls.RoundedButton();
+			this.GroupButton3 = new WinformExampleCore.Controls.RoundedButton();
+			this.GroupButton4 = new WinformExampleCore.Controls.RoundedButton();
+			this.GroupButton5 = new WinformExampleCore.Controls.RoundedButton();
+			this.GroupButton6 = new WinformExampleCore.Controls.RoundedButton();
 			this.panel1 = new System.Windows.Forms.Panel();
 			this.DataLabel = new System.Windows.Forms.Label();
 			this.SourceLabel = new System.Windows.Forms.Label();
 			this.SendASymbolLabel = new System.Windows.Forms.Label();
-			this.SendButton = new WinformExampleCore.FDC3.Controls.RoundedButton();
-			this.DataToSendInput = new WinformExampleCore.FDC3.Controls.FinsembleInput();
+			this.SendButton = new WinformExampleCore.Controls.RoundedButton();
+			this.DataToSendInput = new WinformExampleCore.Controls.FinsembleInput();
 			this.SpawnLabel = new System.Windows.Forms.Label();
-			this.LaunchButton = new WinformExampleCore.FDC3.Controls.RoundedButton();
-			this.ComponentDropDown = new WinformExampleCore.FDC3.Controls.DropDown();
+			this.LaunchButton = new WinformExampleCore.Controls.RoundedButton();
+			this.ComponentDropDown = new WinformExampleCore.Controls.DropDown();
 			this.MessagesLabel = new System.Windows.Forms.Label();
 			this.MessagesRichBox = new System.Windows.Forms.RichTextBox();
-			this.DragNDropEmittingButton = new WinformExampleCore.FDC3.Controls.RoundedButton();
+			this.DragNDropEmittingButton = new WinformExampleCore.Controls.RoundedButton();
 			this.panel2 = new System.Windows.Forms.Panel();
 			this.panel2.SuspendLayout();
 			this.SuspendLayout();
@@ -253,7 +253,7 @@ namespace WinformExampleCore.FDC3
 			// 
 			this.panel1.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-			this.panel1.BackgroundImage = global::WinformExampleCore.FDC3.Resource.winformsLogo;
+			this.panel1.BackgroundImage = global::WinformExampleCore.Resource.winformsLogo;
 			this.panel1.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Zoom;
 			this.panel1.Location = new System.Drawing.Point(198, 11);
 			this.panel1.Margin = new System.Windows.Forms.Padding(2);
