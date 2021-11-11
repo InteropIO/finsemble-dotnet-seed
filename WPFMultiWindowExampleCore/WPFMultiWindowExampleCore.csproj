@@ -6,6 +6,7 @@
     <UseWPF>true</UseWPF>
     <StartupObject>WPFMultiWindowExampleCore.AppStartup</StartupObject>
     <Platforms>AnyCPU;x64</Platforms>
+    <Version>6.3.0</Version>
   </PropertyGroup>
 
   <ItemGroup>
