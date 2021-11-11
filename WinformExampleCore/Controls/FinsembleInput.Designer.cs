@@ -1,5 +1,5 @@
 ﻿
-namespace WinformExampleCore.FDC3.Controls
+namespace WinformExampleCore.Controls
 {
     partial class FinsembleInput
     {

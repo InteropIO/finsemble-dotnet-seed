@@ -6,7 +6,7 @@ using System.Drawing.Printing;
 using System.Text;
 using System.Windows.Forms;
 
-namespace WinformExampleCore.FDC3.Controls
+namespace WinformExampleCore.Controls
 {
 	public class RoundedButton : Button
 	{

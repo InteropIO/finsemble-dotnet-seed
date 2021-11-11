@@ -77,74 +77,76 @@ namespace WPFExampleCore
 
 		private void Finsemble_Connected(object sender, EventArgs e)
 		{
-			// Initialize after Finsemble is connected
-			InitializeComponent();
-
-			// The Header Control needs a connected finsemble instance
-			FinsembleHeader.SetBridge(FSBL);
-
-			#region Styling the Finsemble Header
-
-			FinsembleHeader.GetHandlingService().ActiveBackground = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#22262F"));
-			FinsembleHeader.GetHandlingService().InactiveBackground = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#22262F"));
-			FinsembleHeader.GetHandlingService().ButtonHoverBackground = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#0A8CF4"));
-			FinsembleHeader.GetHandlingService().InactiveButtonHoverBackground = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#0A8CF4"));
-			FinsembleHeader.GetHandlingService().CloseButtonHoverBackground = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#F26666"));
-			FinsembleHeader.GetHandlingService().InactiveCloseButtonHoverBackground = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#F26666"));
-			FinsembleHeader.GetHandlingService().DockingButtonDockedBackground = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#0A8CF4"));
-			FinsembleHeader.GetHandlingService().TitleForeground = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#ACB2C0"));
-			FinsembleHeader.GetHandlingService().ButtonForeground = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#ACB2C0"));
-			FinsembleHeader.GetHandlingService().ButtonFont = new TitlebarFontConfiguration()
+			Application.Current.Dispatcher.Invoke(async delegate //main thread
 			{
-				FontFamily = null,
-				FontSize = 8,
-				FontStyle = FontStyles.Normal,
-				FontWeight = FontWeights.Normal
-			};
-			FinsembleHeader.GetHandlingService().TitleFont = new TitlebarFontConfiguration()
-			{
-				FontFamily = null,
-				FontSize = 12,
-				FontStyle = FontStyles.Normal,
-				FontWeight = FontWeights.SemiBold
-			};
+				// Initialize after Finsemble is connected
+				InitializeComponent();
 
-			//Set window title
-			FinsembleHeader.GetHandlingService().Title = "WPF Example Core Component";
+				// The Header Control needs a connected finsemble instance
+				FinsembleHeader.SetBridge(FSBL);
 
-			#endregion
+				#region Styling the Finsemble Header
 
-			#region Drag And Drop
-			FSBL.Clients.DragAndDropClient.SetScrim(Scrim); // The Scrim Label Control is used for drag and drop.
-
-			// Receivers for dropped data.
-			FSBL.Clients.DragAndDropClient.AddReceivers(new List<KeyValuePair<string, EventHandler<FinsembleEventArgs>>>()
-			{
-				new KeyValuePair<string, EventHandler<FinsembleEventArgs>>("symbol", (s, args) =>
+				FinsembleHeader.GetHandlingService().ActiveBackground = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#22262F"));
+				FinsembleHeader.GetHandlingService().InactiveBackground = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#22262F"));
+				FinsembleHeader.GetHandlingService().ButtonHoverBackground = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#0A8CF4"));
+				FinsembleHeader.GetHandlingService().InactiveButtonHoverBackground = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#0A8CF4"));
+				FinsembleHeader.GetHandlingService().CloseButtonHoverBackground = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#F26666"));
+				FinsembleHeader.GetHandlingService().InactiveCloseButtonHoverBackground = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#F26666"));
+				FinsembleHeader.GetHandlingService().DockingButtonDockedBackground = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#0A8CF4"));
+				FinsembleHeader.GetHandlingService().TitleForeground = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#ACB2C0"));
+				FinsembleHeader.GetHandlingService().ButtonForeground = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#ACB2C0"));
+				FinsembleHeader.GetHandlingService().ButtonFont = new TitlebarFontConfiguration()
 				{
-					var data = args.response["data"]?["symbol"];
-					if(data != null)
-					{
-						//Check if we received an object (so data.symbol.symbol) or a string (data.symbol) to support variations in the format
-						if(data.HasValues) {
-							data = data?["symbol"];
-						}
-						Application.Current.Dispatcher.Invoke((Action)delegate //main thread
-						{
-							Application.Current.Dispatcher.Invoke((Action)async delegate //main thread
-							{
-								DroppedData.Content = data.ToString();
-								DataToSend.TextBox.Text = data.ToString();
-								DroppedDataSource.Content = "via Drag and Drop";
-								await SaveStateAsync();
-							});
-						});
-					}
-				})
-			});
+					FontFamily = null,
+					FontSize = 8,
+					FontStyle = FontStyles.Normal,
+					FontWeight = FontWeights.Normal
+				};
+				FinsembleHeader.GetHandlingService().TitleFont = new TitlebarFontConfiguration()
+				{
+					FontFamily = null,
+					FontSize = 12,
+					FontStyle = FontStyles.Normal,
+					FontWeight = FontWeights.SemiBold
+				};
 
-			// Emitters for data that can be dragged using the drag icon.
-			FSBL.Clients.DragAndDropClient.SetEmitters(new List<KeyValuePair<string, DragAndDropClient.emitter>>()
+				//Set window title
+				FinsembleHeader.GetHandlingService().Title = "WPF Example Core Component";
+
+				#endregion
+
+				#region Drag And Drop
+				FSBL.Clients.DragAndDropClient.SetScrim(Scrim); // The Scrim Label Control is used for drag and drop.
+
+				// Receivers for dropped data.
+				FSBL.Clients.DragAndDropClient.AddReceivers(new List<KeyValuePair<string, EventHandler<FinsembleEventArgs>>>()
+				{
+					new KeyValuePair<string, EventHandler<FinsembleEventArgs>>("symbol", (s, args) =>
+					{
+						var data = args.response["data"]?["symbol"];
+						if(data != null)
+						{
+							//Check if we received an object (so data.symbol.symbol) or a string (data.symbol) to support variations in the format
+							if(data.HasValues) {
+								data = data?["symbol"];
+							}
+							Application.Current.Dispatcher.Invoke((Action)delegate //main thread
+							{
+								Application.Current.Dispatcher.Invoke((Action)async delegate //main thread
+								{
+									DroppedData.Content = data.ToString();
+									DataToSend.TextBox.Text = data.ToString();
+									DroppedDataSource.Content = "via Drag and Drop";
+									await SaveStateAsync();
+								});
+							});
+						}
+					})
+				});
+
+				// Emitters for data that can be dragged using the drag icon.
+				FSBL.Clients.DragAndDropClient.SetEmitters(new List<KeyValuePair<string, DragAndDropClient.emitter>>()
 			{
 				new KeyValuePair<string, DragAndDropClient.emitter>("symbol", () =>
 				{
@@ -161,15 +163,17 @@ namespace WPFExampleCore
 					};
 				})
 			});
-			#endregion
+				#endregion
 
-			//Subscribe to a PubSub topic
-			//N.B. You must add a PubSub responder before publishing or subscribing to any topic that doesn't start with 'Finsemble'
-			//     This is not currently supported in the .Net RouterClient implementation and will need to done in a Finsemble HTML5 service
-			SubscribeToPubSub();
+				//Subscribe to a PubSub topic
+				//N.B. You must add a PubSub responder before publishing or subscribing to any topic that doesn't start with 'Finsemble'
+				//     This is not currently supported in the .Net RouterClient implementation and will need to done in a Finsemble HTML5 service
+				SubscribeToPubSub();
 
-			SetUpFinsembleComponents();
-			UpdateDisplayData();
+				SetUpFinsembleComponents();
+				await UpdateDisplayData();
+				this.Show();
+			});
 
 			#region communication through channels
 			if (FSBL.Clients.Fdc3Client is object)
@@ -243,7 +247,6 @@ namespace WPFExampleCore
 			*/
 			#endregion
 
-			this.Show();
 		}
 
 		private async Task SaveStateAsync()
@@ -320,7 +323,7 @@ namespace WPFExampleCore
 			}
 		}
 
-		private async void UpdateDisplayData()
+		private async Task UpdateDisplayData()
 		{
 			var state = await FSBL.Clients.WindowClient.GetComponentState(new JObject { ["field"] = "symbol" });
 			try
@@ -355,10 +358,10 @@ namespace WPFExampleCore
 								DroppedData.Content = "MSFT";
 								DroppedDataSource.Content = "via default value";
 							}
-							await SaveStateAsync();
 						});
 					});
 				}
+				await SaveStateAsync();
 			}
 			catch (Exception e)
 			{
@@ -444,7 +447,7 @@ namespace WPFExampleCore
 				await SaveStateAsync();
 			});
 		}
-		
+
 		private void DataToSend_EnterKeyPressed(object sender, EventArgs e)
 		{
 			Application.Current.Dispatcher.Invoke(delegate //main thread
