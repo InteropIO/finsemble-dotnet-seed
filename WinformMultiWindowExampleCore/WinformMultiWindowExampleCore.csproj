@@ -3,14 +3,13 @@
   <PropertyGroup>
     <OutputType>WinExe</OutputType>
     <TargetFramework>net5.0-windows</TargetFramework>
-    <UseWPF>true</UseWPF>
-    <StartupObject>WPFMultiWindowExampleCore.AppStartup</StartupObject>
+    <UseWindowsForms>true</UseWindowsForms>
     <Platforms>AnyCPU;x64</Platforms>
     <Version>6.4.0</Version>
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Finsemble.WPF.Core\Finsemble.WPF.Core.csproj" />
+    <ProjectReference Include="..\Finsemble.WinForms.Core\Finsemble.Winform.Core.csproj" />
   </ItemGroup>
 
 </Project>
