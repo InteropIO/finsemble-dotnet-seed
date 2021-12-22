@@ -78,8 +78,9 @@ namespace WinformExampleCore
 			SetUpLinkerChannels(systemChannels);
 
 			// Listen to Fdc3Client state change to render connected channels
-			_bridge.Clients.Fdc3Client.StateChanged += Fdc3Client_StateChanged; ;
-
+			_bridge.Clients.Fdc3Client.StateChanged += Fdc3Client_StateChanged;
+			// Show joined channels
+			Fdc3Client_StateChanged(null, _bridge.Clients.Fdc3Client.LastStateChangedArgs);
 
 			// Example for Fdc3Client subscribe to specific context. The "*" for subscription to all contexts.
 			_contextListenter = _bridge.Clients.Fdc3Client.DesktopAgentClient.AddContextListener("fdc3.instrument", HandleContext);
@@ -286,6 +287,7 @@ namespace WinformExampleCore
 
 		private void Fdc3Client_StateChanged(object sender, FinsembleEventArgs response)
 		{
+			if (response == null) return;
 			this.Invoke(new Action(async () =>
 			{
 				if (response.error != null)
