@@ -464,11 +464,12 @@ namespace WPFExample
 						string symbolTxt = state.response == null ? null : state.response?.ToString();
 						if (!string.IsNullOrEmpty(symbolTxt) && !symbolTxt.Equals("{}"))
 						{
-							Application.Current.Dispatcher.Invoke(delegate //main thread
+							Application.Current.Dispatcher.Invoke(async delegate //main thread
 							{
 								DataToSend.TextBox.Text = symbolTxt;
 								DroppedData.Content = symbolTxt;
 								DroppedDataSource.Content = "via component state";
+								await SaveStateAsync();
 							});
 						}
 						else
