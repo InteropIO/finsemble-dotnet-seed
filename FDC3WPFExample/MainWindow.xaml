@@ -9,8 +9,8 @@
 	xmlns:Custom="http://schemas.microsoft.com/winfx/2006/xaml/presentation/ribbon" xmlns:Finsemble1="clr-namespace:ChartIQ.Finsemble.HeaderControl;assembly=Finsemble" x:Class="FDC3WPFExample.MainWindow" 
 	mc:Ignorable="d" 
 	Title="MainWindow" Height="600" 
-	Width="600" WindowStyle="None" Background="{x:Null}" 
-	AllowsTransparency="True">
+	Width="600" WindowStyle="None" 
+	Background="{x:Null}">
 
     <WindowChrome.WindowChrome>
         <WindowChrome 

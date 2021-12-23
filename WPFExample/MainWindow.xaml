@@ -14,8 +14,7 @@
     Height="600" 
 	Width="600" 
     WindowStyle="None" 
-    Background="{x:Null}" 
-	AllowsTransparency="True">
+    Background="{x:Null}">
 
     <WindowChrome.WindowChrome>
         <WindowChrome 

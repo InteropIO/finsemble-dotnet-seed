@@ -11,6 +11,7 @@ using ChartIQ.Finsemble.Router;
 using ChartIQ.Finsemble.TitlebarService.Models;
 using ChartIQ.Finsemble.FDC3.Types;
 using Microsoft.IdentityModel.Tokens;
+using System.Windows.Interop;
 
 namespace WPFExample
 {
@@ -159,10 +160,18 @@ namespace WPFExample
 		{
 			// Trigger actions on close when requested by Finsemble, e.g.:	
 			this.Closing += MainWindow_Closing;
-			//Ensure that your window has been created (so that its window handle exists) before connecting to Finsemble.
+
+			// If your window should support a transparency, AllowsTransparency and WindowStyle must be setted before EnsureHandle() call
+			this.AllowsTransparency = true;
+			this.WindowStyle = WindowStyle.None;
+
+			// Ensure that your window has been created (so that its window handle exists) before connecting to Finsemble.
+			new WindowInteropHelper(this).EnsureHandle();
+			
 			FSBL = new Finsemble(args, this); // Finsemble needs the command line arguments to connect and also this Window to manage snapping, docking etc.
 			FSBL.Connected += Finsemble_Connected;
-			FSBL.Connect("WPFExample", JWK);
+			// For statitc authentication you may replace FSBL.appName by your app name from appd.json
+			FSBL.Connect(FSBL.appName, JWK);
 		}
 
 		private void Finsemble_Connected(object sender, EventArgs e)
