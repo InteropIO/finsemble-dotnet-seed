@@ -9,18 +9,14 @@
 				{
 					"name": "ViewChart",
 					"displayName": "View Chart",
-					"contexts": [
-						"fdc3.instrument"
-					]
+					"contexts": ["fdc3.instrument"]
 				}
 			],
 			"manifest": {
 				"signatureKey": {
 					"e": "AQAB",
 					"ext": true,
-					"key_ops": [
-						"verify"
-					],
+					"key_ops": ["verify"],
 					"kty": "RSA",
 					"n": "zPOxYfLiAd3rM7KOLDBIeLl0kjQ7fk43mTTc1Nm9BDaSNVWqvOshSMCHmqOrKZX_WwA67Y6CQxWI5rZ6WNzoLHQU3PyqOvAdB7RgXCHlSeVYZ2haTcbWRjAXQ89H1WfnW96VwAbZn5nccxQGYlZIl3AMcwNRqV4hmiKtJVq4-2OzA-zs9Yg4Pfs6TbKR1XbNKz6EAPHDev0-7Xdnb6x1-qr4uL2Bq0ZwgfnyKQIRLc3zhD5kwqiJ5N7uZAZomLRkMFMXwy1UftD6fQUlFT2yoISn403RwN7YHEL8KoA9X7Jgs-dtlBh8c38QzQ1vbdMBzPuyRb07GMMKb6bdjdBV1w"
 				},
@@ -81,9 +77,7 @@
 				"signatureKey": {
 					"e": "AQAB",
 					"ext": true,
-					"key_ops": [
-						"verify"
-					],
+					"key_ops": ["verify"],
 					"kty": "RSA",
 					"n": "zPOxYfLiAd3rM7KOLDBIeLl0kjQ7fk43mTTc1Nm9BDaSNVWqvOshSMCHmqOrKZX_WwA67Y6CQxWI5rZ6WNzoLHQU3PyqOvAdB7RgXCHlSeVYZ2haTcbWRjAXQ89H1WfnW96VwAbZn5nccxQGYlZIl3AMcwNRqV4hmiKtJVq4-2OzA-zs9Yg4Pfs6TbKR1XbNKz6EAPHDev0-7Xdnb6x1-qr4uL2Bq0ZwgfnyKQIRLc3zhD5kwqiJ5N7uZAZomLRkMFMXwy1UftD6fQUlFT2yoISn403RwN7YHEL8KoA9X7Jgs-dtlBh8c38QzQ1vbdMBzPuyRb07GMMKb6bdjdBV1w"
 				},
@@ -136,32 +130,29 @@
 				}
 			}
 		},
-		"WPFExample": {
-			"appId": "WPFExample",
-			"name": "WPFExample",
+		"Finsemble WPF Demo": {
+			"appId": "Finsemble WPF Demo",
+			"name": "Finsemble WPF Demo",
 			"intents": [
 				{
 					"name": "ViewChart",
 					"displayName": "View Chart",
-					"contexts": [
-						"fdc3.instrument"
-					]
+					"contexts": ["fdc3.instrument"]
 				}
 			],
 			"manifest": {
 				"signatureKey": {
 					"e": "AQAB",
 					"ext": true,
-					"key_ops": [
-						"verify"
-					],
+					"key_ops": ["verify"],
 					"kty": "RSA",
 					"n": "zPOxYfLiAd3rM7KOLDBIeLl0kjQ7fk43mTTc1Nm9BDaSNVWqvOshSMCHmqOrKZX_WwA67Y6CQxWI5rZ6WNzoLHQU3PyqOvAdB7RgXCHlSeVYZ2haTcbWRjAXQ89H1WfnW96VwAbZn5nccxQGYlZIl3AMcwNRqV4hmiKtJVq4-2OzA-zs9Yg4Pfs6TbKR1XbNKz6EAPHDev0-7Xdnb6x1-qr4uL2Bq0ZwgfnyKQIRLc3zhD5kwqiJ5N7uZAZomLRkMFMXwy1UftD6fQUlFT2yoISn403RwN7YHEL8KoA9X7Jgs-dtlBh8c38QzQ1vbdMBzPuyRb07GMMKb6bdjdBV1w"
 				},
 				"window": {
-					"id": "WPFExample",
+					"id": "Finsemble WPF Demo",
 					"windowType": "FinsembleNativeWindow",
 					"path": "$wpfExampleRoot/WPFExample.exe",
+					"arguments": "appName=\"Finsemble WPF Demo\"",
 					"url": "",
 					"minHeight": 300,
 					"minWidth": 300,
@@ -215,9 +206,7 @@
 				"signatureKey": {
 					"e": "AQAB",
 					"ext": true,
-					"key_ops": [
-						"verify"
-					],
+					"key_ops": ["verify"],
 					"kty": "RSA",
 					"n": "zPOxYfLiAd3rM7KOLDBIeLl0kjQ7fk43mTTc1Nm9BDaSNVWqvOshSMCHmqOrKZX_WwA67Y6CQxWI5rZ6WNzoLHQU3PyqOvAdB7RgXCHlSeVYZ2haTcbWRjAXQ89H1WfnW96VwAbZn5nccxQGYlZIl3AMcwNRqV4hmiKtJVq4-2OzA-zs9Yg4Pfs6TbKR1XbNKz6EAPHDev0-7Xdnb6x1-qr4uL2Bq0ZwgfnyKQIRLc3zhD5kwqiJ5N7uZAZomLRkMFMXwy1UftD6fQUlFT2yoISn403RwN7YHEL8KoA9X7Jgs-dtlBh8c38QzQ1vbdMBzPuyRb07GMMKb6bdjdBV1w"
 				},
@@ -278,9 +267,7 @@
 				"signatureKey": {
 					"e": "AQAB",
 					"ext": true,
-					"key_ops": [
-						"verify"
-					],
+					"key_ops": ["verify"],
 					"kty": "RSA",
 					"n": "zPOxYfLiAd3rM7KOLDBIeLl0kjQ7fk43mTTc1Nm9BDaSNVWqvOshSMCHmqOrKZX_WwA67Y6CQxWI5rZ6WNzoLHQU3PyqOvAdB7RgXCHlSeVYZ2haTcbWRjAXQ89H1WfnW96VwAbZn5nccxQGYlZIl3AMcwNRqV4hmiKtJVq4-2OzA-zs9Yg4Pfs6TbKR1XbNKz6EAPHDev0-7Xdnb6x1-qr4uL2Bq0ZwgfnyKQIRLc3zhD5kwqiJ5N7uZAZomLRkMFMXwy1UftD6fQUlFT2yoISn403RwN7YHEL8KoA9X7Jgs-dtlBh8c38QzQ1vbdMBzPuyRb07GMMKb6bdjdBV1w"
 				},
@@ -339,9 +326,7 @@
 				"signatureKey": {
 					"e": "AQAB",
 					"ext": true,
-					"key_ops": [
-						"verify"
-					],
+					"key_ops": ["verify"],
 					"kty": "RSA",
 					"n": "zPOxYfLiAd3rM7KOLDBIeLl0kjQ7fk43mTTc1Nm9BDaSNVWqvOshSMCHmqOrKZX_WwA67Y6CQxWI5rZ6WNzoLHQU3PyqOvAdB7RgXCHlSeVYZ2haTcbWRjAXQ89H1WfnW96VwAbZn5nccxQGYlZIl3AMcwNRqV4hmiKtJVq4-2OzA-zs9Yg4Pfs6TbKR1XbNKz6EAPHDev0-7Xdnb6x1-qr4uL2Bq0ZwgfnyKQIRLc3zhD5kwqiJ5N7uZAZomLRkMFMXwy1UftD6fQUlFT2yoISn403RwN7YHEL8KoA9X7Jgs-dtlBh8c38QzQ1vbdMBzPuyRb07GMMKb6bdjdBV1w"
 				},
@@ -373,9 +358,7 @@
 				"signatureKey": {
 					"e": "AQAB",
 					"ext": true,
-					"key_ops": [
-						"verify"
-					],
+					"key_ops": ["verify"],
 					"kty": "RSA",
 					"n": "zPOxYfLiAd3rM7KOLDBIeLl0kjQ7fk43mTTc1Nm9BDaSNVWqvOshSMCHmqOrKZX_WwA67Y6CQxWI5rZ6WNzoLHQU3PyqOvAdB7RgXCHlSeVYZ2haTcbWRjAXQ89H1WfnW96VwAbZn5nccxQGYlZIl3AMcwNRqV4hmiKtJVq4-2OzA-zs9Yg4Pfs6TbKR1XbNKz6EAPHDev0-7Xdnb6x1-qr4uL2Bq0ZwgfnyKQIRLc3zhD5kwqiJ5N7uZAZomLRkMFMXwy1UftD6fQUlFT2yoISn403RwN7YHEL8KoA9X7Jgs-dtlBh8c38QzQ1vbdMBzPuyRb07GMMKb6bdjdBV1w"
 				},
@@ -406,18 +389,14 @@
 				{
 					"name": "fdc3.wpfExampleTesting",
 					"displayName": "WPFExampleTesting",
-					"contexts": [
-						"fdc3.wpfExampleTesting"
-					]
+					"contexts": ["fdc3.wpfExampleTesting"]
 				}
 			],
 			"manifest": {
 				"signatureKey": {
 					"e": "AQAB",
 					"ext": true,
-					"key_ops": [
-						"verify"
-					],
+					"key_ops": ["verify"],
 					"kty": "RSA",
 					"n": "zPOxYfLiAd3rM7KOLDBIeLl0kjQ7fk43mTTc1Nm9BDaSNVWqvOshSMCHmqOrKZX_WwA67Y6CQxWI5rZ6WNzoLHQU3PyqOvAdB7RgXCHlSeVYZ2haTcbWRjAXQ89H1WfnW96VwAbZn5nccxQGYlZIl3AMcwNRqV4hmiKtJVq4-2OzA-zs9Yg4Pfs6TbKR1XbNKz6EAPHDev0-7Xdnb6x1-qr4uL2Bq0ZwgfnyKQIRLc3zhD5kwqiJ5N7uZAZomLRkMFMXwy1UftD6fQUlFT2yoISn403RwN7YHEL8KoA9X7Jgs-dtlBh8c38QzQ1vbdMBzPuyRb07GMMKb6bdjdBV1w"
 				},
@@ -468,18 +447,14 @@
 				{
 					"name": "fdc3.wpfCoreExampleTesting",
 					"displayName": "WPFCoreExampleTesting",
-					"contexts": [
-						"fdc3.wpfCoreExampleTesting"
-					]
+					"contexts": ["fdc3.wpfCoreExampleTesting"]
 				}
 			],
 			"manifest": {
 				"signatureKey": {
 					"e": "AQAB",
 					"ext": true,
-					"key_ops": [
-						"verify"
-					],
+					"key_ops": ["verify"],
 					"kty": "RSA",
 					"n": "zPOxYfLiAd3rM7KOLDBIeLl0kjQ7fk43mTTc1Nm9BDaSNVWqvOshSMCHmqOrKZX_WwA67Y6CQxWI5rZ6WNzoLHQU3PyqOvAdB7RgXCHlSeVYZ2haTcbWRjAXQ89H1WfnW96VwAbZn5nccxQGYlZIl3AMcwNRqV4hmiKtJVq4-2OzA-zs9Yg4Pfs6TbKR1XbNKz6EAPHDev0-7Xdnb6x1-qr4uL2Bq0ZwgfnyKQIRLc3zhD5kwqiJ5N7uZAZomLRkMFMXwy1UftD6fQUlFT2yoISn403RwN7YHEL8KoA9X7Jgs-dtlBh8c38QzQ1vbdMBzPuyRb07GMMKb6bdjdBV1w"
 				},

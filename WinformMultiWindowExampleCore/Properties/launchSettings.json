@@ -1,0 +1,8 @@
+{
+	"profiles": {
+		"WinformMultiWindowExampleCore": {
+			"commandName": "Project",
+			"commandLineArgs": "Form1"
+		}
+	}
+}

@@ -27,6 +27,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FreestandingWPFExample", "F
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WinformExampleCore", "WinformExampleCore\WinformExampleCore.csproj", "{0E0D48C5-CDDD-4A27-9FC3-982092B8096D}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WinformMultiWindowExampleCore", "WinformMultiWindowExampleCore\WinformMultiWindowExampleCore.csproj", "{B60B83D3-0D6F-447E-BBE2-29733EFDDC42}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -181,6 +183,18 @@ Global
 		{0E0D48C5-CDDD-4A27-9FC3-982092B8096D}.Release|x64.Build.0 = Release|x64
 		{0E0D48C5-CDDD-4A27-9FC3-982092B8096D}.Release|x86.ActiveCfg = Release|Any CPU
 		{0E0D48C5-CDDD-4A27-9FC3-982092B8096D}.Release|x86.Build.0 = Release|Any CPU
+		{B60B83D3-0D6F-447E-BBE2-29733EFDDC42}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B60B83D3-0D6F-447E-BBE2-29733EFDDC42}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B60B83D3-0D6F-447E-BBE2-29733EFDDC42}.Debug|x64.ActiveCfg = Debug|x64
+		{B60B83D3-0D6F-447E-BBE2-29733EFDDC42}.Debug|x64.Build.0 = Debug|x64
+		{B60B83D3-0D6F-447E-BBE2-29733EFDDC42}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{B60B83D3-0D6F-447E-BBE2-29733EFDDC42}.Debug|x86.Build.0 = Debug|Any CPU
+		{B60B83D3-0D6F-447E-BBE2-29733EFDDC42}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B60B83D3-0D6F-447E-BBE2-29733EFDDC42}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B60B83D3-0D6F-447E-BBE2-29733EFDDC42}.Release|x64.ActiveCfg = Release|x64
+		{B60B83D3-0D6F-447E-BBE2-29733EFDDC42}.Release|x64.Build.0 = Release|x64
+		{B60B83D3-0D6F-447E-BBE2-29733EFDDC42}.Release|x86.ActiveCfg = Release|Any CPU
+		{B60B83D3-0D6F-447E-BBE2-29733EFDDC42}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
