@@ -24,7 +24,8 @@ namespace WPFExample
 		/// The logger
 		/// </summary>
 
-		private Finsemble FSBL;
+		public Finsemble FSBL;
+		public event EventHandler WindowReady;
 
 		private JsonWebKey JWK = new JsonWebKey()
 		{
@@ -144,7 +145,7 @@ namespace WPFExample
 				});
 			}
 
-			Application.Current.Dispatcher.Invoke(async delegate //main thread
+			FSBL.getDispatcher().Invoke(async delegate //main thread
 			{
 				DroppedData.Content = DataToSend.TextBox.Text;
 				DroppedDataSource.Content = "via Text entry";
@@ -176,7 +177,7 @@ namespace WPFExample
 
 		private void Finsemble_Connected(object sender, EventArgs e)
 		{
-			Application.Current.Dispatcher.Invoke(delegate //main thread
+			this.Dispatcher.Invoke(delegate //main thread
 			{
 				// Initialize this Window and show it
 				InitializeComponent(); // Initialize after Finsemble is connected
@@ -226,9 +227,9 @@ namespace WPFExample
 							if(data.HasValues) {
 								data = data?["symbol"];
 							}
-							Application.Current.Dispatcher.Invoke((Action)delegate //main thread
+							FSBL.getDispatcher().Invoke((Action)delegate //main thread
 							{
-								Application.Current.Dispatcher.Invoke((Action)async delegate //main thread
+								FSBL.getDispatcher().Invoke((Action)async delegate //main thread
 								{
 									DroppedData.Content = data.ToString();
 									DataToSend.TextBox.Text = data.ToString();
@@ -246,7 +247,7 @@ namespace WPFExample
 					new KeyValuePair<string, DragAndDropClient.emitter>("symbol", () =>
 					{
 						//set state on drag so correct symbol is displayed
-						Application.Current.Dispatcher.Invoke(async delegate //main thread
+						FSBL.getDispatcher().Invoke(async delegate //main thread
 						{
 							DroppedData.Content = DataToSend.TextBox.Text;
 							await SaveStateAsync();
@@ -277,7 +278,7 @@ namespace WPFExample
 						object value = components?[property.Name]?["foreign"]?["components"]?["App Launcher"]?["launchableByUser"];
 						if ((value != null) && bool.Parse(value.ToString()))
 						{
-							Application.Current.Dispatcher.Invoke(delegate //main thread
+							FSBL.getDispatcher().Invoke(delegate //main thread
 							{
 								ComponentSelect.ItemsComboBox.Items.Add(property.Name);
 							});
@@ -294,7 +295,7 @@ namespace WPFExample
 			if (FSBL.FDC3Client is object)
 			{
 				//FDC3 Usage example	
-				Application.Current.Dispatcher.Invoke(delegate //main thread	
+				FSBL.getDispatcher().Invoke(delegate //main thread	
 				{
 					//	FDC3Label.Visibility = Visibility.Visible;
 				});
@@ -305,7 +306,7 @@ namespace WPFExample
 					FSBL.Logger.Log(new JToken[] { "WPF FDC3 Usage Example, context received by contextHandler.", context.Value });
 					if (context.Type.Equals("fdc3.instrument"))
 					{
-						Application.Current.Dispatcher.Invoke(async delegate //main thread
+						FSBL.getDispatcher().Invoke(async delegate //main thread
 						{
 							DataToSend.TextBox.Text = context.Id?["ticker"]?.ToString();
 							DroppedData.Content = context.Id?["ticker"]?.ToString();
@@ -323,7 +324,7 @@ namespace WPFExample
 					FSBL.Logger.Log(new JToken[] { "WPF FDC3 Usage Example: context received by intentHandler.", context.Value });
 					if (context.Type !=null && context.Type.Equals("fdc3.instrument"))
 					{
-						Application.Current.Dispatcher.Invoke(async delegate //main thread
+						FSBL.getDispatcher().Invoke(async delegate //main thread
 						{
 							DataToSend.TextBox.Text = context.Id?["ticker"]?.ToString();
 							DroppedData.Content = context.Id?["ticker"]?.ToString();
@@ -340,7 +341,7 @@ namespace WPFExample
 				//Subscribe to Finsemble Linker Channels
 				FSBL.LinkerClient?.Subscribe("symbol", (error, response) =>
 				{
-					Application.Current.Dispatcher.Invoke(async delegate //main thread
+					FSBL.getDispatcher().Invoke(async delegate //main thread
 					{
 						DataToSend.TextBox.Text = response.response?["data"]?.ToString();
 						DroppedData.Content = response.response?["data"]?.ToString();
@@ -372,6 +373,8 @@ namespace WPFExample
 			//{
 			//	System.Diagnostics.Debug.Write(args.response.ToString());
 			//});
+
+			WindowReady?.Invoke(this, EventArgs.Empty);
 		}
 
 		private void Logger_OnLog(object sender, JObject e)
@@ -464,7 +467,7 @@ namespace WPFExample
 						string symbolTxt = state.response == null ? null : state.response?.ToString();
 						if (!string.IsNullOrEmpty(symbolTxt) && !symbolTxt.Equals("{}"))
 						{
-							Application.Current.Dispatcher.Invoke(async delegate //main thread
+							FSBL.getDispatcher().Invoke(async delegate //main thread
 							{
 								DataToSend.TextBox.Text = symbolTxt;
 								DroppedData.Content = symbolTxt;
@@ -477,7 +480,7 @@ namespace WPFExample
 							//Get SpawnData if no previous state
 							FSBL.WindowClient.GetSpawnData((sender, r) =>
 							{
-								Application.Current.Dispatcher.Invoke(async delegate //main thread
+								FSBL.getDispatcher().Invoke(async delegate //main thread
 								{
 									symbolTxt = r.response == null ? null : r.response?["symbol"]?.ToString();
 									if (!string.IsNullOrEmpty(symbolTxt) && !symbolTxt.Equals("{}"))
@@ -508,7 +511,7 @@ namespace WPFExample
 		private void Publish_Click(object sender, RoutedEventArgs e)
 		{
 			//set state on click
-			Application.Current.Dispatcher.Invoke(async delegate //main thread
+			FSBL.getDispatcher().Invoke(async delegate //main thread
 			{
 				DroppedData.Content = DataToSend.TextBox.Text;
 				await SaveStateAsync();
@@ -532,7 +535,7 @@ namespace WPFExample
 					if (state.response != null)
 					{
 						var pubSubData = (JObject)state.response;
-						Application.Current.Dispatcher.Invoke(async delegate //main thread
+						FSBL.getDispatcher().Invoke(async delegate //main thread
 						{
 							// The initial publish will always be an empty object.
 							// Therefore, we need these null operators to handle that case.

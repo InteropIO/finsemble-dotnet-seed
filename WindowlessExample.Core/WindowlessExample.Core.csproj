@@ -4,11 +4,11 @@
     <OutputType>WinExe</OutputType>
     <TargetFramework>net5.0</TargetFramework>
     <Platforms>AnyCPU;x64</Platforms>
-    <Version>6.4.1</Version>
+    <Version>6.5.0</Version>
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Finsemble.Core" Version="6.4.1" />
+    <PackageReference Include="Finsemble.Core" Version="6.5.0" />
   </ItemGroup>
 
 </Project>

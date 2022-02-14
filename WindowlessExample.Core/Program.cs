@@ -2,6 +2,7 @@
 using System.Threading;
 using Finsemble.Core;
 using Finsemble.Core.Clients.Router;
+using Finsemble.Core.Events;
 using Microsoft.IdentityModel.Tokens;
 using Newtonsoft.Json.Linq;
 
@@ -43,17 +44,17 @@ namespace WindowlessExample.Core
 
 		private static void OnConnected(object sender, EventArgs e)
 		{
-			FSBL.Clients.Logger.Log("Windowless example connected to Finsemble.");
+			FSBL.Clients.Logger.Log("Windowless example Core connected to Finsemble.");
 
 			// Send log message every 5 seconds
 			timer.Interval = 5 * 1000;
 			timer.AutoReset = true;
-			timer.Elapsed += (s1, e1) => FSBL.Clients.Logger.Log(string.Format("Windowless example elapsed event was raised at {0}", e1.SignalTime));
+			timer.Elapsed += (s1, e1) => FSBL.Clients.Logger.Log(string.Format("Windowless example Core elapsed event was raised at {0}", e1.SignalTime));
 			timer.Start();
 
 			//Search provider example
 			FSBL.Clients.SearchClient.Register(
-				"Windowless example",
+				"Windowless example Core",
 				(o, args) => {
 					FSBL.Clients.Logger.Log("Received query", args.response?["data"]?["text"]);
 					JArray results = new JArray{
@@ -64,14 +65,17 @@ namespace WindowlessExample.Core
 							["actions"] = new JArray { new JObject { ["name"] = "example action" } }
 						}
 					};
+					args.sendQueryMessage(new FinsembleEventResponse(results, null));
 				},
 				(o, args) => {
 					FSBL.Clients.Logger.Log("Search result action clicked on", args.response["item"], "action:", args.response["action"]);
+					args.sendQueryMessage(new FinsembleEventResponse("Performed search result action", null));
 				},
 				(o, args) => {
 					FSBL.Clients.Logger.Log("Search provider title was click on");
+					args.sendQueryMessage(new FinsembleEventResponse("Performed search provider action", null));
 				},
-				"Windowless example search provider",
+				"Windowless example Core search provider",
 				(o, args) =>
 				{
 					if (args.error != null)

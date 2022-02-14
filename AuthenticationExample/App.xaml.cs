@@ -16,6 +16,9 @@ namespace AuthenticationExample
     {
         protected override void OnStartup(StartupEventArgs e)
         {
+#if DEBUG
+            Debugger.Launch();
+#endif
             var mainWindow = new MainWindow(e.Args);
         }
     }
