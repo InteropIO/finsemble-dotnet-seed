@@ -78,7 +78,7 @@ namespace WinformExampleCore
 			SetUpLinkerChannels(systemChannels);
 
 			// Listen to Fdc3Client state change to render connected channels
-			_bridge.Clients.Fdc3Client.StateChanged += Fdc3Client_StateChanged;
+			_bridge.Clients.Fdc3Client.StateChanged += Fdc3Client_StateChanged; ;
 			// Show joined channels
 			Fdc3Client_StateChanged(null, _bridge.Clients.Fdc3Client.LastStateChangedArgs);
 

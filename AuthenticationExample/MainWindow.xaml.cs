@@ -35,8 +35,8 @@ namespace AuthenticationExample
         {
             //Ensure that your window has been created (so that its window handle exists) before connecting to Finsemble.
             finsemble = new Finsemble(args, this);
-            finsemble.Connect("AuthenticationExample", JWK);
             finsemble.Connected += Finsemble_Connected;
+            finsemble.Connect();
         }
 
         private void Finsemble_Connected(object sender, EventArgs e)
@@ -53,6 +53,8 @@ namespace AuthenticationExample
         private void PublishCredentials_Click(object sender, RoutedEventArgs e)
         {
             finsemble.AuthenticationClient.PublishAuthorization(UserName.Text, JObject.FromObject(new Credentials(Guid.NewGuid().ToString())));
+            this.loggedIn = true;
+            Close();
         }
     }
 }

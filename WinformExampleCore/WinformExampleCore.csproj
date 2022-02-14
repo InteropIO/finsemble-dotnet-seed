@@ -5,11 +5,25 @@
     <TargetFramework>net5.0-windows</TargetFramework>
     <UseWindowsForms>true</UseWindowsForms>
     <Platforms>AnyCPU;x64</Platforms>
-    <Version>6.4.1</Version>
+    <Version>6.5.0</Version>
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Finsemble.Winform.Core" Version="6.4.1" />
+    <None Remove="Resources\finfont.ttf" />
+    <None Remove="Resources\font-finance.ttf" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Include="Resources\finfont.ttf">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Resources\font-finance.ttf">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </EmbeddedResource>
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Finsemble.Winform.Core" Version="6.5.0" />
     <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
   </ItemGroup>
 
