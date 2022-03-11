@@ -6,11 +6,11 @@
     <UseWPF>true</UseWPF>
     <StartupObject>WPFMultiWindowExampleCore.AppStartup</StartupObject>
     <Platforms>AnyCPU;x64</Platforms>
-    <Version>6.5.0</Version>
+    <Version>6.6.0</Version>
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Finsemble.WPF.Core" Version="6.5.0" />
+    <PackageReference Include="Finsemble.WPF.Core" Version="6.6.0" />
   </ItemGroup>
 
 </Project>
