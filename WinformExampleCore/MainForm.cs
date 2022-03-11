@@ -111,7 +111,14 @@ namespace WinformExampleCore
 
 			SetInitialWindowGrouping(_bridge.Clients.WindowClient.GetWindowGroups());
 			LoadAndSetButtonsFont();
+			SetInitialAlwaysOnTop();
 			this.Visible = true;
+		}
+
+		private async void SetInitialAlwaysOnTop()
+		{
+			var isAlwaysOnTop = (await _bridge.Clients.FinsembleWindow.IsAlwaysOnTop(new JObject())).response?["data"]?.ToObject<bool>() == true;
+			UpdateAlwaysOnTopButton(isAlwaysOnTop);
 		}
 
 		private void SetInitialWindowGrouping(JArray groupdWindowBelongsTo)
@@ -469,12 +476,9 @@ namespace WinformExampleCore
 			_bridge.Clients.Fdc3Client.DesktopAgentClient.Broadcast(new Context(param));
 		}
 
-		private async void AlwaysOnTopButton_Click(object sender, EventArgs e)
+		private void UpdateAlwaysOnTopButton(bool isAlwaysOnTop)
 		{
-			var newAlwaysOnTop = !await _bridge.Clients.WindowClient.IsAlwaysOnTop();
-			await _bridge.Clients.WindowClient.SetAlwaysOnTop(newAlwaysOnTop);
-
-			if (newAlwaysOnTop)
+			if (isAlwaysOnTop)
 			{
 				AlwaysOnTopButton.ButtonColor = Color.FromArgb(3, 155, 255);
 				AlwaysOnTopButton.OnHoverButtonColor = Color.FromArgb(3, 155, 255);
@@ -484,6 +488,14 @@ namespace WinformExampleCore
 				AlwaysOnTopButton.ButtonColor = Color.FromArgb(34, 38, 47);
 				AlwaysOnTopButton.OnHoverButtonColor = Color.FromArgb(40, 45, 56);
 			}
+		}
+
+		private async void AlwaysOnTopButton_Click(object sender, EventArgs e)
+		{
+			var newAlwaysOnTop = !await _bridge.Clients.WindowClient.IsAlwaysOnTop();
+			await _bridge.Clients.WindowClient.SetAlwaysOnTop(newAlwaysOnTop);
+
+			UpdateAlwaysOnTopButton(newAlwaysOnTop);
 		}
 
 

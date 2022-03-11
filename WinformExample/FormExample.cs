@@ -9,7 +9,6 @@ using System.Windows.Forms;
 using System.Windows.Threading;
 using ChartIQ.Finsemble.DragAndDrop;
 using ChartIQ.Finsemble.Router;
-using Newtonsoft.Json.Bson;
 using WinformExample.Controls;
 using Color = System.Drawing.Color;
 using ChartIQ.Finsemble.FDC3.Types;
@@ -146,6 +145,13 @@ namespace WinformExample
 			FSBL.ConfigClient.GetValue(new JObject { ["field"] = "finsemble.components" }, HandleComponentsList);
 
 			SetInitialWindowGrouping(FSBL.WindowClient.GetWindowGroups());
+			SetInitialAlwaysOnTop();
+		}
+
+		private async void SetInitialAlwaysOnTop()
+		{
+			var isAlwaysOnTop = (await FSBL.FinsembleWindow.IsAlwaysOnTop(new JObject()))?["data"]?.ToObject<bool>() == true;
+			UpdateAlwaysOnTopButton(isAlwaysOnTop);
 		}
 
 		private void HandleContext(Context context)
@@ -605,14 +611,9 @@ namespace WinformExample
 			}
 		}
 
-		private async void AlwaysOnTopButton_Click(object sender, EventArgs e)
+		private void UpdateAlwaysOnTopButton(bool isAlwaysOnTop)
 		{
-			var isAlwaysOnTop = await FSBL.WindowClient.IsAlwaysOnTop();
-
-			var newAlwaysOnTop = !isAlwaysOnTop;
-			await FSBL.WindowClient.SetAlwaysOnTop(newAlwaysOnTop);
-
-			if (newAlwaysOnTop)
+			if (isAlwaysOnTop)
 			{
 				AlwaysOnTopButton.ButtonColor = Color.FromArgb(3, 155, 255);
 				AlwaysOnTopButton.OnHoverButtonColor = Color.FromArgb(3, 155, 255);
@@ -622,6 +623,16 @@ namespace WinformExample
 				AlwaysOnTopButton.ButtonColor = Color.FromArgb(34, 38, 47);
 				AlwaysOnTopButton.OnHoverButtonColor = Color.FromArgb(40, 45, 56);
 			}
+		}
+
+		private async void AlwaysOnTopButton_Click(object sender, EventArgs e)
+		{
+			var isAlwaysOnTop = await FSBL.WindowClient.IsAlwaysOnTop();
+
+			var newAlwaysOnTop = !isAlwaysOnTop;
+			await FSBL.WindowClient.SetAlwaysOnTop(newAlwaysOnTop);
+
+			UpdateAlwaysOnTopButton(newAlwaysOnTop);
 		}
 
 		private void DockingButton_Click(object sender, EventArgs e)
@@ -668,11 +679,6 @@ namespace WinformExample
 		private void DragNDropEmittingButton_MouseDown(object sender, MouseEventArgs e)
 		{
 			FSBL.DragAndDropClient.DragStartWithData(sender);
-		}
-
-		private void DragNDropEmittingButton_Click(object sender, EventArgs e)
-		{
-
 		}
 
 		protected override void OnFormClosing(FormClosingEventArgs e)
