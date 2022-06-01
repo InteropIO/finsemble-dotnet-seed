@@ -20,6 +20,8 @@ namespace WinformExampleCore
 		private string[] _startupArgs;
 		private FinsembleWinform _bridge;
 		private IListener _contextListenter;
+		const int LinkerPillWidth = 15;
+		const int LinkerPillHeight = 24;
 
 		private SortedDictionary<string, Button> LinkerGroups = new SortedDictionary<string, Button>();
 		private System.Drawing.Text.PrivateFontCollection finfont = new System.Drawing.Text.PrivateFontCollection();
@@ -38,7 +40,7 @@ namespace WinformExampleCore
 		public MainForm(string[] args)
 		{
 			InitializeComponent();
-			
+
 			this.Visible = false;
 			_startupArgs = args;
 		}
@@ -46,7 +48,7 @@ namespace WinformExampleCore
 		private void MainForm_Load(object sender, EventArgs e)
 		{
 			this.Visible = false;
-			
+
 			MessagesRichBox.SendToBack();
 			DataToSendInput.EnterKeyPressed += DataToSendInput_EnterKeyPressed; ;
 
@@ -67,43 +69,19 @@ namespace WinformExampleCore
 
 			_bridge.Clients.Logger.OnLog += Logger_OnLog;
 			_bridge.Clients.Logger.Log(new JToken[] { "Winform Example Core connected to Finsemble." });
-			
+
 
 			// Handle Window grouping
 			_bridge.Clients.RouterClient.Subscribe("Finsemble.WorkspaceService.groupUpdate", HandleWindowGrouping);
 
 			#region FDC3
+			// Listen to Fdc3Client state change to render connected channels
+			_bridge.Clients.Fdc3Client.StateChanged += Fdc3Client_StateChanged; ;
+			// Show joined channels
+			Fdc3Client_StateChanged(null, _bridge.Clients.Fdc3Client.LastStateChangedArgs);
 
-			if (_bridge.Clients.Fdc3Client != null)
-			{
-				//Setup channels
-				var systemChannels = await _bridge.Clients.Fdc3Client.DesktopAgentClient.GetSystemChannels();
-				SetUpLinkerChannels(systemChannels);
-
-				// Listen to Fdc3Client state change to render connected channels
-				_bridge.Clients.Fdc3Client.StateChanged += Fdc3Client_StateChanged; ;
-				// Show joined channels
-				Fdc3Client_StateChanged(null, _bridge.Clients.Fdc3Client.LastStateChangedArgs);
-
-				// Example for Fdc3Client subscribe to specific context. The "*" for subscription to all contexts.
-				_contextListenter = _bridge.Clients.Fdc3Client.DesktopAgentClient.AddContextListener("fdc3.instrument", HandleContext);
-			}
-
-			#endregion
-
-			#region Linker Client
-
-			if (_bridge.Clients.LinkerClient != null)
-			{
-				//setup linker channels
-				_bridge.Clients.LinkerClient.GetAllChannels(HandleLinkerChannelLabels);
-
-				// Listen to Linker state change to render connected channels
-				_bridge.Clients.LinkerClient.OnStateChange(Fdc3Client_StateChanged);
-
-				// Example for LinkerClient subscribe
-				_bridge.Clients.LinkerClient.Subscribe("symbol", HandleLinkerData);
-			}
+			// Example for Fdc3Client subscribe to specific context. The "*" for subscription to all contexts.
+			_contextListenter = _bridge.Clients.Fdc3Client.DesktopAgentClient.AddContextListener("fdc3.instrument", HandleContext);
 
 			#endregion
 
@@ -259,62 +237,16 @@ namespace WinformExampleCore
 				_bridge.Clients.Logger.Error(new JToken[] { "Error when receiving spawnable component list: ", ex.ToString() });
 			}
 		}
-		private void HandleLinkerChannelLabels(object sender, FinsembleEventArgs args)
-		{
-			this.Invoke(new Action(() =>
-			{
-				if (args.error == null)
-				{
-					var groupLabels = new Button[] { GroupButton1, GroupButton2, GroupButton3, GroupButton4, GroupButton5, GroupButton6 };
-					var allChannels = args.response as JArray;
-					int labelcount = 0;
-					foreach (JObject item in allChannels)
-					{
-						var theLabel = groupLabels[labelcount++];
-						theLabel.Visible = false;
-						if (!LinkerGroups.ContainsKey(item["name"].ToString()))
-							LinkerGroups.Add(item["name"].ToString(), theLabel);
-						//limit channels to ones we enough labels for
-						if (labelcount == groupLabels.Length)
-						{
-							break;
-						}
-					}
-				}
-				else
-				{
-					_bridge.Clients.Logger.Error(new JToken[] { "Error when retrieving linker channels: ", args.error.ToString() });
-				}
-			}));
-		}
-
-		private void HandleLinkerData(object sender, FinsembleEventArgs response)
-		{
-			this.Invoke(new Action(() =>
-			{
-				if (response.error != null)
-				{
-					_bridge.Clients.Logger.Error(new JToken[] { "Error when receiving linker data: ", response.error.ToString() });
-				}
-				else if (response.response != null)
-				{
-					string value = response.response?["data"]?.ToString();
-					DataLabel.Text = value;
-					SourceLabel.Text = "via Linker";
-					DataToSendInput.Text = value;
-				}
-			}));
-		}
 
 		private void HandleContext(Context context)
 		{
 			_bridge.Clients.Logger.Debug($"Context received: {context.Value}");
-			
+
 			if (context == null)
 			{
-				_bridge.Clients.Logger.Error(new JToken[] { "Error when receiving context. Context is null "});
+				_bridge.Clients.Logger.Error(new JToken[] { "Error when receiving context. Context is null " });
 			}
-			else 
+			else
 			{
 				string value = context.Name;
 				SourceLabel.Text = "via FDC3";
@@ -373,15 +305,30 @@ namespace WinformExampleCore
 
 					var channels = response.response["channels"] as JArray;
 					var allChannels = response.response["allChannels"] as JArray;
+
+					if (LinkerGroups.Count == 0)
+					{
+						// setup linker channels only once
+						CreateLinkerPills(allChannels);
+					}
+
 					foreach (JObject obj in allChannels)
 					{
-						LinkerGroups[obj["name"].ToString()].Visible = false;
-						LinkerGroups[obj["name"].ToString()].BackColor = ColorTranslator.FromHtml(obj["color"].ToString());
+						var key = obj["name"]?.ToString();
+						if (key != null && LinkerGroups.ContainsKey(key))
+						{
+							LinkerGroups[key].Visible = false;
+							LinkerGroups[key].BackColor = ColorTranslator.FromHtml(obj["color"].ToString());
+						}
 					}
 
 					foreach (JValue channel in channels)
 					{
-						LinkerGroups[channel.Value.ToString()].Visible = true;
+						var key = channel.Value?.ToString();
+						if (key != null && LinkerGroups.ContainsKey(key))
+						{
+							LinkerGroups[key].Visible = true;
+						}
 					}
 
 					var visiblePillsAfterChange = LinkerGroups.Count(x => x.Value.Visible);
@@ -392,21 +339,62 @@ namespace WinformExampleCore
 			}));
 		}
 
+		private void CreateLinkerPills(JArray allChannels)
+		{
+			this.Invoke(new Action(() =>
+			{
+				int positionX = 0;
+				const int positionY = 19;
+
+
+				var colorConverter = new ColorConverter();
+				foreach (var channel in allChannels)
+				{
+					if (!LinkerGroups.ContainsKey(channel["name"].ToString()))
+					{
+						var label = channel["label"].ToString();
+
+						var button = new Controls.RoundedButton()
+						{
+							CornerRadius = 15,
+							ImageMargins = new System.Drawing.Printing.Margins(0, 0, 0, 0),
+							Margin = new Padding(2),
+							Name = $"GroupButton{label.Replace(" ", "_")}",
+							Visible = false,
+							UseEllipse = true,
+							UseVisualStyleBackColor = true,
+							TextColor = Color.White,
+							Size = new Size(LinkerPillWidth, LinkerPillHeight),
+							Text = label,
+							ButtonColor = (Color)colorConverter.ConvertFromString(channel["color"].ToString()),
+							OnHoverTextColor = Color.Black,
+							OnHoverButtonColor = Color.DarkOliveGreen,
+							Location = new Point(positionX, positionY)
+						};
+
+						this.Controls.Add(button);
+
+						positionX += LinkerPillWidth;
+						LinkerGroups.Add(channel["name"].ToString(), button);
+					}
+				}
+			}));
+		}
+
 		private void AlignAllLinkerPills()
 		{
-			var initialX = GroupButton1.Location.X;
-			var counter = 0;
-
-			foreach (var visiblePill in LinkerGroups.Where(x => x.Value.Visible))
+			var initialX = LinkerButton.Location.X + LinkerButton.Width + 2;
+			var visiblePills = LinkerGroups.Where(x => x.Value.Visible).ToArray();
+			for (int i = 0; i < visiblePills.Count(); i++)
 			{
-				visiblePill.Value.Location = new Point(initialX + (counter * (GroupButton1.Width)), visiblePill.Value.Location.Y);
-				++counter;
+				var button = visiblePills[i].Value;
+				button.Location = new Point(initialX + (i * LinkerPillWidth), button.Location.Y);
 			}
 		}
 
 		private int CalculateDragNDropLeftMarginShift(int visiblePillsBeforeShift, int visiblePillsAfterShift)
 		{
-			return (visiblePillsAfterShift - visiblePillsBeforeShift) * (GroupButton1.Width + 2);
+			return (visiblePillsAfterShift - visiblePillsBeforeShift) * (LinkerPillWidth + 2);
 		}
 
 		private void HandlePubSub(object sender, FinsembleEventArgs args)
@@ -434,31 +422,6 @@ namespace WinformExampleCore
 				catch (Exception ex)
 				{
 					_bridge.Clients.Logger.Error(new JToken[] { "Error when retrieving linker channels: ", ex.Message });
-				}
-			}));
-		}
-
-		private void SetUpLinkerChannels(IChannel[] systemChannels)
-		{
-			this.Invoke(new Action(() =>
-			{
-				if (systemChannels != null)
-				{
-					var groupLabels = new Button[] { GroupButton1, GroupButton2, GroupButton3, GroupButton4, GroupButton5, GroupButton6 };
-					int labelcount = 0;
-					foreach (IChannel channel in systemChannels)
-					{
-						var theLabel = groupLabels[labelcount++];
-						theLabel.Visible = false;
-						LinkerGroups.Add(channel.Id, theLabel);
-
-						//limit channels to ones we enough labels for
-						if (labelcount == groupLabels.Length) break;
-					}
-				}
-				else
-				{
-					_bridge.Clients.Logger.Error(new JToken[] { "Error when retrieving system channels."});
 				}
 			}));
 		}
@@ -525,39 +488,21 @@ namespace WinformExampleCore
 
 		private void LinkerButton_Click(object sender, EventArgs e)
 		{
-			if (_bridge.Clients.LinkerClient != null)
-			{
-				_bridge.Clients.LinkerClient.OpenLinkerWindow();
-			}
-			else
-			{
-				_bridge.Clients.Util.OpenLinkerWindow();
-			}
+			_bridge.Clients.Util.OpenLinkerWindow();
 		}
 
 		private void SendButton_Click(object sender, EventArgs e)
 		{
-			if (_bridge.Clients.LinkerClient != null)
+			var param = new JObject
 			{
-				_bridge.Clients.LinkerClient.Publish(new JObject
+				["type"] = "fdc3.instrument",
+				["name"] = DataToSendInput.Text,
+				["id"] = new JObject
 				{
-					["dataType"] = "symbol",
-					["data"] = DataToSendInput.Text
-				});
-			}
-			else
-			{
-				var param = new JObject
-				{
-					["type"] = "fdc3.instrument",
-					["name"] = DataToSendInput.Text,
-					["id"] = new JObject
-					{
-						["ticker"] = DataToSendInput.Text
-					}
-				};
-				_bridge.Clients.Fdc3Client.DesktopAgentClient.Broadcast(new Context(param));
-			}
+					["ticker"] = DataToSendInput.Text
+				}
+			};
+			_bridge.Clients.Fdc3Client.DesktopAgentClient.Broadcast(new Context(param));
 		}
 
 		private void UpdateAlwaysOnTopButton(bool isAlwaysOnTop)
@@ -602,7 +547,7 @@ namespace WinformExampleCore
 			if (selected == null) return;
 
 			var componentName = selected.ToString();
-			
+
 			var targetApp = new TargetApp() { Name = componentName };
 			var context = new Context(new JObject
 			{

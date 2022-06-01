@@ -36,12 +36,6 @@ namespace WinformExampleCore
 			this.AlwaysOnTopButton = new WinformExampleCore.Controls.RoundedButton();
 			this.DockingButton = new WinformExampleCore.Controls.RoundedButton();
 			this.LinkerButton = new WinformExampleCore.Controls.RoundedButton();
-			this.GroupButton1 = new WinformExampleCore.Controls.RoundedButton();
-			this.GroupButton2 = new WinformExampleCore.Controls.RoundedButton();
-			this.GroupButton3 = new WinformExampleCore.Controls.RoundedButton();
-			this.GroupButton4 = new WinformExampleCore.Controls.RoundedButton();
-			this.GroupButton5 = new WinformExampleCore.Controls.RoundedButton();
-			this.GroupButton6 = new WinformExampleCore.Controls.RoundedButton();
 			this.panel1 = new System.Windows.Forms.Panel();
 			this.DataLabel = new System.Windows.Forms.Label();
 			this.SourceLabel = new System.Windows.Forms.Label();
@@ -134,120 +128,6 @@ namespace WinformExampleCore
 			this.LinkerButton.UseEllipse = true;
 			this.LinkerButton.UseVisualStyleBackColor = true;
 			this.LinkerButton.Click += new System.EventHandler(this.LinkerButton_Click);
-			// 
-			// GroupButton1
-			// 
-			this.GroupButton1.ButtonColor = System.Drawing.Color.FromArgb(((int)(((byte)(124)))), ((int)(((byte)(119)))), ((int)(((byte)(174)))));
-			this.GroupButton1.CornerRadius = 15;
-			this.GroupButton1.Font = new System.Drawing.Font("Microsoft Sans Serif", 6.6F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
-			this.GroupButton1.ImageMargins = new System.Drawing.Printing.Margins(0, 0, 0, 0);
-			this.GroupButton1.Location = new System.Drawing.Point(43, 19);
-			this.GroupButton1.Margin = new System.Windows.Forms.Padding(4);
-			this.GroupButton1.Name = "GroupButton1";
-			this.GroupButton1.OnHoverButtonColor = System.Drawing.Color.FromArgb(((int)(((byte)(190)))), ((int)(((byte)(185)))), ((int)(((byte)(240)))));
-			this.GroupButton1.OnHoverTextColor = System.Drawing.Color.Black;
-			this.GroupButton1.Size = new System.Drawing.Size(15, 24);
-			this.GroupButton1.TabIndex = 28;
-			this.GroupButton1.Text = "1";
-			this.GroupButton1.TextColor = System.Drawing.Color.White;
-			this.GroupButton1.UseEllipse = false;
-			this.GroupButton1.UseVisualStyleBackColor = true;
-			this.GroupButton1.Visible = false;
-			// 
-			// GroupButton2
-			// 
-			this.GroupButton2.ButtonColor = System.Drawing.Color.FromArgb(((int)(((byte)(254)))), ((int)(((byte)(223)))), ((int)(((byte)(53)))));
-			this.GroupButton2.CornerRadius = 15;
-			this.GroupButton2.Font = new System.Drawing.Font("Microsoft Sans Serif", 6.6F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
-			this.GroupButton2.ImageMargins = new System.Drawing.Printing.Margins(0, 0, 0, 0);
-			this.GroupButton2.Location = new System.Drawing.Point(66, 19);
-			this.GroupButton2.Margin = new System.Windows.Forms.Padding(4);
-			this.GroupButton2.Name = "GroupButton2";
-			this.GroupButton2.OnHoverButtonColor = System.Drawing.Color.FromArgb(((int)(((byte)(254)))), ((int)(((byte)(223)))), ((int)(((byte)(53)))));
-			this.GroupButton2.OnHoverTextColor = System.Drawing.Color.Black;
-			this.GroupButton2.Size = new System.Drawing.Size(15, 24);
-			this.GroupButton2.TabIndex = 29;
-			this.GroupButton2.Text = "2";
-			this.GroupButton2.TextColor = System.Drawing.Color.White;
-			this.GroupButton2.UseEllipse = true;
-			this.GroupButton2.UseVisualStyleBackColor = true;
-			this.GroupButton2.Visible = false;
-			// 
-			// GroupButton3
-			// 
-			this.GroupButton3.ButtonColor = System.Drawing.Color.FromArgb(((int)(((byte)(137)))), ((int)(((byte)(216)))), ((int)(((byte)(3)))));
-			this.GroupButton3.CornerRadius = 15;
-			this.GroupButton3.Font = new System.Drawing.Font("Microsoft Sans Serif", 6.6F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
-			this.GroupButton3.ImageMargins = new System.Drawing.Printing.Margins(0, 0, 0, 0);
-			this.GroupButton3.Location = new System.Drawing.Point(89, 19);
-			this.GroupButton3.Margin = new System.Windows.Forms.Padding(4);
-			this.GroupButton3.Name = "GroupButton3";
-			this.GroupButton3.OnHoverButtonColor = System.Drawing.Color.FromArgb(((int)(((byte)(137)))), ((int)(((byte)(216)))), ((int)(((byte)(3)))));
-			this.GroupButton3.OnHoverTextColor = System.Drawing.Color.Black;
-			this.GroupButton3.Size = new System.Drawing.Size(15, 24);
-			this.GroupButton3.TabIndex = 30;
-			this.GroupButton3.Text = "3";
-			this.GroupButton3.TextColor = System.Drawing.Color.White;
-			this.GroupButton3.UseEllipse = true;
-			this.GroupButton3.UseVisualStyleBackColor = true;
-			this.GroupButton3.Visible = false;
-			// 
-			// GroupButton4
-			// 
-			this.GroupButton4.ButtonColor = System.Drawing.Color.FromArgb(((int)(((byte)(254)))), ((int)(((byte)(98)))), ((int)(((byte)(98)))));
-			this.GroupButton4.CornerRadius = 15;
-			this.GroupButton4.Font = new System.Drawing.Font("Microsoft Sans Serif", 6.6F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
-			this.GroupButton4.ImageMargins = new System.Drawing.Printing.Margins(0, 0, 0, 0);
-			this.GroupButton4.Location = new System.Drawing.Point(112, 19);
-			this.GroupButton4.Margin = new System.Windows.Forms.Padding(4);
-			this.GroupButton4.Name = "GroupButton4";
-			this.GroupButton4.OnHoverButtonColor = System.Drawing.Color.FromArgb(((int)(((byte)(254)))), ((int)(((byte)(98)))), ((int)(((byte)(98)))));
-			this.GroupButton4.OnHoverTextColor = System.Drawing.Color.Black;
-			this.GroupButton4.Size = new System.Drawing.Size(15, 24);
-			this.GroupButton4.TabIndex = 31;
-			this.GroupButton4.Text = "4";
-			this.GroupButton4.TextColor = System.Drawing.Color.White;
-			this.GroupButton4.UseEllipse = true;
-			this.GroupButton4.UseVisualStyleBackColor = true;
-			this.GroupButton4.Visible = false;
-			// 
-			// GroupButton5
-			// 
-			this.GroupButton5.ButtonColor = System.Drawing.Color.FromArgb(((int)(((byte)(45)))), ((int)(((byte)(172)))), ((int)(((byte)(255)))));
-			this.GroupButton5.CornerRadius = 15;
-			this.GroupButton5.Font = new System.Drawing.Font("Microsoft Sans Serif", 6.6F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
-			this.GroupButton5.ImageMargins = new System.Drawing.Printing.Margins(0, 0, 0, 0);
-			this.GroupButton5.Location = new System.Drawing.Point(135, 19);
-			this.GroupButton5.Margin = new System.Windows.Forms.Padding(4);
-			this.GroupButton5.Name = "GroupButton5";
-			this.GroupButton5.OnHoverButtonColor = System.Drawing.Color.FromArgb(((int)(((byte)(45)))), ((int)(((byte)(172)))), ((int)(((byte)(255)))));
-			this.GroupButton5.OnHoverTextColor = System.Drawing.Color.Black;
-			this.GroupButton5.Size = new System.Drawing.Size(15, 24);
-			this.GroupButton5.TabIndex = 32;
-			this.GroupButton5.Text = "5";
-			this.GroupButton5.TextColor = System.Drawing.Color.White;
-			this.GroupButton5.UseEllipse = true;
-			this.GroupButton5.UseVisualStyleBackColor = true;
-			this.GroupButton5.Visible = false;
-			// 
-			// GroupButton6
-			// 
-			this.GroupButton6.ButtonColor = System.Drawing.Color.FromArgb(((int)(((byte)(255)))), ((int)(((byte)(162)))), ((int)(((byte)(0)))));
-			this.GroupButton6.CornerRadius = 15;
-			this.GroupButton6.Font = new System.Drawing.Font("Microsoft Sans Serif", 6.6F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
-			this.GroupButton6.ImageMargins = new System.Drawing.Printing.Margins(0, 0, 0, 0);
-			this.GroupButton6.Location = new System.Drawing.Point(158, 19);
-			this.GroupButton6.Margin = new System.Windows.Forms.Padding(4);
-			this.GroupButton6.Name = "GroupButton6";
-			this.GroupButton6.OnHoverButtonColor = System.Drawing.Color.FromArgb(((int)(((byte)(255)))), ((int)(((byte)(162)))), ((int)(((byte)(0)))));
-			this.GroupButton6.OnHoverTextColor = System.Drawing.Color.Black;
-			this.GroupButton6.Size = new System.Drawing.Size(15, 24);
-			this.GroupButton6.TabIndex = 33;
-			this.GroupButton6.Text = "6";
-			this.GroupButton6.TextColor = System.Drawing.Color.White;
-			this.GroupButton6.UseEllipse = true;
-			this.GroupButton6.UseVisualStyleBackColor = true;
-			this.GroupButton6.Visible = false;
 			// 
 			// panel1
 			// 
@@ -455,12 +335,6 @@ namespace WinformExampleCore
 			this.Controls.Add(this.SpawnLabel);
 			this.Controls.Add(this.SendButton);
 			this.Controls.Add(this.SendASymbolLabel);
-			this.Controls.Add(this.GroupButton6);
-			this.Controls.Add(this.GroupButton5);
-			this.Controls.Add(this.GroupButton4);
-			this.Controls.Add(this.GroupButton3);
-			this.Controls.Add(this.GroupButton2);
-			this.Controls.Add(this.GroupButton1);
 			this.Controls.Add(this.LinkerButton);
 			this.Controls.Add(this.DockingButton);
 			this.Controls.Add(this.AlwaysOnTopButton);
@@ -480,12 +354,6 @@ namespace WinformExampleCore
 		private Controls.RoundedButton AlwaysOnTopButton;
 		private Controls.RoundedButton DockingButton;
 		private Controls.RoundedButton LinkerButton;
-		private Controls.RoundedButton GroupButton1;
-		private Controls.RoundedButton GroupButton2;
-		private Controls.RoundedButton GroupButton5;
-		private Controls.RoundedButton GroupButton3;
-		private Controls.RoundedButton GroupButton4;
-		private Controls.RoundedButton GroupButton6;
 		private System.Windows.Forms.Panel panel1;
 		private System.Windows.Forms.Label DataLabel;
 		private System.Windows.Forms.Label SourceLabel;

@@ -5,13 +5,13 @@
     <TargetFramework>net5.0-windows</TargetFramework>
     <UseWPF>true</UseWPF>
     <Platforms>AnyCPU;x64</Platforms>
-    <AssemblyVersion>6.6.3.0</AssemblyVersion>
-    <FileVersion>6.6.3.0</FileVersion>
-    <Version>6.6.3</Version>
+    <AssemblyVersion>7.1.0.0</AssemblyVersion>
+    <FileVersion>7.1.0.0</FileVersion>
+    <Version>7.0.1</Version>
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="DotNetBrowser" Version="2.6.0" />
+    <PackageReference Include="DotNetBrowser" Version="2.13.1" />
     <PackageReference Include="DotNetBrowser.Wpf" Version="2.6.0" />
   </ItemGroup>
 

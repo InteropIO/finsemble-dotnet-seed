@@ -45,12 +45,6 @@ namespace WinformExample
 			this.MessagesRichBox = new System.Windows.Forms.RichTextBox();
 			this.MessagesLabel = new System.Windows.Forms.Label();
 			this.ComponentDropDown = new WinformExample.Controls.DropDown();
-			this.GroupButton6 = new WinformExample.Controls.RoundedButton();
-			this.GroupButton5 = new WinformExample.Controls.RoundedButton();
-			this.GroupButton4 = new WinformExample.Controls.RoundedButton();
-			this.GroupButton3 = new WinformExample.Controls.RoundedButton();
-			this.GroupButton2 = new WinformExample.Controls.RoundedButton();
-			this.GroupButton1 = new WinformExample.Controls.RoundedButton();
 			this.DragNDropEmittingButton = new WinformExample.Controls.RoundedButton();
 			this.DockingButton = new WinformExample.Controls.RoundedButton();
 			this.AlwaysOnTopButton = new WinformExample.Controls.RoundedButton();
@@ -105,8 +99,8 @@ namespace WinformExample
 			// 
 			// panel1
 			// 
-			this.panel1.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
-			| System.Windows.Forms.AnchorStyles.Right)));
+			this.panel1.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
 			this.panel1.BackgroundImage = global::WinformExample.Properties.Resources.winformsLogo;
 			this.panel1.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Zoom;
 			this.panel1.Location = new System.Drawing.Point(31, 11);
@@ -143,9 +137,9 @@ namespace WinformExample
 			// 
 			// MessagesRichBox
 			// 
-			this.MessagesRichBox.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
-			| System.Windows.Forms.AnchorStyles.Left)
-			| System.Windows.Forms.AnchorStyles.Right)));
+			this.MessagesRichBox.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
 			this.MessagesRichBox.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(23)))), ((int)(((byte)(26)))), ((int)(((byte)(32)))));
 			this.MessagesRichBox.ForeColor = System.Drawing.Color.White;
 			this.MessagesRichBox.Location = new System.Drawing.Point(15, 410);
@@ -170,8 +164,8 @@ namespace WinformExample
 			// 
 			// ComponentDropDown
 			// 
-			this.ComponentDropDown.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
-			| System.Windows.Forms.AnchorStyles.Right)));
+			this.ComponentDropDown.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
 			this.ComponentDropDown.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(34)))), ((int)(((byte)(38)))), ((int)(((byte)(47)))));
 			this.ComponentDropDown.DrawMode = System.Windows.Forms.DrawMode.OwnerDrawVariable;
 			this.ComponentDropDown.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
@@ -183,117 +177,6 @@ namespace WinformExample
 			this.ComponentDropDown.Name = "ComponentDropDown";
 			this.ComponentDropDown.Size = new System.Drawing.Size(203, 31);
 			this.ComponentDropDown.TabIndex = 35;
-			// 
-			// GroupButton6
-			// 
-			this.GroupButton6.ButtonColor = System.Drawing.Color.FromArgb(((int)(((byte)(255)))), ((int)(((byte)(162)))), ((int)(((byte)(0)))));
-			this.GroupButton6.CornerRadius = 15;
-			this.GroupButton6.ImageMargins = new System.Drawing.Printing.Margins(0, 0, 0, 0);
-			this.GroupButton6.Location = new System.Drawing.Point(134, 10);
-			this.GroupButton6.Margin = new System.Windows.Forms.Padding(2);
-			this.GroupButton6.Name = "GroupButton6";
-			this.GroupButton6.OnHoverButtonColor = System.Drawing.Color.FromArgb(((int)(((byte)(255)))), ((int)(((byte)(220)))), ((int)(((byte)(59)))));
-			this.GroupButton6.OnHoverTextColor = System.Drawing.Color.Black;
-			this.GroupButton6.Size = new System.Drawing.Size(22, 24);
-			this.GroupButton6.TabIndex = 33;
-			this.GroupButton6.Text = "6";
-			this.GroupButton6.TextColor = System.Drawing.Color.White;
-			this.GroupButton6.TextImageRelation = System.Windows.Forms.TextImageRelation.ImageAboveText;
-			this.GroupButton6.UseEllipse = true;
-			this.GroupButton6.UseVisualStyleBackColor = true;
-			this.GroupButton6.Visible = false;
-			// 
-			// GroupButton5
-			// 
-			this.GroupButton5.ButtonColor = System.Drawing.Color.FromArgb(((int)(((byte)(45)))), ((int)(((byte)(172)))), ((int)(((byte)(255)))));
-			this.GroupButton5.CornerRadius = 15;
-			this.GroupButton5.ImageMargins = new System.Drawing.Printing.Margins(0, 0, 0, 0);
-			this.GroupButton5.Location = new System.Drawing.Point(114, 10);
-			this.GroupButton5.Margin = new System.Windows.Forms.Padding(2);
-			this.GroupButton5.Name = "GroupButton5";
-			this.GroupButton5.OnHoverButtonColor = System.Drawing.Color.FromArgb(((int)(((byte)(101)))), ((int)(((byte)(228)))), ((int)(((byte)(243)))));
-			this.GroupButton5.OnHoverTextColor = System.Drawing.Color.Black;
-			this.GroupButton5.Size = new System.Drawing.Size(22, 24);
-			this.GroupButton5.TabIndex = 32;
-			this.GroupButton5.Text = "5";
-			this.GroupButton5.TextColor = System.Drawing.Color.White;
-			this.GroupButton5.TextImageRelation = System.Windows.Forms.TextImageRelation.ImageAboveText;
-			this.GroupButton5.UseEllipse = true;
-			this.GroupButton5.UseVisualStyleBackColor = true;
-			this.GroupButton5.Visible = false;
-			// 
-			// GroupButton4
-			// 
-			this.GroupButton4.ButtonColor = System.Drawing.Color.FromArgb(((int)(((byte)(254)))), ((int)(((byte)(98)))), ((int)(((byte)(98)))));
-			this.GroupButton4.CornerRadius = 15;
-			this.GroupButton4.ImageMargins = new System.Drawing.Printing.Margins(0, 0, 0, 0);
-			this.GroupButton4.Location = new System.Drawing.Point(94, 10);
-			this.GroupButton4.Margin = new System.Windows.Forms.Padding(2);
-			this.GroupButton4.Name = "GroupButton4";
-			this.GroupButton4.OnHoverButtonColor = System.Drawing.Color.FromArgb(((int)(((byte)(255)))), ((int)(((byte)(140)))), ((int)(((byte)(140)))));
-			this.GroupButton4.OnHoverTextColor = System.Drawing.Color.Black;
-			this.GroupButton4.Size = new System.Drawing.Size(22, 24);
-			this.GroupButton4.TabIndex = 31;
-			this.GroupButton4.Text = "4";
-			this.GroupButton4.TextColor = System.Drawing.Color.White;
-			this.GroupButton4.TextImageRelation = System.Windows.Forms.TextImageRelation.ImageAboveText;
-			this.GroupButton4.UseEllipse = true;
-			this.GroupButton4.UseVisualStyleBackColor = true;
-			this.GroupButton4.Visible = false;
-			// 
-			// GroupButton3
-			// 
-			this.GroupButton3.ButtonColor = System.Drawing.Color.FromArgb(((int)(((byte)(137)))), ((int)(((byte)(216)))), ((int)(((byte)(3)))));
-			this.GroupButton3.CornerRadius = 15;
-			this.GroupButton3.ImageMargins = new System.Drawing.Printing.Margins(0, 0, 0, 0);
-			this.GroupButton3.Location = new System.Drawing.Point(75, 10);
-			this.GroupButton3.Margin = new System.Windows.Forms.Padding(2);
-			this.GroupButton3.Name = "GroupButton3";
-			this.GroupButton3.OnHoverButtonColor = System.Drawing.Color.FromArgb(((int)(((byte)(189)))), ((int)(((byte)(255)))), ((int)(((byte)(55)))));
-			this.GroupButton3.OnHoverTextColor = System.Drawing.Color.Black;
-			this.GroupButton3.Size = new System.Drawing.Size(22, 24);
-			this.GroupButton3.TabIndex = 30;
-			this.GroupButton3.Text = "3";
-			this.GroupButton3.TextColor = System.Drawing.Color.White;
-			this.GroupButton3.UseEllipse = true;
-			this.GroupButton3.UseVisualStyleBackColor = true;
-			this.GroupButton3.Visible = false;
-			// 
-			// GroupButton2
-			// 
-			this.GroupButton2.ButtonColor = System.Drawing.Color.FromArgb(((int)(((byte)(254)))), ((int)(((byte)(223)))), ((int)(((byte)(53)))));
-			this.GroupButton2.CornerRadius = 15;
-			this.GroupButton2.ImageMargins = new System.Drawing.Printing.Margins(0, 0, 0, 0);
-			this.GroupButton2.Location = new System.Drawing.Point(56, 10);
-			this.GroupButton2.Margin = new System.Windows.Forms.Padding(2);
-			this.GroupButton2.Name = "GroupButton2";
-			this.GroupButton2.OnHoverButtonColor = System.Drawing.Color.FromArgb(((int)(((byte)(255)))), ((int)(((byte)(255)))), ((int)(((byte)(123)))));
-			this.GroupButton2.OnHoverTextColor = System.Drawing.Color.Black;
-			this.GroupButton2.Size = new System.Drawing.Size(22, 24);
-			this.GroupButton2.TabIndex = 29;
-			this.GroupButton2.Text = "2";
-			this.GroupButton2.TextColor = System.Drawing.Color.White;
-			this.GroupButton2.UseEllipse = true;
-			this.GroupButton2.UseVisualStyleBackColor = true;
-			this.GroupButton2.Visible = false;
-			// 
-			// GroupButton1
-			// 
-			this.GroupButton1.ButtonColor = System.Drawing.Color.FromArgb(((int)(((byte)(124)))), ((int)(((byte)(119)))), ((int)(((byte)(174)))));
-			this.GroupButton1.CornerRadius = 15;
-			this.GroupButton1.ImageMargins = new System.Drawing.Printing.Margins(0, 0, 0, 0);
-			this.GroupButton1.Location = new System.Drawing.Point(36, 10);
-			this.GroupButton1.Margin = new System.Windows.Forms.Padding(2);
-			this.GroupButton1.Name = "GroupButton1";
-			this.GroupButton1.OnHoverButtonColor = System.Drawing.Color.FromArgb(((int)(((byte)(190)))), ((int)(((byte)(185)))), ((int)(((byte)(240)))));
-			this.GroupButton1.OnHoverTextColor = System.Drawing.Color.Black;
-			this.GroupButton1.Size = new System.Drawing.Size(22, 24);
-			this.GroupButton1.TabIndex = 28;
-			this.GroupButton1.Text = "1";
-			this.GroupButton1.TextColor = System.Drawing.Color.White;
-			this.GroupButton1.UseEllipse = true;
-			this.GroupButton1.UseVisualStyleBackColor = true;
-			this.GroupButton1.Visible = false;
 			// 
 			// DragNDropEmittingButton
 			// 
@@ -397,8 +280,8 @@ namespace WinformExample
 			// 
 			// DataToSendInput
 			// 
-			this.DataToSendInput.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
-			| System.Windows.Forms.AnchorStyles.Right)));
+			this.DataToSendInput.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
 			this.DataToSendInput.AutoSize = true;
 			this.DataToSendInput.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(23)))), ((int)(((byte)(26)))), ((int)(((byte)(32)))));
 			this.DataToSendInput.ForeColor = System.Drawing.Color.White;
@@ -429,8 +312,8 @@ namespace WinformExample
 			// 
 			// panel2
 			// 
-			this.panel2.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
-			| System.Windows.Forms.AnchorStyles.Right)));
+			this.panel2.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
 			this.panel2.Controls.Add(this.panel1);
 			this.panel2.Controls.Add(this.DataLabel);
 			this.panel2.Controls.Add(this.SourceLabel);
@@ -448,12 +331,6 @@ namespace WinformExample
 			this.ClientSize = new System.Drawing.Size(550, 576);
 			this.Controls.Add(this.panel2);
 			this.Controls.Add(this.ComponentDropDown);
-			this.Controls.Add(this.GroupButton6);
-			this.Controls.Add(this.GroupButton5);
-			this.Controls.Add(this.GroupButton4);
-			this.Controls.Add(this.GroupButton3);
-			this.Controls.Add(this.GroupButton2);
-			this.Controls.Add(this.GroupButton1);
 			this.Controls.Add(this.DragNDropEmittingButton);
 			this.Controls.Add(this.DockingButton);
 			this.Controls.Add(this.AlwaysOnTopButton);
@@ -492,12 +369,6 @@ namespace WinformExample
 		private Controls.RoundedButton AlwaysOnTopButton;
 		private Controls.RoundedButton DockingButton;
 		private Controls.RoundedButton DragNDropEmittingButton;
-		private Controls.RoundedButton GroupButton1;
-		private Controls.RoundedButton GroupButton2;
-		private Controls.RoundedButton GroupButton3;
-		private Controls.RoundedButton GroupButton4;
-		private Controls.RoundedButton GroupButton5;
-		private Controls.RoundedButton GroupButton6;
 		private Controls.DropDown ComponentDropDown;
 		private Panel panel2;
 	}

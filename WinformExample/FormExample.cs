@@ -19,6 +19,8 @@ namespace WinformExample
 	public partial class FormExample : Form
 	{
 		private SortedDictionary<string, RoundedButton> LinkerGroups = new SortedDictionary<string, RoundedButton>();
+		const int LinkerPillWidth = 22;
+		const int LinkerPillHeight = 24;
 
 		private System.Drawing.Text.PrivateFontCollection finfont = new System.Drawing.Text.PrivateFontCollection();
 		private JsonWebKey JWK = new JsonWebKey()
@@ -80,9 +82,6 @@ namespace WinformExample
 
 			if (FSBL.LinkerClient != null)
 			{
-				//setup linker channels
-				FSBL.LinkerClient.GetAllChannels(HandleLinkerChannelLabels);
-
 				// Listen to Linker state change to render connected channels
 				FSBL.LinkerClient.OnStateChange(HandleLinkerStateChange);
 
@@ -91,11 +90,6 @@ namespace WinformExample
 			}
 			else //use default FDC3 client
 			{
-				//setup linker channels
-				var systemChannels = await FSBL.FDC3Client.DesktopAgentClient.GetSystemChannels();
-				var data = new JArray(systemChannels.Select(x => new JObject { ["name"] = x.Id }));
-				HandleLinkerChannelLabels(null, new FinsembleEventArgs(null, data));
-
 				FSBL.FDC3Client.StateChanged += HandleLinkerStateChange;
 
 				//setting initial state of linked channels
@@ -187,35 +181,6 @@ namespace WinformExample
 			}
 		}
 
-		private void HandleLinkerChannelLabels(object sender, FinsembleEventArgs args)
-		{
-			this.Invoke(new Action(() =>
-			{
-				if (args.error == null)
-				{
-					var groupLabels = new RoundedButton[] { GroupButton1, GroupButton2, GroupButton3, GroupButton4, GroupButton5, GroupButton6 };
-					var allChannels = args.response as JArray;
-					int labelcount = 0;
-					foreach (JObject item in allChannels)
-					{
-						var theLabel = groupLabels[labelcount++];
-						theLabel.Visible = false;
-						if (!LinkerGroups.ContainsKey(item["name"].ToString()))
-							LinkerGroups.Add(item["name"].ToString(), theLabel);
-						//limit channels to ones we enough labels for
-						if (labelcount == groupLabels.Length)
-						{
-							break;
-						}
-					}
-				}
-				else
-				{
-					FSBL.Logger.Error(new JToken[] { "Error when retrieving linker channels: ", args.error.ToString() });
-				}
-			}));
-		}
-
 		private void HandleLinkerStateChange(Object sender, FinsembleEventArgs response)
 		{
 			this.Invoke(new Action(() =>
@@ -230,39 +195,92 @@ namespace WinformExample
 
 					var channels = response.response["channels"] as JArray;
 					var allChannels = response.response["allChannels"] as JArray;
+
+					if (LinkerGroups.Count == 0)
+					{
+						// setup linker channels only once
+						CreateLinkerPills(allChannels);
+					}
+
 					foreach (JObject obj in allChannels)
 					{
-						LinkerGroups[obj["name"].ToString()].Visible = false;
-						LinkerGroups[obj["name"].ToString()].BackColor = ColorTranslator.FromHtml(obj["color"].ToString());
+						var channelName = obj["name"].ToString();
+						var channelColor = obj["color"].ToString();
+						LinkerGroups[channelName].Visible = false;
+						LinkerGroups[channelName].BackColor = ColorTranslator.FromHtml(channelColor);
 					}
 
 					foreach (JValue channel in channels)
 					{
-						LinkerGroups[channel.Value.ToString()].Visible = true;
+						var channelName = channel.Value.ToString();
+						LinkerGroups[channelName].Visible = true;
 					}
 
-					var visiblePillsAfterChange = LinkerGroups.Count(x => x.Value.Visible);
 					AlignAllLinkerPills();
-					DragNDropEmittingButton.Location = new Point(DragNDropEmittingButton.Location.X + CalculateDragNDropLeftMarginShift(visiblePillsBeforeChange, visiblePillsAfterChange), DragNDropEmittingButton.Location.Y);
+
+					var visiblePillsAfterChange = LinkerGroups.Count(x => x.Value.Visible);
+					var marginShift = CalculateDragNDropLeftMarginShift(visiblePillsBeforeChange, visiblePillsAfterChange);
+					DragNDropEmittingButton.Location = new Point(DragNDropEmittingButton.Location.X + marginShift, DragNDropEmittingButton.Location.Y);
+				}
+			}));
+		}
+
+		private void CreateLinkerPills(JArray allChannels)
+		{
+			this.Invoke(new Action(() =>
+			{
+				int positionX = 0;
+				const int positionY = 10;
+				
+
+				var colorConverter = new ColorConverter();
+				foreach (var channel in allChannels)
+				{
+					if (!LinkerGroups.ContainsKey(channel["name"].ToString()))
+					{
+						var label = channel["label"].ToString();
+
+						var button = new RoundedButton()
+						{
+							CornerRadius = 15,
+							ImageMargins = new System.Drawing.Printing.Margins(0, 0, 0, 0),
+							Margin = new Padding(2),
+							Name = $"GroupButton{label.Replace(" ", "_")}",
+							Visible = false,
+							UseEllipse = true,
+							UseVisualStyleBackColor = true,
+							TextColor = Color.White,
+							Size = new Size(LinkerPillWidth, LinkerPillHeight),
+							Text = label,
+							ButtonColor = (Color)colorConverter.ConvertFromString(channel["color"].ToString()),
+							OnHoverTextColor = Color.Black,
+							OnHoverButtonColor = Color.DarkOliveGreen,
+							Location = new Point(positionX, positionY)
+						};
+
+						this.Controls.Add(button);
+
+						positionX += LinkerPillWidth;
+						LinkerGroups.Add(channel["name"].ToString(), button);
+					}
 				}
 			}));
 		}
 
 		private void AlignAllLinkerPills()
 		{
-			var initialX = GroupButton1.Location.X;
-			var counter = 0;
-
-			foreach (var visiblePill in LinkerGroups.Where(x => x.Value.Visible))
+			var initialX = LinkerButton.Location.X + LinkerButton.Width + 2;
+			var visiblePills = LinkerGroups.Where(x => x.Value.Visible).ToArray();
+			for (int i = 0; i < visiblePills.Count(); i++)
 			{
-				visiblePill.Value.Location = new Point(initialX + (counter * (GroupButton1.Width)), visiblePill.Value.Location.Y);
-				++counter;
+				var button = visiblePills[i].Value;
+				button.Location = new Point(initialX + (i * LinkerPillWidth), button.Location.Y);
 			}
 		}
 
 		private int CalculateDragNDropLeftMarginShift(int visiblePillsBeforeShift, int visiblePillsAfterShift)
 		{
-			return (visiblePillsAfterShift - visiblePillsBeforeShift) * (GroupButton1.Width + 2);
+			return (visiblePillsAfterShift - visiblePillsBeforeShift) * (LinkerPillWidth + 2);
 		}
 
 		private void HandleWindowGrouping(object s, FinsembleEventArgs res)
@@ -576,8 +594,8 @@ namespace WinformExample
 			if (selected == null) return;
 
 			var componentName = selected.ToString();
-			
-			if(FSBL.FDC3Client != null)
+
+			if (FSBL.FDC3Client != null)
 			{
 				var targetApp = new TargetApp() { Name = componentName };
 				var context = new Context(new JObject
