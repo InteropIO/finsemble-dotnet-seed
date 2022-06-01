@@ -5,7 +5,7 @@
     <TargetFramework>net5.0-windows</TargetFramework>
     <UseWPF>true</UseWPF>
     <Platforms>AnyCPU;x64</Platforms>
-    <Version>7.1.0</Version>
+    <Version>7.1.1</Version>
   </PropertyGroup>
 
   <ItemGroup>
@@ -13,7 +13,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Finsemble.WPF.Core" Version="7.1.0" />
+    <PackageReference Include="Finsemble.WPF.Core" Version="7.1.1" />
   </ItemGroup>
 
   <ItemGroup>
