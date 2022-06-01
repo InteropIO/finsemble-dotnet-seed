@@ -45,7 +45,7 @@ namespace WPFExampleCore
 			FSBL = new FinsembleWPF(this, handle.ToString("X"), args); // Finsemble needs the command line arguments to connect and also this Window handle to manage snapping, docking etc.
 			FSBL.Connected += Finsemble_Connected;
 			FSBL.Disconnected += FSBL_Disconnected;
-			var connectTask = FSBL.Connect("WPFExampleCore", JWK);
+			var connectTask = FSBL.Connect(FSBL.AppName ?? "WPFExampleCore", JWK);
 		}
 
 		private void MainWindow_Closing(object sender, System.ComponentModel.CancelEventArgs e)

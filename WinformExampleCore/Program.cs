@@ -1,9 +1,7 @@
 using System;
-using System.Collections.Generic;
 using System.Diagnostics;
-using System.Linq;
+using System.IO;
 using System.Threading;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 
 namespace WinformExampleCore
@@ -20,8 +18,9 @@ namespace WinformExampleCore
 			Application.EnableVisualStyles();
 			Application.SetCompatibleTextRenderingDefault(false);
 
+			Application.ThreadException += new ThreadExceptionEventHandler(Application_ThreadException);
 			Application.SetUnhandledExceptionMode(UnhandledExceptionMode.CatchException);
-			Application.ThreadException += Application_ThreadException;
+			AppDomain.CurrentDomain.UnhandledException += new UnhandledExceptionEventHandler(CurrentDomain_UnhandledException);
 
 #if DEBUG
 			Debugger.Launch();
@@ -32,10 +31,30 @@ namespace WinformExampleCore
 			Application.Run(new MainForm(args));
 		}
 
-		private static void Application_ThreadException(object sender, ThreadExceptionEventArgs e)
+		static void Application_ThreadException(object sender, ThreadExceptionEventArgs e)
 		{
+			LogUnhandledException(e.Exception);
 			Debug.Print($"An Unhandled Exception has occurred. Exception: {e.Exception}");
 			Application.Exit();
+		}
+
+		static void CurrentDomain_UnhandledException(object sender, UnhandledExceptionEventArgs e)
+		{
+			LogUnhandledException(e.ExceptionObject as Exception);
+			Application.Exit();
+		}
+
+		static void LogUnhandledException(Exception e)
+		{
+			using (StreamWriter sw = new StreamWriter("Critical exceptions.log", true))
+			{
+				sw.WriteLine($"{DateTime.Now.ToUniversalTime()} - {e.Message}");
+				sw.WriteLine(e.StackTrace);
+				sw.WriteLine();
+				sw.Close();
+			}
+
+			if (e.InnerException != null) LogUnhandledException(e.InnerException);
 		}
 	}
 }

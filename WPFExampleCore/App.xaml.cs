@@ -1,11 +1,6 @@
-﻿using Finsemble.WPF.Core;
-using System;
-using System.Collections.Generic;
-using System.Configuration;
-using System.Data;
+﻿using System;
 using System.Diagnostics;
-using System.Linq;
-using System.Threading.Tasks;
+using System.IO;
 using System.Windows;
 
 namespace WPFExampleCore
@@ -32,7 +27,22 @@ namespace WPFExampleCore
 #if DEBUG
             Debugger.Launch();
 #endif
+            LogUnhandledException(e.Exception);
             Debug.Print($"An Unhandled Exception has occurred. Exception: {e.Exception}");
+            Shutdown();
+        }
+
+        private void LogUnhandledException(Exception e)
+        {
+            using (StreamWriter sw = new StreamWriter("Critical exceptions.log", true))
+            {
+                sw.WriteLine($"{DateTime.Now.ToUniversalTime()} - {e.Message}");
+                sw.WriteLine(e.StackTrace);
+                sw.WriteLine();
+                sw.Close();
+            }
+
+            if (e.InnerException != null) LogUnhandledException(e.InnerException);
         }
     }
 }

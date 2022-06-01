@@ -5,11 +5,11 @@
     <TargetFramework>net5.0-windows</TargetFramework>
     <UseWindowsForms>true</UseWindowsForms>
     <Platforms>AnyCPU;x64</Platforms>
-    <Version>6.6.3</Version>
+    <Version>7.1.0</Version>
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Finsemble.Winform.Core" Version="6.6.3" />
+    <PackageReference Include="Finsemble.Winform.Core" Version="7.1.0" />
   </ItemGroup>
 
 </Project>
