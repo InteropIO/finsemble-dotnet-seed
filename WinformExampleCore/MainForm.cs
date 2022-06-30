@@ -65,7 +65,7 @@ namespace WinformExampleCore
 
 		private async void Finsemble_Connected(object sender, EventArgs e)
 		{
-			Debug.Print("FSBL Ready.");
+			Trace.TraceInformation("FSBL Ready.");
 
 			_bridge.Clients.Logger.OnLog += Logger_OnLog;
 			_bridge.Clients.Logger.Log(new JToken[] { "Winform Example Core connected to Finsemble." });
@@ -75,14 +75,27 @@ namespace WinformExampleCore
 			_bridge.Clients.RouterClient.Subscribe("Finsemble.WorkspaceService.groupUpdate", HandleWindowGrouping);
 
 			#region FDC3
-			// Listen to Fdc3Client state change to render connected channels
-			_bridge.Clients.Fdc3Client.StateChanged += Fdc3Client_StateChanged; ;
-			// Show joined channels
-			Fdc3Client_StateChanged(null, _bridge.Clients.Fdc3Client.LastStateChangedArgs);
+			if (_bridge.Clients.Fdc3Client != null)
+			{
+				// Listen to Fdc3Client state change to render connected channels
+				_bridge.Clients.Fdc3Client.StateChanged += Fdc3Client_StateChanged;
+				// Show joined channels
+				Fdc3Client_StateChanged(null, _bridge.Clients.Fdc3Client.LastStateChangedArgs);
 
-			// Example for Fdc3Client subscribe to specific context. The "*" for subscription to all contexts.
-			_contextListenter = _bridge.Clients.Fdc3Client.DesktopAgentClient.AddContextListener("fdc3.instrument", HandleContext);
+				// Example for Fdc3Client subscribe to specific context. The "*" for subscription to all contexts.
+				_contextListenter = _bridge.Clients.Fdc3Client.DesktopAgentClient.AddContextListener("fdc3.instrument", HandleContext);
+			}
+			#endregion
 
+			#region Linker Client
+			if (_bridge.Clients.LinkerClient != null)
+			{
+				// Listen to Linker state change to render connected channels
+				_bridge.Clients.LinkerClient.OnStateChange(Fdc3Client_StateChanged);
+
+				// Example for LinkerClient subscribe
+				_bridge.Clients.LinkerClient.Subscribe("symbol", HandleLinkerData);
+			}
 			#endregion
 
 			//Example for Handling PubSub data
@@ -238,6 +251,24 @@ namespace WinformExampleCore
 			}
 		}
 
+		private void HandleLinkerData(object sender, FinsembleEventArgs response)
+		{
+			this.Invoke(new Action(() =>
+			{
+				if (response.error != null)
+				{
+					_bridge.Clients.Logger.Error(new JToken[] { "Error when receiving linker data: ", response.error.ToString() });
+				}
+				else if (response.response != null)
+				{
+					string value = response.response?["data"]?.ToString();
+					DataLabel.Text = value;
+					SourceLabel.Text = "via Linker";
+					DataToSendInput.Text = value;
+				}
+			}));
+		}
+
 		private void HandleContext(Context context)
 		{
 			_bridge.Clients.Logger.Debug($"Context received: {context.Value}");
@@ -352,7 +383,7 @@ namespace WinformExampleCore
 				{
 					if (!LinkerGroups.ContainsKey(channel["name"].ToString()))
 					{
-						var label = channel["label"].ToString();
+						var label = channel["label"]?.ToString() ?? channel["name"].ToString();
 
 						var button = new Controls.RoundedButton()
 						{
@@ -454,7 +485,6 @@ namespace WinformExampleCore
 
 		private void Logger_OnLog(object sender, JObject e)
 		{
-			Debug.Print($"Logged message: {e.ToString()}");
 			MessagesRichBox.Invoke(new Action(() =>
 			{
 				MessagesRichBox.Text += e + "\n\n";
@@ -488,21 +518,39 @@ namespace WinformExampleCore
 
 		private void LinkerButton_Click(object sender, EventArgs e)
 		{
-			_bridge.Clients.Util.OpenLinkerWindow();
+			if (_bridge.Clients.LinkerClient != null)
+			{
+				_bridge.Clients.LinkerClient.OpenLinkerWindow();
+			}
+			else
+			{
+				_bridge.Clients.Util.OpenLinkerWindow();
+			}
 		}
 
 		private void SendButton_Click(object sender, EventArgs e)
 		{
-			var param = new JObject
+			if (_bridge.Clients.LinkerClient != null)
 			{
-				["type"] = "fdc3.instrument",
-				["name"] = DataToSendInput.Text,
-				["id"] = new JObject
+				_bridge.Clients.LinkerClient.Publish(new JObject
 				{
-					["ticker"] = DataToSendInput.Text
-				}
-			};
-			_bridge.Clients.Fdc3Client.DesktopAgentClient.Broadcast(new Context(param));
+					["dataType"] = "symbol",
+					["data"] = DataToSendInput.Text
+				});
+			}
+			else
+			{
+				var param = new JObject
+				{
+					["type"] = "fdc3.instrument",
+					["name"] = DataToSendInput.Text,
+					["id"] = new JObject
+					{
+						["ticker"] = DataToSendInput.Text
+					}
+				};
+				_bridge.Clients.Fdc3Client.DesktopAgentClient.Broadcast(new Context(param));
+			}
 		}
 
 		private void UpdateAlwaysOnTopButton(bool isAlwaysOnTop)

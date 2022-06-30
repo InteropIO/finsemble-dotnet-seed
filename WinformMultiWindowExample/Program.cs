@@ -8,6 +8,7 @@
 	using System.Diagnostics;
 	using System.Linq;
 	using System.Windows.Forms;
+	using System.Diagnostics;
 
 	internal static class Program
 	{
@@ -20,6 +21,15 @@
 		{
 #if DEBUG
 			Debugger.Launch();
+#endif
+
+#if LOGGING && TRACE
+			TextWriterTraceListener logger = new TextWriterTraceListener("Finsemble.log");
+			logger.TraceOutputOptions = TraceOptions.DateTime;
+
+			Trace.Listeners.Add(logger);
+			Trace.AutoFlush = true;
+			Trace.TraceInformation("Logging started");
 #endif
 
 			ApplicationContext app = new ApplicationContext(args);
@@ -55,7 +65,7 @@
 				var fsbl = new Finsemble(args.ToArray(), form);
 				fsbl.Connected += (s, e) =>
 				{
-					Debug.WriteLine("FSBL connected");
+					Trace.TraceInformation("FSBL connected");
 
 					IIntegratable fsblForm = form as IIntegratable;
 					if (fsblForm != null)
@@ -67,9 +77,9 @@
 				// Dispose of Finsemble object when window is closed.
 				form.Closed += (s, e) =>
 				{
-					Debug.WriteLine("disposing window from app.xaml");
+					Trace.TraceInformation("disposing window from app.xaml");
 					fsbl.Dispose();
-					Debug.WriteLine("dispose completed");
+					Trace.TraceInformation("dispose completed");
 				};
 				fsbl.Connect("WinformMultiWindowExample", JWK);
 				this.MainForm = form;
@@ -88,7 +98,7 @@
 				var fsbl = new Finsemble(eventArgs.CommandLine.ToArray(), form);
 				fsbl.Connected += (s, e) =>
 				{
-					Debug.WriteLine("FSBL connected");
+					Trace.TraceInformation("FSBL connected");
 					IIntegratable fsblForm = form as IIntegratable;
 					if (fsblForm != null)
 					{
@@ -99,9 +109,9 @@
 				// Dispose of Finsemble object when window is closed.
 				form.Closed += (s, e) =>
 				{
-					Debug.WriteLine("disposing window from app.xaml");
+					Trace.TraceInformation("disposing window from app.xaml");
 					fsbl.Dispose();
-					Debug.WriteLine("dispose completed");
+					Trace.TraceInformation("dispose completed");
 				};
 				fsbl.Connect("WinformMultiWindowExample", JWK);
 				form.Show();

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO.Pipes;
 using System.Text.Json;
 using System.Threading;
@@ -162,7 +163,7 @@ namespace WPFMultiWindowExampleCore
 				}
 				catch (Exception ex)
 				{
-					System.Diagnostics.Debug.Print(ex.Message);
+					Trace.TraceError(ex.Message);
 				}
 				finally
 				{
@@ -204,7 +205,7 @@ namespace WPFMultiWindowExampleCore
 			}
 			catch (Exception ex)
 			{
-				System.Diagnostics.Debug.Print(ex.Message);
+				Trace.TraceError(ex.Message);
 			}
 		}
 

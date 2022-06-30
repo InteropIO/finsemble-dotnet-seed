@@ -14,6 +14,18 @@ namespace WinformExampleCore
 		[STAThread]
 		static void Main()
 		{
+#if DEBUG
+			Debugger.Launch();
+#endif
+
+#if LOGGING && TRACE
+			TextWriterTraceListener logger = new TextWriterTraceListener("Finsemble.log");
+			logger.TraceOutputOptions = TraceOptions.DateTime;
+
+			Trace.Listeners.Add(logger);
+			Trace.AutoFlush = true;
+			Trace.TraceInformation("Logging started");
+#endif
 			Application.SetHighDpiMode(HighDpiMode.SystemAware);
 			Application.EnableVisualStyles();
 			Application.SetCompatibleTextRenderingDefault(false);
@@ -22,11 +34,6 @@ namespace WinformExampleCore
 			Application.SetUnhandledExceptionMode(UnhandledExceptionMode.CatchException);
 			AppDomain.CurrentDomain.UnhandledException += new UnhandledExceptionEventHandler(CurrentDomain_UnhandledException);
 
-#if DEBUG
-			Debugger.Launch();
-			Debug.Print("OnStartup");
-#endif
-
 			string[] args = Environment.GetCommandLineArgs();
 			Application.Run(new MainForm(args));
 		}
@@ -34,18 +41,20 @@ namespace WinformExampleCore
 		static void Application_ThreadException(object sender, ThreadExceptionEventArgs e)
 		{
 			LogUnhandledException(e.Exception);
-			Debug.Print($"An Unhandled Exception has occurred. Exception: {e.Exception}");
+			Trace.TraceInformation("Shutting down");
 			Application.Exit();
 		}
 
 		static void CurrentDomain_UnhandledException(object sender, UnhandledExceptionEventArgs e)
 		{
 			LogUnhandledException(e.ExceptionObject as Exception);
+			Trace.TraceInformation("Shutting down");
 			Application.Exit();
 		}
 
 		static void LogUnhandledException(Exception e)
 		{
+			Trace.TraceError(e.Message);
 			using (StreamWriter sw = new StreamWriter("Critical exceptions.log", true))
 			{
 				sw.WriteLine($"{DateTime.Now.ToUniversalTime()} - {e.Message}");

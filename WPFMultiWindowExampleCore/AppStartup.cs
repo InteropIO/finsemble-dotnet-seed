@@ -28,6 +28,16 @@ namespace WPFMultiWindowExampleCore
 #if DEBUG
 			Debugger.Launch();
 #endif
+
+#if LOGGING && TRACE
+			TextWriterTraceListener logger = new TextWriterTraceListener("Finsemble.log");
+			logger.TraceOutputOptions = TraceOptions.DateTime;
+
+			Trace.Listeners.Add(logger);
+			Trace.AutoFlush = true;
+			Trace.TraceInformation("Logging started");
+#endif
+
 			// create a global mutex
 			using (var mutex = new Mutex(false, "Finsemble"))
 			{
@@ -139,7 +149,7 @@ namespace WPFMultiWindowExampleCore
 				default:
 					{
 						// Unknown window, ignore
-						Debug.Print($"Could not create window: {name}");
+						Trace.TraceError($"Could not create window: {name}");
 						break;
 					}
 			}
@@ -165,10 +175,7 @@ namespace WPFMultiWindowExampleCore
 		/// <param name="e"></param>
 		private static void Application_DispatcherUnhandledException(object sender, System.Windows.Threading.DispatcherUnhandledExceptionEventArgs e)
 		{
-#if DEBUG
-			Debugger.Launch();
-#endif
-			Debug.Print($"An Unhandled Exception has occurred. {e.Exception.Message}");
+			Trace.TraceError($"An Unhandled Exception has occurred. {e.Exception.Message}");
 			MessageBox.Show("An Unhandled Exception has occurred. Please Check your event Logs.");
 		}
 	}

@@ -23,6 +23,15 @@ namespace WinformMultiWindowExampleCore
 #if DEBUG
 			Debugger.Launch();
 #endif
+#if LOGGING && TRACE
+			TextWriterTraceListener logger = new TextWriterTraceListener("Finsemble.log");
+			logger.TraceOutputOptions = TraceOptions.DateTime;
+
+			Trace.Listeners.Add(logger);
+			Trace.AutoFlush = true;
+			Trace.TraceInformation("Logging started");
+#endif
+
 			Application.SetHighDpiMode(HighDpiMode.SystemAware);
 			Application.EnableVisualStyles();
 			Application.SetCompatibleTextRenderingDefault(false);
@@ -50,7 +59,7 @@ namespace WinformMultiWindowExampleCore
 				// if it wasn't acquired, it timed out, so can handle that how ever we want
 				if (!mutexAcquired)
 				{
-					Debug.Print("I have timed out acquiring the mutex and can handle that somehow");
+					Trace.TraceError("I have timed out acquiring the mutex and can handle that somehow");
 					return;
 				}
 
@@ -97,9 +106,8 @@ namespace WinformMultiWindowExampleCore
 
 		private static void Application_ThreadException(object sender, ThreadExceptionEventArgs e)
 		{
-#if DEBUG
-			Debug.Print($"An Unhandled Exception has occurred. Exception: {e.Exception}");
-#endif
+			Trace.TraceError($"An Unhandled Exception has occurred. Exception: {e.Exception}");
+			Trace.TraceInformation("Shutting down");
 			Application.Exit();
 		}
 
