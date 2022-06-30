@@ -69,7 +69,7 @@ namespace WPFMultiWindowExampleCore
 
 		private void Finsemble_Connected(object sender, EventArgs e)
 		{
-			Debug.WriteLine("FSBL connected");
+			Trace.TraceInformation("FSBL connected");
 			
 			Application.Current.Dispatcher.Invoke(() =>
 			{
@@ -109,7 +109,7 @@ namespace WPFMultiWindowExampleCore
 				Show();
 			});
 
-			Debug.Print($"The window \"{this.LabelWindowName.Content}\" is connected to Finsemble.");
+			Trace.TraceInformation($"The window \"{this.LabelWindowName.Content}\" is connected to Finsemble.");
 		}
 	}
 }

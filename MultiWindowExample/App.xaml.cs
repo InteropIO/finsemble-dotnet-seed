@@ -44,39 +44,49 @@ namespace MultiWindowExample
 #if DEBUG
             Debugger.Launch();
 #endif
-            // create a global mutex
-            using (var mutex = new Mutex(false, "Finsemble"))
-            {
-                var mutexAcquired = false;
-                try
-                {
-                    // acquire the mutex (or timeout after 60 seconds)
-                    // will return false if it timed out
-                    mutexAcquired = mutex.WaitOne(60000);
-                }
-                catch (AbandonedMutexException)
-                {
-                    // abandoned mutexes are still acquired, we just need
-                    // to handle the exception and treat it as acquisition
-                    mutexAcquired = true;
-                }
 
-                // if it wasn't acquired, it timed out, so can handle that how ever we want
-                if (!mutexAcquired)
-                {
-                    Console.WriteLine("I have timed out acquiring the mutex and can handle that somehow");
-                    return;
-                }
+#if LOGGING && TRACE
+			TextWriterTraceListener logger = new TextWriterTraceListener("Finsemble.log");
+			logger.TraceOutputOptions = TraceOptions.DateTime;
 
-                // otherwise, we've acquired the mutex and should do what we need to do,
-                // then ensure that we always release the mutex
-                if (SingleInstance<App>.InitializeAsFirstInstance(Unique))
-                {
-                    application = new App();
+			Trace.Listeners.Add(logger);
+			Trace.AutoFlush = true;
+			Trace.TraceInformation("Logging started");
+#endif
 
-                    // If window type passed for initial launch, add listener to launch window when connected.
-                    var argsList = args.ToList();
-                    IEnumerable<string> nonFSBLArgs = GetNonFinsembleArgs(argsList);
+			// create a global mutex
+			using (var mutex = new Mutex(false, "Finsemble"))
+			{
+				var mutexAcquired = false;
+				try
+				{
+					// acquire the mutex (or timeout after 60 seconds)
+					// will return false if it timed out
+					mutexAcquired = mutex.WaitOne(60000);
+				}
+				catch (AbandonedMutexException)
+				{
+					// abandoned mutexes are still acquired, we just need
+					// to handle the exception and treat it as acquisition
+					mutexAcquired = true;
+				}
+
+				// if it wasn't acquired, it timed out, so can handle that how ever we want
+				if (!mutexAcquired)
+				{
+					Console.WriteLine("I have timed out acquiring the mutex and can handle that somehow");
+					return;
+				}
+
+				// otherwise, we've acquired the mutex and should do what we need to do,
+				// then ensure that we always release the mutex
+				if (SingleInstance<App>.InitializeAsFirstInstance(Unique))
+				{
+					application = new App();
+
+					// If window type passed for initial launch, add listener to launch window when connected.
+					var argsList = args.ToList();
+					IEnumerable<string> nonFSBLArgs = GetNonFinsembleArgs(argsList);
 					if ((nonFSBLArgs != null) && nonFSBLArgs.Any())
 					{
 						// Non-finsemble arguments passed, launch window
@@ -92,13 +102,13 @@ namespace MultiWindowExample
 					}
 
 					application.InitializeComponent();
-                    mutex.ReleaseMutex();
-                    application.Run();
+					mutex.ReleaseMutex();
+					application.Run();
 
-                    // Allow single instance code to perform cleanup operations
-                    SingleInstance<App>.Cleanup();
-                }
-            }
+					// Allow single instance code to perform cleanup operations
+					SingleInstance<App>.Cleanup();
+				}
+			}
 		}
 
 		/// <summary>
@@ -148,7 +158,7 @@ namespace MultiWindowExample
 
 			if (window == null)
 			{
-				Debug.Print($"Could not create window: {name}");
+				Trace.TraceWarning($"Could not create window: {name}");
 			}
 			else
 			{
@@ -160,7 +170,7 @@ namespace MultiWindowExample
 					IIntegratable fsblWin = window as IIntegratable;
 					if (fsblWin == null)
 					{
-						Debug.Print($"The window \"{name}\" is not a window that can be integrated into Finsemble.");
+						Trace.TraceWarning($"The window \"{name}\" is not a window that can be integrated into Finsemble.");
 					}
 					else
 					{
@@ -173,9 +183,9 @@ namespace MultiWindowExample
 				// Dispose of Finsemble object when window is closed.
 				window.Closed += (s, e) =>
 				{
-					Debug.WriteLine("disposing window from app.xaml");
+					Trace.TraceInformation("disposing window from app.xaml");
 					fsbl.Dispose();
-					Debug.WriteLine("dispose completed");
+					Trace.TraceInformation("dispose completed");
 				};
 
 				fsbl.Connect("MultiWindowExample", JWK);

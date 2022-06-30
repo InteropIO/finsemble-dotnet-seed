@@ -6,6 +6,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Text.Json.Serialization;
 using System.Text.Json;
+using System.Diagnostics;
 
 namespace WinformMultiWindowExampleCore
 {
@@ -126,7 +127,7 @@ namespace WinformMultiWindowExampleCore
 				}
 				catch (Exception ex)
 				{
-					System.Diagnostics.Debug.Print(ex.Message);
+					Trace.TraceError(ex.Message);
 				}
 				finally
 				{
@@ -169,7 +170,7 @@ namespace WinformMultiWindowExampleCore
 			}
 			catch (Exception ex)
 			{
-				System.Diagnostics.Debug.Print(ex.Message);
+				Trace.TraceError(ex.Message);
 			}
 		}
 	}

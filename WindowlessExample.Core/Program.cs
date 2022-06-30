@@ -1,7 +1,6 @@
 ﻿using System;
+using System.Diagnostics;
 using System.Threading;
-using Finsemble.Core;
-using Finsemble.Core.Clients.Router;
 using Finsemble.Core.Events;
 using Microsoft.IdentityModel.Tokens;
 using Newtonsoft.Json.Linq;
@@ -26,11 +25,20 @@ namespace WindowlessExample.Core
 			Q = "4R0RUlCnmZRzEw9sqjwxMuvNM1BTSubvMvG0VIlBkYbCn9MOdwurBPxrYqnUcbw-q-qzQy6st6a4L-EAZSnfD3FEEFKeINOJK06l0EwjcLeP8B4YQ-bxd9UroXpl9ACiMqHzyvJCNOpw8A22nbjKVnVhW1E17F-LFAJoWBetYA0",
 			QI = "PODgpJrXxPAp72v_O0fNfAhWjHLeTk9TfLARl9lzPpYIoYR5tgP1Y_A-3feH_xtCfkzcCskfXIerQlY9lVmqs-eGEYjfuuPVYIruN4OsskMY1nz-h_14clyUmUwfCQJDV4qjcAzf80IMu53jYEW1BydRf90snRjk1dYgSq_qtTQ",
 		};
-		
+
 		static void Main(string[] args)
 		{
 #if DEBUG
-			System.Diagnostics.Debugger.Launch();
+			Debugger.Launch();
+#endif
+
+#if LOGGING && TRACE
+			TextWriterTraceListener logger = new TextWriterTraceListener("Finsemble.log");
+			logger.TraceOutputOptions = TraceOptions.DateTime;
+
+			Trace.Listeners.Add(logger);
+			Trace.AutoFlush = true;
+			Trace.TraceInformation("Logging started");
 #endif
 
 			FSBL = new Finsemble.Core.Finsemble(args, null);
@@ -46,6 +54,10 @@ namespace WindowlessExample.Core
 		{
 			FSBL.Clients.Logger.Log("Windowless example Core connected to Finsemble.");
 
+			// If the appd config contains ` "appService": true, "waitForInitialization": true `,
+			// signal to Finsemble that appService initialization is complete
+			FSBL.PublishReady();
+
 			// Send log message every 5 seconds
 			timer.Interval = 5 * 1000;
 			timer.AutoReset = true;
@@ -55,7 +67,8 @@ namespace WindowlessExample.Core
 			//Search provider example
 			FSBL.Clients.SearchClient.Register(
 				"Windowless example Core",
-				(o, args) => {
+				(o, args) =>
+				{
 					FSBL.Clients.Logger.Log("Received query", args.response?["data"]?["text"]);
 					JArray results = new JArray{
 						new JObject {
@@ -67,11 +80,13 @@ namespace WindowlessExample.Core
 					};
 					args.sendQueryMessage(new FinsembleEventResponse(results, null));
 				},
-				(o, args) => {
+				(o, args) =>
+				{
 					FSBL.Clients.Logger.Log("Search result action clicked on", args.response["item"], "action:", args.response["action"]);
 					args.sendQueryMessage(new FinsembleEventResponse("Performed search result action", null));
 				},
-				(o, args) => {
+				(o, args) =>
+				{
 					FSBL.Clients.Logger.Log("Search provider title was click on");
 					args.sendQueryMessage(new FinsembleEventResponse("Performed search provider action", null));
 				},

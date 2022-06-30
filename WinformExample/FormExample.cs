@@ -238,7 +238,7 @@ namespace WinformExample
 				{
 					if (!LinkerGroups.ContainsKey(channel["name"].ToString()))
 					{
-						var label = channel["label"].ToString();
+						var label = channel["label"]?.ToString() ?? channel["name"].ToString();
 
 						var button = new RoundedButton()
 						{

@@ -47,9 +47,9 @@ namespace WinformMultiWindowExampleCore
 
 		private void FinsembleForm_FormClosed(object sender, FormClosedEventArgs e)
 		{
-			Debug.WriteLine("disposing Finsemble bridge");
+			Trace.TraceInformation("disposing Finsemble bridge");
 			FSBL.Dispose();
-			Debug.WriteLine("dispose completed");
+			Trace.TraceInformation("dispose completed");
 		}
 
 		/// <summary>
@@ -65,7 +65,7 @@ namespace WinformMultiWindowExampleCore
 
 		private void Finsemble_Connected(object sender, EventArgs e)
 		{
-			Debug.WriteLine("FSBL connected");
+			Trace.TraceInformation("FSBL connected");
 			//show the form
 			this.allowshowdisplay = true;
 			this.Visible = true;
