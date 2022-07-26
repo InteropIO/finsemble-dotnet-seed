@@ -26,7 +26,7 @@ namespace WpfTestProject
 
 		#region JS scripts
 		private string finsembleJsAdapterSrc = "http://localhost:3375/build/finsemble/finsemble-javascript-adapter.js";
-		private string fsblStartApp = "FSBL.startApp({appName: \"MyApp\", windowName: \"MyApp-window\"})";
+		private string fsblStartApp = "FSBLJSAdapter.startApp({appName: \"MyApp\", windowName: \"MyApp-window\"})";
 		#endregion
 
 		private IBrowser browser;

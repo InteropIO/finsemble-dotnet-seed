@@ -171,8 +171,8 @@ namespace WPFExample
 			
 			FSBL = new Finsemble(args, this); // Finsemble needs the command line arguments to connect and also this Window to manage snapping, docking etc.
 			FSBL.Connected += Finsemble_Connected;
-			// For statitc authentication you may replace FSBL.appName by your app name from appd.json
-			FSBL.Connect(FSBL.appName, JWK);
+			// For authentication in the InteropService use the appId from appd.json and static auth token
+			FSBL.Connect("Finsemble WPF Demo", JWK);
 		}
 
 		private void Finsemble_Connected(object sender, EventArgs e)
