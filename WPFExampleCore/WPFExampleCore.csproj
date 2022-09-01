@@ -29,7 +29,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Finsemble.WPF.Core" Version="7.3.1" />
+    <PackageReference Include="Finsemble.WPF.Core" Version="7.3.2" />
   </ItemGroup>
 
   <ItemGroup>
