@@ -39,7 +39,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Finsemble.Winform.Core" Version="7.3.2" />
+    <PackageReference Include="Finsemble.Winform.Core" Version="7.3.3" />
     <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
   </ItemGroup>
 
