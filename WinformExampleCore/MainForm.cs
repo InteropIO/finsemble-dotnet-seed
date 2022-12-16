@@ -83,7 +83,7 @@ namespace WinformExampleCore
 				Fdc3Client_StateChanged(null, _bridge.Clients.Fdc3Client.LastStateChangedArgs);
 
 				// Example for Fdc3Client subscribe to specific context. The "*" for subscription to all contexts.
-				_contextListenter = _bridge.Clients.Fdc3Client.DesktopAgentClient.AddContextListener("fdc3.instrument", HandleContext);
+				_contextListenter = await _bridge.Clients.Fdc3Client.DesktopAgentClient.AddContextListener("fdc3.instrument", HandleContext);
 			}
 			#endregion
 
@@ -136,12 +136,17 @@ namespace WinformExampleCore
 		{
 			this.Invoke(new Action(() =>
 			{
-				var thisWindowGroups = new JObject();
+				var thisWindowGroups = new JObject
+				{
+					["dockingGroup"] = "",
+					["snappingGroup"] = "",
+					["topRight"] = false
+				};
 
 				foreach (var group in groupdWindowBelongsTo)
 				{
 					var windowNames = group["windowNames"] as JArray;
-					thisWindowGroups = FormWindowGroupsTo(group, windowNames);
+					thisWindowGroups = FormWindowGroupsTo(group, windowNames, thisWindowGroups);
 				}
 
 				UpdateViewDueToWindowGroups(thisWindowGroups);
@@ -173,15 +178,8 @@ namespace WinformExampleCore
 			}
 		}
 
-		private JObject FormWindowGroupsTo(JToken group, JArray windowNames)
+		private JObject FormWindowGroupsTo(JToken group, JArray windowNames, JObject thisWindowGroups)
 		{
-			var thisWindowGroups = new JObject
-			{
-				["dockingGroup"] = "",
-				["snappingGroup"] = "",
-				["topRight"] = false
-			};
-
 			var currentWindowName = _bridge.Clients.WindowClient.GetWindowIdentifier()["windowName"].ToString();
 
 			var windowingGroup = false;
@@ -269,7 +267,7 @@ namespace WinformExampleCore
 			}));
 		}
 
-		private void HandleContext(Context context)
+		private void HandleContext(Context context, IContextMetadata metadata)
 		{
 			_bridge.Clients.Logger.Debug($"Context received: {context.Value}");
 
@@ -279,10 +277,13 @@ namespace WinformExampleCore
 			}
 			else
 			{
-				string value = context.Name;
-				SourceLabel.Text = "via FDC3";
-				DataLabel.Text = value;
-				DataToSendInput.Text = value;
+				this.Invoke(new Action(() =>
+				{
+					string value = context.Id?["ticker"]?.ToString();
+					SourceLabel.Text = "via FDC3";
+					DataLabel.Text = value;
+					DataToSendInput.Text = value;
+				}));
 			}
 		}
 
@@ -468,7 +469,12 @@ namespace WinformExampleCore
 				}
 
 				var groupData = args.response["data"]["groupData"] as JObject;
-				var thisWindowGroups = new JObject();
+				var thisWindowGroups = new JObject
+				{
+					["dockingGroup"] = "",
+					["snappingGroup"] = "",
+					["topRight"] = false
+				};
 
 				foreach (var obj in groupData)
 				{
@@ -476,7 +482,7 @@ namespace WinformExampleCore
 					var windowgroup = groupData[windowgroupid] as JObject;
 					var windownames = windowgroup["windowNames"] as JArray;
 
-					thisWindowGroups = FormWindowGroupsTo(windowgroup, windownames);
+					thisWindowGroups = FormWindowGroupsTo(windowgroup, windownames, thisWindowGroups);
 				}
 
 				UpdateViewDueToWindowGroups(thisWindowGroups);
@@ -551,6 +557,12 @@ namespace WinformExampleCore
 				};
 				_bridge.Clients.Fdc3Client.DesktopAgentClient.Broadcast(new Context(param));
 			}
+
+			this.Invoke(new Action(() =>
+			{
+				SourceLabel.Text = "via Text entry";
+				DataLabel.Text = DataToSendInput.Text;
+			}));
 		}
 
 		private void UpdateAlwaysOnTopButton(bool isAlwaysOnTop)

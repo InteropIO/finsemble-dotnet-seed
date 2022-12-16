@@ -180,7 +180,7 @@ namespace WPFExampleCore
 			if (FSBL.Clients.Fdc3Client is object)
 			{
 				FDC3Label.Visibility = Visibility.Visible;
-				ContextHandler contextHandler = (context) =>
+				ContextHandler contextHandler = (context, metadata) =>
 				{
 					FSBL.Clients.Logger.Log(new JToken[] { "WPF Core FDC3 Usage Example, context received by contextHandler.", context.Value });
 					if (context.Type.Equals("fdc3.instrument"))
@@ -196,7 +196,7 @@ namespace WPFExampleCore
 				};
 				FSBL.Clients.Fdc3Client.DesktopAgentClient.AddContextListener("fdc3.instrument", contextHandler);
 
-				ContextHandler intentHandler = (context) =>
+				IntentHandler intentHandler = (context, metadata) =>
 				{
 					FSBL.Clients.Logger.Log(new JToken[] { "WPF Core FDC3 Usage Example: context received by intentHandler.", context.Value });
 					if (context.Type != null && context.Type.Equals("fdc3.instrument"))
@@ -209,6 +209,8 @@ namespace WPFExampleCore
 							await SaveStateAsync();
 						});
 					}
+
+					return null;
 				};
 				FSBL.Clients.Fdc3Client.DesktopAgentClient.AddIntentListener("ViewChart", intentHandler);
 			}

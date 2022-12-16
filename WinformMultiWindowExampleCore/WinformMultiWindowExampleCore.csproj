@@ -25,7 +25,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Finsemble.Winform.Core" Version="8.2.1" />
+    <PackageReference Include="Finsemble.Winform.Core" Version="8.3.0" />
   </ItemGroup>
 
 </Project>

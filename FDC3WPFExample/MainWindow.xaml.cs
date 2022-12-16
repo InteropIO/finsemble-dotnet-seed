@@ -117,7 +117,7 @@ namespace FDC3WPFExample
 				if (FSBL.FDC3Client is object)
 				{
 					//Context handler
-					ContextHandler contextHandler = (context) =>
+					ContextHandler contextHandler = (context, metadata) =>
 					{
 						FSBL.Logger.Log(new JToken[] { "context received by contextHandler.", context.Value.ToString() });
 						if (context.Type.Equals("fdc3.instrument"))
@@ -135,12 +135,12 @@ namespace FDC3WPFExample
 					//FSBL.FDC3Client.DesktopAgentClient.AddContextListener("fdc3.instrument", contextHandler);
 
 					//Intent handler
-					ContextHandler intentHandler = (context) =>
+					IntentHandler intentHandler = async (context, metadata) =>
 					{
 						FSBL.Logger.Log(new JToken[] { "context received by intentHandler.", context.Value.ToString() });
 						if (context.Type != null && context.Type.Equals("fdc3.instrument"))
 						{
-							Application.Current.Dispatcher.Invoke(async delegate //main thread
+							await Application.Current.Dispatcher.Invoke(async delegate //main thread
 							{
 								string ticker = context.Id?["ticker"]?.ToString();
 								FSBL.Logger.Log(new JToken[] { "updating state to ticker:" + ticker });
@@ -157,6 +157,8 @@ namespace FDC3WPFExample
 						{
 							FSBL.Logger.Log(new JToken[] { "unrecognized context type received by intentHandler.", context.ToString() });
 						}
+
+						return new ContextIntentResult() { Context = context };
 					};
 					FSBL.FDC3Client.DesktopAgentClient.AddIntentListener("ViewChart", intentHandler);
 				}
@@ -236,7 +238,7 @@ namespace FDC3WPFExample
 			}
 			// NOTE: it possible to listen to multiple channels simultaneously, but that we do not in this example
 			AppChannel = await FSBL.FDC3Client.DesktopAgentClient.GetOrCreateChannel(AppChannelInput.TextBox.Text);
-			AppChannelListener = AppChannel.AddContextListener((context) =>
+			AppChannelListener = await AppChannel.AddContextListener((context, metadata) =>
 			{
 				Application.Current.Dispatcher.Invoke(delegate //main thread
 				{
@@ -320,7 +322,8 @@ namespace FDC3WPFExample
 				var context = GetContext();
 				if (context != null)
 				{
-					await FSBL.FDC3Client.DesktopAgentClient.RaiseIntent(IntentsDropDown.ItemsComboBox.SelectedItem as string, context, null);
+					var intent = IntentsDropDown.ItemsComboBox.SelectedItem as string;
+					await FSBL.FDC3Client.DesktopAgentClient.RaiseIntent(intent, context);
 				}
 			}
 			else
@@ -338,7 +341,7 @@ namespace FDC3WPFExample
 				var context = GetContext();
 				if (context != null)
 				{
-					await FSBL.FDC3Client.DesktopAgentClient.RaiseIntentForContext(context, null);
+					await FSBL.FDC3Client.DesktopAgentClient.RaiseIntentForContext(context);
 				}
 			}
 			else
