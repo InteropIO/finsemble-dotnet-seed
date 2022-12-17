@@ -24,7 +24,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Finsemble.Core" Version="8.2.1" />
+    <PackageReference Include="Finsemble.Core" Version="8.3.0" />
   </ItemGroup>
 
 </Project>

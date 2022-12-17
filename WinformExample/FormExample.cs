@@ -13,6 +13,7 @@ using WinformExample.Controls;
 using Color = System.Drawing.Color;
 using ChartIQ.Finsemble.FDC3.Types;
 using Microsoft.IdentityModel.Tokens;
+using ChartIQ.Finsemble.FDC3.Interfaces;
 
 namespace WinformExample
 {
@@ -148,7 +149,7 @@ namespace WinformExample
 			UpdateAlwaysOnTopButton(isAlwaysOnTop);
 		}
 
-		private void HandleContext(Context context)
+		private void HandleContext(Context context, IContextMetadata metadata)
 		{
 
 			FSBL.Logger.Debug($"Context received: {context.Value}");
@@ -161,7 +162,7 @@ namespace WinformExample
 			{
 				this.Invoke(new Action(() =>
 				{
-					string value = context.Name;
+					string value = context.Id?["ticker"]?.ToString();
 					SourceLabel.Text = "via FDC3";
 					DataLabel.Text = value;
 					DataToSendInput.Text = value;
@@ -293,7 +294,12 @@ namespace WinformExample
 				}
 
 				var groupData = res.response["data"]["groupData"] as JObject;
-				var thisWindowGroups = new JObject();
+				var thisWindowGroups = new JObject
+				{
+					["dockingGroup"] = "",
+					["snappingGroup"] = "",
+					["topRight"] = false
+				};
 
 				foreach (var obj in groupData)
 				{
@@ -301,7 +307,7 @@ namespace WinformExample
 					var windowgroup = groupData[windowgroupid] as JObject;
 					var windownames = windowgroup["windowNames"] as JArray;
 
-					thisWindowGroups = FormWindowGroupsTo(windowgroup, windownames);
+					thisWindowGroups = FormWindowGroupsTo(windowgroup, windownames, thisWindowGroups);
 				}
 
 				UpdateViewDueToWindowGroups(thisWindowGroups);
@@ -312,27 +318,25 @@ namespace WinformExample
 		{
 			this.Invoke(new Action(() =>
 			{
-				var thisWindowGroups = new JObject();
+				var thisWindowGroups = new JObject
+				{
+					["dockingGroup"] = "",
+					["snappingGroup"] = "",
+					["topRight"] = false
+				};
 
 				foreach (var group in groupdWindowBelongsTo)
 				{
 					var windowNames = group["windowNames"] as JArray;
-					thisWindowGroups = FormWindowGroupsTo(group, windowNames);
+					thisWindowGroups = FormWindowGroupsTo(group, windowNames, thisWindowGroups);
 				}
 
 				UpdateViewDueToWindowGroups(thisWindowGroups);
 			}));
 		}
 
-		private JObject FormWindowGroupsTo(JToken group, JArray windowNames)
+		private JObject FormWindowGroupsTo(JToken group, JArray windowNames, JObject thisWindowGroups)
 		{
-			var thisWindowGroups = new JObject
-			{
-				["dockingGroup"] = "",
-				["snappingGroup"] = "",
-				["topRight"] = false
-			};
-
 			var currentWindowName = FSBL.WindowClient.GetWindowIdentifier()["windowName"].ToString();
 
 			var windowingGroup = false;
