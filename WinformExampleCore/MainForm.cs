@@ -71,8 +71,9 @@ namespace WinformExampleCore
 			_bridge.Clients.Logger.Log(new JToken[] { "Winform Example Core connected to Finsemble." });
 
 
-			// Handle Window grouping
-			_bridge.Clients.RouterClient.Subscribe("Finsemble.WorkspaceService.groupUpdate", HandleWindowGrouping);
+			// Update UI buttons
+			_bridge.Clients.WindowClient.WindowStateChanged += WindowClient_WindowStateChanged;
+			WindowClient_WindowStateChanged(null, _bridge.Clients.WindowClient.CurrentWindowState);
 
 			#region FDC3
 			if (_bridge.Clients.Fdc3Client != null)
@@ -120,96 +121,46 @@ namespace WinformExampleCore
 			// Example for getting Spawnable component list
 			HandleComponentsList();
 
-			SetInitialWindowGrouping(_bridge.Clients.WindowClient.GetWindowGroups());
 			LoadAndSetButtonsFont();
-			SetInitialAlwaysOnTop();
 			this.Visible = true;
 		}
 
-		private async void SetInitialAlwaysOnTop()
+		private void WindowClient_WindowStateChanged(object sender, JObject state)
 		{
-			var isAlwaysOnTop = (await _bridge.Clients.FinsembleWindow.IsAlwaysOnTop(new JObject())).response?["data"]?.ToObject<bool>() == true;
-			UpdateAlwaysOnTopButton(isAlwaysOnTop);
-		}
+			var isGrouped = state?["isGrouped"]?.ToObject<bool>() ?? false;
+			var groupable = state?["groupable"]?.ToObject<bool>() ?? false;
+			var showAlwaysOnTopButton = state?["showAlwaysOnTopButton"]?.Value<bool>() ?? true;
+			var isAlwaysOnTop = state?["alwaysOnTop"]?.Value<bool>() ?? false;
 
-		private void SetInitialWindowGrouping(JArray groupdWindowBelongsTo)
-		{
 			this.Invoke(new Action(() =>
 			{
-				var thisWindowGroups = new JObject
+				// update grouping button
+				if (groupable)
 				{
-					["dockingGroup"] = "",
-					["snappingGroup"] = "",
-					["topRight"] = false
-				};
+					DockingButton.Visible = true;
 
-				foreach (var group in groupdWindowBelongsTo)
-				{
-					var windowNames = group["windowNames"] as JArray;
-					thisWindowGroups = FormWindowGroupsTo(group, windowNames, thisWindowGroups);
-				}
-
-				UpdateViewDueToWindowGroups(thisWindowGroups);
-			}));
-		}
-
-		private void UpdateViewDueToWindowGroups(JObject thisWindowGroups)
-		{
-			if (!string.IsNullOrEmpty(thisWindowGroups?["dockingGroup"]?.ToString()))
-			{
-				// docked
-				DockingButton.Text = "@";
-				DockingButton.ButtonColor = Color.FromArgb(3, 155, 255);
-				DockingButton.OnHoverButtonColor = Color.FromArgb(3, 155, 255);
-				DockingButton.Visible = true;
-			}
-			else if (!string.IsNullOrEmpty(thisWindowGroups?["snappingGroup"]?.ToString()))
-			{
-				// Snapped
-				DockingButton.Text = ">";
-				DockingButton.ButtonColor = Color.FromArgb(34, 38, 47);
-				DockingButton.OnHoverButtonColor = Color.FromArgb(40, 45, 56);
-				DockingButton.Visible = true;
-			}
-			else
-			{
-				// unsnapped/undocked
-				DockingButton.Visible = false;
-			}
-		}
-
-		private JObject FormWindowGroupsTo(JToken group, JArray windowNames, JObject thisWindowGroups)
-		{
-			var currentWindowName = _bridge.Clients.WindowClient.GetWindowIdentifier()["windowName"].ToString();
-
-			var windowingGroup = false;
-			for (int i = 0; i < windowNames.Count; i++)
-			{
-				var windowName = windowNames[i].ToString();
-				if (windowName == currentWindowName)
-				{
-					windowingGroup = true;
-				}
-			}
-
-			if (windowingGroup)
-			{
-				var isMovable = (bool)group["isMovable"];
-				if (isMovable)
-				{
-					thisWindowGroups["dockingGroup"] = group;
-					if (group["topRightWindow"].ToString() == currentWindowName)
-					{
-						thisWindowGroups["topRight"] = true;
-					}
+					DockingButton.Text = isGrouped ? "@" : ">";
+					DockingButton.ButtonColor = isGrouped ? Color.FromArgb(3, 155, 255) : Color.FromArgb(34, 38, 47);
+					DockingButton.OnHoverButtonColor = isGrouped ? Color.FromArgb(3, 155, 255) : Color.FromArgb(40, 45, 56);
 				}
 				else
 				{
-					thisWindowGroups["snappingGroup"] = group;
+					DockingButton.Visible = false;
 				}
-			}
 
-			return thisWindowGroups;
+				// update alwaysOnTopButton
+				if (showAlwaysOnTopButton)
+				{
+					AlwaysOnTopButton.Visible = true;
+
+					AlwaysOnTopButton.ButtonColor = isAlwaysOnTop ? Color.FromArgb(3, 155, 255) : Color.FromArgb(34, 38, 47);
+					AlwaysOnTopButton.OnHoverButtonColor = isAlwaysOnTop ? Color.FromArgb(3, 155, 255) : Color.FromArgb(40, 45, 56);
+				}
+				else
+				{
+					AlwaysOnTopButton.Visible = false;
+				}
+			}));
 		}
 
 		private async void HandleComponentsList()
@@ -458,37 +409,6 @@ namespace WinformExampleCore
 			}));
 		}
 
-		private void HandleWindowGrouping(object sender, FinsembleEventArgs args)
-		{
-			this.Invoke(new Action(() =>
-			{
-				if (args.error != null)
-				{
-					_bridge.Clients.Logger.Error(new JToken[] { "WinformExampleCore HandleWindowGrouping Error", args.error.ToString() });
-					return;
-				}
-
-				var groupData = args.response["data"]["groupData"] as JObject;
-				var thisWindowGroups = new JObject
-				{
-					["dockingGroup"] = "",
-					["snappingGroup"] = "",
-					["topRight"] = false
-				};
-
-				foreach (var obj in groupData)
-				{
-					var windowgroupid = obj.Key;
-					var windowgroup = groupData[windowgroupid] as JObject;
-					var windownames = windowgroup["windowNames"] as JArray;
-
-					thisWindowGroups = FormWindowGroupsTo(windowgroup, windownames, thisWindowGroups);
-				}
-
-				UpdateViewDueToWindowGroups(thisWindowGroups);
-			}));
-		}
-
 		private void Logger_OnLog(object sender, JObject e)
 		{
 			MessagesRichBox.Invoke(new Action(() =>
@@ -565,26 +485,10 @@ namespace WinformExampleCore
 			}));
 		}
 
-		private void UpdateAlwaysOnTopButton(bool isAlwaysOnTop)
-		{
-			if (isAlwaysOnTop)
-			{
-				AlwaysOnTopButton.ButtonColor = Color.FromArgb(3, 155, 255);
-				AlwaysOnTopButton.OnHoverButtonColor = Color.FromArgb(3, 155, 255);
-			}
-			else
-			{
-				AlwaysOnTopButton.ButtonColor = Color.FromArgb(34, 38, 47);
-				AlwaysOnTopButton.OnHoverButtonColor = Color.FromArgb(40, 45, 56);
-			}
-		}
-
 		private async void AlwaysOnTopButton_Click(object sender, EventArgs e)
 		{
 			var newAlwaysOnTop = !await _bridge.Clients.WindowClient.IsAlwaysOnTop();
 			await _bridge.Clients.WindowClient.SetAlwaysOnTop(newAlwaysOnTop);
-
-			UpdateAlwaysOnTopButton(newAlwaysOnTop);
 		}
 
 
@@ -608,7 +512,6 @@ namespace WinformExampleCore
 
 			var componentName = selected.ToString();
 
-			var targetApp = new TargetApp() { Name = componentName };
 			var context = new Context(new JObject
 			{
 				["type"] = "fdc3.instrument",
@@ -619,8 +522,7 @@ namespace WinformExampleCore
 				}
 			});
 
-			var openError = await _bridge.Clients.Fdc3Client.DesktopAgentClient.Open(targetApp, context);
-			if (openError.HasValue) MessageBox.Show(openError.ToString());
+			var appId = await _bridge.Clients.Fdc3Client.DesktopAgentClient.Open(componentName, context);
 		}
 
 		private void DragNDropEmittingButton_MouseDown(object sender, MouseEventArgs e)
