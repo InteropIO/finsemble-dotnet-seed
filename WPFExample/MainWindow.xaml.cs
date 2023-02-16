@@ -60,8 +60,7 @@ namespace WPFExample
 						}
 					});
 
-					var targetApp = new TargetApp(componentName);
-					await FSBL.FDC3Client.DesktopAgentClient.Open(targetApp, context);
+					var appId = await FSBL.FDC3Client.DesktopAgentClient.Open(componentName, context);
 
 					//Intent 
 					//var context = new Context(new JObject

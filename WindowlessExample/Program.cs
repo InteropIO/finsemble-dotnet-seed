@@ -51,6 +51,8 @@ namespace WindowlessExample
 
 			// Block main thread until worker is finished.
 			autoEvent.WaitOne();
+
+			Trace.TraceInformation("WindowlessExample example is finished");
 		}
 
 		private static void OnConnected(object sender, EventArgs e)
@@ -110,6 +112,7 @@ namespace WindowlessExample
 
 		private static void OnShutdown(object sender, EventArgs e)
 		{
+			Trace.TraceInformation("On Finsemble Disconnected event");
 			if (FSBL != null)
 			{
 				lock (lockObj)

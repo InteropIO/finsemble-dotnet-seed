@@ -78,8 +78,9 @@ namespace WinformExample
 			FSBL.Logger.Log(new JToken[] { "Winform example connected to Finsemble." });
 			System.Diagnostics.Debug.WriteLine("FSBL Ready.");
 
-			// Handle Window grouping
-			FSBL.RouterClient.Subscribe("Finsemble.WorkspaceService.groupUpdate", HandleWindowGrouping);
+			// Update UI buttons
+			FSBL.WindowClient.WindowStateChanged += WindowClient_WindowStateChanged;
+			WindowClient_WindowStateChanged(null, FSBL.WindowClient.currentWindowState);
 
 			if (FSBL.LinkerClient != null)
 			{
@@ -138,15 +139,6 @@ namespace WinformExample
 
 			// Example for getting Spawnable component list
 			FSBL.ConfigClient.GetValue(new JObject { ["field"] = "finsemble.components" }, HandleComponentsList);
-
-			SetInitialWindowGrouping(FSBL.WindowClient.GetWindowGroups());
-			SetInitialAlwaysOnTop();
-		}
-
-		private async void SetInitialAlwaysOnTop()
-		{
-			var isAlwaysOnTop = (await FSBL.FinsembleWindow.IsAlwaysOnTop(new JObject()))?["data"]?.ToObject<bool>() == true;
-			UpdateAlwaysOnTopButton(isAlwaysOnTop);
 		}
 
 		private void HandleContext(Context context, IContextMetadata metadata)
@@ -284,114 +276,42 @@ namespace WinformExample
 			return (visiblePillsAfterShift - visiblePillsBeforeShift) * (LinkerPillWidth + 2);
 		}
 
-		private void HandleWindowGrouping(object s, FinsembleEventArgs res)
+		private void WindowClient_WindowStateChanged(object sender, JObject state)
 		{
+			var isGrouped = state?["isGrouped"]?.ToObject<bool>() ?? false;
+			var groupable = state?["groupable"]?.ToObject<bool>() ?? false;
+			var showAlwaysOnTopButton = state?["showAlwaysOnTopButton"]?.Value<bool>() ?? true;
+			var isAlwaysOnTop = state?["alwaysOnTop"]?.Value<bool>() ?? false;
+
 			this.Invoke(new Action(() =>
 			{
-				if (res.error != null)
+				// update grouping button
+				if (groupable)
 				{
-					return;
-				}
+					DockingButton.Visible = true;
 
-				var groupData = res.response["data"]["groupData"] as JObject;
-				var thisWindowGroups = new JObject
-				{
-					["dockingGroup"] = "",
-					["snappingGroup"] = "",
-					["topRight"] = false
-				};
-
-				foreach (var obj in groupData)
-				{
-					var windowgroupid = obj.Key;
-					var windowgroup = groupData[windowgroupid] as JObject;
-					var windownames = windowgroup["windowNames"] as JArray;
-
-					thisWindowGroups = FormWindowGroupsTo(windowgroup, windownames, thisWindowGroups);
-				}
-
-				UpdateViewDueToWindowGroups(thisWindowGroups);
-			}));
-		}
-
-		private void SetInitialWindowGrouping(JArray groupdWindowBelongsTo)
-		{
-			this.Invoke(new Action(() =>
-			{
-				var thisWindowGroups = new JObject
-				{
-					["dockingGroup"] = "",
-					["snappingGroup"] = "",
-					["topRight"] = false
-				};
-
-				foreach (var group in groupdWindowBelongsTo)
-				{
-					var windowNames = group["windowNames"] as JArray;
-					thisWindowGroups = FormWindowGroupsTo(group, windowNames, thisWindowGroups);
-				}
-
-				UpdateViewDueToWindowGroups(thisWindowGroups);
-			}));
-		}
-
-		private JObject FormWindowGroupsTo(JToken group, JArray windowNames, JObject thisWindowGroups)
-		{
-			var currentWindowName = FSBL.WindowClient.GetWindowIdentifier()["windowName"].ToString();
-
-			var windowingGroup = false;
-			for (int i = 0; i < windowNames.Count; i++)
-			{
-				var windowName = windowNames[i].ToString();
-				if (windowName == currentWindowName)
-				{
-					windowingGroup = true;
-				}
-			}
-
-			if (windowingGroup)
-			{
-				var isMovable = (bool)group["isMovable"];
-				if (isMovable)
-				{
-					thisWindowGroups["dockingGroup"] = group;
-					if (group["topRightWindow"].ToString() == currentWindowName)
-					{
-						thisWindowGroups["topRight"] = true;
-					}
+					DockingButton.Text = isGrouped ? "@" : ">";
+					DockingButton.ButtonColor = isGrouped ? Color.FromArgb(3, 155, 255) : Color.FromArgb(34, 38, 47);
+					DockingButton.OnHoverButtonColor = isGrouped ? Color.FromArgb(3, 155, 255) : Color.FromArgb(40, 45, 56);
 				}
 				else
 				{
-					thisWindowGroups["snappingGroup"] = group;
+					DockingButton.Visible = false;
 				}
-			}
 
-			return thisWindowGroups;
-		}
+				// update alwaysOnTopButton
+				if (showAlwaysOnTopButton)
+				{
+					AlwaysOnTopButton.Visible = true;
 
-		private void UpdateViewDueToWindowGroups(JObject thisWindowGroups)
-		{
-			if (!string.IsNullOrEmpty(thisWindowGroups?["dockingGroup"]?.ToString()))
-			{
-				// docked
-				DockingButton.Text = "@";
-				DockingButton.ButtonColor = Color.FromArgb(3, 155, 255);
-				DockingButton.OnHoverButtonColor = Color.FromArgb(3, 155, 255);
-				DockingButton.Visible = true;
-			}
-			else if (!string.IsNullOrEmpty(thisWindowGroups?["snappingGroup"]?.ToString()))
-			{
-				// Snapped
-				DockingButton.Text = ">";
-				DockingButton.ButtonColor = Color.FromArgb(34, 38, 47);
-				DockingButton.OnHoverButtonColor = Color.FromArgb(40, 45, 56);
-				DockingButton.Visible = true;
-			}
-			else
-			{
-				// unsnapped/undocked
-				DockingButton.Visible = false;
-			}
+					AlwaysOnTopButton.ButtonColor = isAlwaysOnTop ? Color.FromArgb(3, 155, 255) : Color.FromArgb(34, 38, 47);
+					AlwaysOnTopButton.OnHoverButtonColor = isAlwaysOnTop ? Color.FromArgb(3, 155, 255) : Color.FromArgb(40, 45, 56);
+				}
+				else
+				{
+					AlwaysOnTopButton.Visible = false;
+				}
+			}));
 		}
 
 		private void HandleGetComponentState(object s, FinsembleEventArgs state)
@@ -601,7 +521,6 @@ namespace WinformExample
 
 			if (FSBL.FDC3Client != null)
 			{
-				var targetApp = new TargetApp() { Name = componentName };
 				var context = new Context(new JObject
 				{
 					["type"] = "fdc3.instrument",
@@ -612,8 +531,7 @@ namespace WinformExample
 					}
 				});
 
-				var openError = await FSBL.FDC3Client.DesktopAgentClient.Open(targetApp, context);
-				if (openError.HasValue) MessageBox.Show(openError.ToString());
+				var appId = await FSBL.FDC3Client.DesktopAgentClient.Open(componentName, context);
 			}
 			else
 			{
@@ -633,28 +551,12 @@ namespace WinformExample
 			}
 		}
 
-		private void UpdateAlwaysOnTopButton(bool isAlwaysOnTop)
-		{
-			if (isAlwaysOnTop)
-			{
-				AlwaysOnTopButton.ButtonColor = Color.FromArgb(3, 155, 255);
-				AlwaysOnTopButton.OnHoverButtonColor = Color.FromArgb(3, 155, 255);
-			}
-			else
-			{
-				AlwaysOnTopButton.ButtonColor = Color.FromArgb(34, 38, 47);
-				AlwaysOnTopButton.OnHoverButtonColor = Color.FromArgb(40, 45, 56);
-			}
-		}
-
 		private async void AlwaysOnTopButton_Click(object sender, EventArgs e)
 		{
 			var isAlwaysOnTop = await FSBL.WindowClient.IsAlwaysOnTop();
 
 			var newAlwaysOnTop = !isAlwaysOnTop;
 			await FSBL.WindowClient.SetAlwaysOnTop(newAlwaysOnTop);
-
-			UpdateAlwaysOnTopButton(newAlwaysOnTop);
 		}
 
 		private void DockingButton_Click(object sender, EventArgs e)

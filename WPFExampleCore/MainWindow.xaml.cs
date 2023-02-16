@@ -59,8 +59,8 @@ namespace WPFExampleCore
 
 		private void FSBL_Disconnected(object sender, EventArgs e)
 		{
-			MessageBoxResult result = MessageBox.Show("Finsemble was disconnected. This application will be close");
-			Close();
+			//MessageBox.Show("Finsemble was disconnected. This application will be close");
+			//Close();
 		}
 
 		private void Current_DispatcherUnhandledException(object sender, System.Windows.Threading.DispatcherUnhandledExceptionEventArgs e)
@@ -405,8 +405,7 @@ namespace WPFExampleCore
 						}
 					});
 
-					var targetApp = new TargetApp() { Name = componentName };
-					await FSBL.Clients.Fdc3Client.DesktopAgentClient.Open(targetApp, context);
+					var appId = await FSBL.Clients.Fdc3Client.DesktopAgentClient.Open(componentName, context);
 				}
 				else
 				{
