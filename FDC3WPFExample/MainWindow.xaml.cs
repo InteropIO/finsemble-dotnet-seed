@@ -9,6 +9,10 @@ using ChartIQ.Finsemble.FDC3.Types;
 using Microsoft.IdentityModel.Tokens;
 using System.Windows.Interop;
 using ChartIQ.Finsemble.FDC3.Interfaces;
+using FDC3WPFExample.Types;
+using Newtonsoft.Json.Serialization;
+using Newtonsoft.Json;
+using ChartIQ.Finsemble.Router;
 
 namespace FDC3WPFExample
 {
@@ -117,14 +121,14 @@ namespace FDC3WPFExample
 				if (FSBL.FDC3Client is object)
 				{
 					//Context handler
-					ContextHandler contextHandler = (context, metadata) =>
+					ContextHandler<MarketContext> contextHandler = (context, metadata) =>
 					{
-						FSBL.Logger.Log(new JToken[] { "context received by contextHandler.", context.Value.ToString() });
+						FSBL.Logger.Log(new JToken[] { "context received by contextHandler.", JObject.FromObject(context) });
 						if (context.Type.Equals("fdc3.instrument"))
 						{
 							Application.Current.Dispatcher.Invoke(async delegate //main thread
 							{
-								DroppedData.Content = context.Id?["ticker"]?.ToString();
+								DroppedData.Content = context.Id?.Ticker;
 								DroppedDataSource.Content = "context shared via FDC3";
 								await SaveStateAsync(DroppedData.Content.ToString());
 							});
@@ -135,14 +139,14 @@ namespace FDC3WPFExample
 					//FSBL.FDC3Client.DesktopAgentClient.AddContextListener("fdc3.instrument", contextHandler);
 
 					//Intent handler
-					IntentHandler intentHandler = async (context, metadata) =>
+					IntentHandler<MarketContext> intentHandler = async (context, metadata) =>
 					{
-						FSBL.Logger.Log(new JToken[] { "context received by intentHandler.", context.Value.ToString() });
+						FSBL.Logger.Log(new JToken[] { "context received by intentHandler.", JObject.FromObject(context) });
 						if (context.Type != null && context.Type.Equals("fdc3.instrument"))
 						{
 							await Application.Current.Dispatcher.Invoke(async delegate //main thread
 							{
-								string ticker = context.Id?["ticker"]?.ToString();
+								string ticker = context.Id?.Ticker;
 								FSBL.Logger.Log(new JToken[] { "updating state to ticker:" + ticker });
 								DroppedData.Content = ticker;
 								DroppedDataSource.Content = "context shared via FDC3 intent";
@@ -160,7 +164,7 @@ namespace FDC3WPFExample
 
 						return new ContextIntentResult() { Context = context };
 					};
-					FSBL.FDC3Client.DesktopAgentClient.AddIntentListener("ViewChart", intentHandler);
+					var addListenerTask = FSBL.FDC3Client.DesktopAgentClient.AddIntentListener("ViewChart", intentHandler);
 				}
 				else
 				{
@@ -198,7 +202,11 @@ namespace FDC3WPFExample
 			ContextTemplatesDropDown.ItemsComboBox.SelectionChanged += (object s, System.Windows.Controls.SelectionChangedEventArgs selectionEvent) =>
 			{
 				var contextType = ContextTemplatesDropDown.ItemsComboBox.SelectedValue as string;
-				ContextTextBox.Text = DefaultData.DefaultContexts[contextType].Value.ToString();
+				var serializer = new JsonSerializer()
+				{
+					ContractResolver = new CamelCasePropertyNamesContractResolver()
+				};
+				ContextTextBox.Text = JObject.FromObject(DefaultData.DefaultContexts[contextType], serializer).ToString();
 			};
 
 			// choose most popular
@@ -214,7 +222,7 @@ namespace FDC3WPFExample
 
 		private async void LoadAvailableIntents()
 		{
-			var intents = await FSBL.FDC3Client.DesktopAgentClient.FindIntentsByContext(null);
+			var intents = await FSBL.FDC3Client.DesktopAgentClient.FindIntentsByContext(new InstrumentContext());
 			if (intents != null && intents.Length > 0)
 			{
 				foreach (var intent in intents)
@@ -238,11 +246,11 @@ namespace FDC3WPFExample
 			}
 			// NOTE: it possible to listen to multiple channels simultaneously, but that we do not in this example
 			AppChannel = await FSBL.FDC3Client.DesktopAgentClient.GetOrCreateChannel(AppChannelInput.TextBox.Text);
-			AppChannelListener = await AppChannel.AddContextListener((context, metadata) =>
+			AppChannelListener = await AppChannel.AddContextListener<MarketContext>(null, (context, metadata) =>
 			{
 				Application.Current.Dispatcher.Invoke(delegate //main thread
 				{
-					DroppedData.Content = context.Id?["ticker"]?.ToString();
+					DroppedData.Content = context.Id?.Ticker;
 					DroppedDataSource.Content = $"context received via App channel: {AppChannel.Id}";
 				});
 			});
@@ -260,12 +268,18 @@ namespace FDC3WPFExample
 					//FDC3 Usage example 
 					//open
 
-					var targetApp = new TargetApp(componentName);
+					var targetApp = new AppMetadata() { AppId = componentName };
 					var context = GetContext();
 					if (context != null)
 					{
-						var openError = await FSBL.FDC3Client.DesktopAgentClient.Open(targetApp, context);
-						if (openError.HasValue) MessageBox.Show(openError.ToString());
+						try
+						{
+							var appIdentifier = await FSBL.FDC3Client.DesktopAgentClient.Open(targetApp, context);
+						}
+						catch (Exception ex)
+						{
+							MessageBox.Show(ex.Message.ToString());
+						}
 					}
 				}
 				else
@@ -285,7 +299,7 @@ namespace FDC3WPFExample
 
 				if (context != null)
 				{
-					FSBL.FDC3Client.DesktopAgentClient.Broadcast(context);
+					var broadcastTask = FSBL.FDC3Client.DesktopAgentClient.Broadcast(context);
 				}
 			}
 			else
@@ -323,7 +337,14 @@ namespace FDC3WPFExample
 				if (context != null)
 				{
 					var intent = IntentsDropDown.ItemsComboBox.SelectedItem as string;
-					await FSBL.FDC3Client.DesktopAgentClient.RaiseIntent(intent, context);
+					try
+					{
+						await FSBL.FDC3Client.DesktopAgentClient.RaiseIntent(intent, context);
+					}
+					catch (Exception ex)
+					{
+						MessageBox.Show(ex.Message);
+					}
 				}
 			}
 			else
@@ -341,7 +362,14 @@ namespace FDC3WPFExample
 				var context = GetContext();
 				if (context != null)
 				{
-					await FSBL.FDC3Client.DesktopAgentClient.RaiseIntentForContext(context);
+					try
+					{
+						await FSBL.FDC3Client.DesktopAgentClient.RaiseIntentForContext(context);
+					}
+					catch(Exception ex)
+					{
+						MessageBox.Show(ex.Message);
+					}
 				}
 			}
 			else

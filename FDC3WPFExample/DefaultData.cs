@@ -1,4 +1,6 @@
-﻿using ChartIQ.Finsemble.FDC3.Types;
+﻿using ChartIQ.Finsemble.FDC3.Interfaces;
+using ChartIQ.Finsemble.FDC3.Types;
+using FDC3WPFExample.Types;
 using Newtonsoft.Json.Linq;
 using System.Collections.Generic;
 
@@ -6,162 +8,124 @@ namespace FDC3WPFExample
 {
 	public static class DefaultData
 	{
-		public static Dictionary<string, Context> DefaultContexts = new Dictionary<string, Context>()
+		public static Dictionary<string, IContext> DefaultContexts = new Dictionary<string, IContext>()
 		{
-			{"fdc3.contact", new Context(new JObject
+			{
+				"fdc3.contact", new ContactContext()
 				{
-					["type"] = "fdc3.contact",
-					["name"] = "Jane Doe",
-					["id"] = new JObject
-					{
-						["email"] = "jane.doe@mail.com"
-					}
+					Name = "Jane Doe",
+					Id = new ContactContextId() { Email = "jane.doe@mail.com" }
 				}
-			)},
-			{"fdc3.contactList", new Context(new JObject
+			},
+			{
+				"fdc3.contactList", new ContactListContext()
 				{
-					["type"] = "fdc3.contactList",
-					["contacts"] = new JArray
+					Contacts = new ContactContext[]
 					{
-						new JObject
+						new ContactContext()
 						{
-							["type"] = "fdc3.contact",
-							["name"] = "Jane Doe",
-							["id"] = new JObject
-							{
-								["email"] = "jane.doe@mail.com"
-							}
+							Name = "Jane Doe",
+							Id = new ContactContextId() { Email = "jane.doe@mail.com" }
 						},
-						new JObject
+						new ContactContext()
 						{
-							["type"] = "fdc3.contact",
-							["name"] = "John Doe",
-							["id"] = new JObject
-							{
-								["email"] = "john.doe@mail.com"
-							}
-						}
-					}
-				}
-			)},
-			{"fdc3.instrument", new Context(new JObject
-				{
-					["type"] = "fdc3.instrument",
-					["name"] = "Microsoft",
-					["id"] = new JObject
-					{
-						["ticker"] = "MSFT",
-						["RIC"] = "MSFT.OQ",
-						["ISIN"] = "US5949181045"
-					}
-				}
-			)},
-			{"fdc3.instrumentList", new Context(new JObject
-				{
-					["type"] = "fdc3.instrumentList",
-					["instruments"] = new JArray
-					{
-						new JObject
-						{
-							["type"] = "fdc3.instrument",
-							["id"] = new JObject
-							{
-								["ticker"] = "AAPL"
-							}
+							Name = "John Doe",
+							Id = new ContactContextId() { Email = "john.doe@mail.com" }
 						},
-						new JObject
+					}
+				}
+			},
+			{
+				"fdc3.instrument", new InstrumentContext()
+				{
+					Name = "Microsoft",
+					Id = new InstrumentContextId()
+					{
+						Ticker = "MSFT",
+						RIC = "MSFT.OQ",
+						ISIN = "US5949181045"
+					}
+				}
+			},
+			{
+				"fdc3.instrumentList", new InstrumentListContext()
+				{
+					Instruments = new InstrumentContext[]
+					{
+						new InstrumentContext()
 						{
-							["type"] = "fdc3.instrument",
-							["id"] = new JObject
-							{
-								["ticker"] = "MSFT"
-							}
-						}
-					}
-				}
-			)},
-			{"fdc3.organization", new Context(new JObject
-				{
-					["type"] = "fdc3.organization",
-					["name"] = "Cargill, Incorporated",
-					["id"] = new JObject
-					{
-						["LEI"] = "QXZYQNMR4JZ5RIRN4T31",
-						["FDS_ID"] = "00161G-E"
-					}
-				}
-			)},
-			{"fdc3.country", new Context(new JObject
-				{
-					["type"] = "fdc3.country",
-					["name"] = "Sweden",
-					["id"] = new JObject
-					{
-						["ISOALPHA3"] = "SWE"
-					}
-				}
-			)},
-			{"fdc3.position", new Context(new JObject
-				{
-					["type"] = "fdc3.position",
-					["instrument"] = new JObject
-					{
-						["type"] = "fdc3.instrument",
-						["id"] = new JObject
+							Id = new InstrumentContextId() { Ticker = "AAPL" }
+						},
+						new InstrumentContext()
 						{
-							["ticker"] = "AAPL"
-						}
+							Id = new InstrumentContextId() { Ticker = "MSFT" }
+						},
+					}
+				}
+			},
+			{
+				"fdc3.organization", new OrganizationContext()
+				{
+					Name = "Cargill, Incorporated",
+					Id = new OrganizationContextId()
+					{
+						LEI = "QXZYQNMR4JZ5RIRN4T31",
+						FDS_ID = "00161G-E"
+					}
+				}
+			},
+			{
+				"fdc3.country", new CountryContext()
+				{
+					Name = "Sweden",
+					Id = new CountryContextId()
+					{
+						ISOALPHA3 = "SWE"
+					}
+				}
+			},
+			{
+				"fdc3.position", new PositionContext()
+				{
+					Instrument = new InstrumentContext()
+					{
+						Id = new InstrumentContextId() { Ticker = "AAPL" }
 					},
-					["holding"] = 2000000
+					Holding = 2000000
 				}
-			)},
-			{"fdc3.portfolio", new Context(new JObject
+			},
+			{
+				"fdc3.portfolio", new PortfolioContext()
 				{
-					["type"] = "fdc3.portfolio",
-					["positions"] = new JArray
+					Positions = new[]
 					{
-						new JObject
+						new PositionContext()
 						{
-							["type"] = "fdc3.position",
-							["instrument"] = new JObject
+							Holding = 2000000,
+							Instrument = new InstrumentContext()
 							{
-								["type"] = "fdc3.instrument",
-								["id"] = new JObject
-								{
-									["ticker"] = "AAPL"
-								}
-							},
-							["holding"] = 2000000
+								Id = new InstrumentContextId() { Ticker = "AAPL" }
+							}
 						},
-						new JObject
+						new PositionContext()
 						{
-							["type"] = "fdc3.position",
-							["instrument"] = new JObject
+							Holding = 1500000,
+							Instrument = new InstrumentContext()
 							{
-								["type"] = "fdc3.instrument",
-								["id"] = new JObject
-								{
-									["ticker"] = "MSFT"
-								}
-							},
-							["holding"] = 1500000
+								Id = new InstrumentContextId() { Ticker = "MSFT" }
+							}
 						},
-						new JObject
+						new PositionContext()
 						{
-							["type"] = "fdc3.position",
-							["instrument"] = new JObject
+							Holding = 3000000,
+							Instrument = new InstrumentContext()
 							{
-								["type"] = "fdc3.instrument",
-								["id"] = new JObject
-								{
-									["ticker"] = "IBM"
-								}
-							},
-							["holding"] = 3000000
+								Id = new InstrumentContextId() { Ticker = "IBM" }
+							}
 						}
 					}
 				}
-			)},
+			}
 		};
 	}
 }

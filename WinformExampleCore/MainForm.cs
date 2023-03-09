@@ -522,7 +522,14 @@ namespace WinformExampleCore
 				}
 			});
 
-			var appId = await _bridge.Clients.Fdc3Client.DesktopAgentClient.Open(componentName, context);
+			try
+			{
+				var appIdentifier = await _bridge.Clients.Fdc3Client.DesktopAgentClient.Open(componentName, context);
+			}
+			catch (Exception ex)
+			{
+				MessageBox.Show(ex.Message);
+			}
 		}
 
 		private void DragNDropEmittingButton_MouseDown(object sender, MouseEventArgs e)
