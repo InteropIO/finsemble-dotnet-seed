@@ -4,7 +4,7 @@
     <OutputType>WinExe</OutputType>
     <TargetFramework>net5.0</TargetFramework>
     <Platforms>AnyCPU;x64</Platforms>
-    <Version>7.1.1</Version>
+    <Version>8.5.0</Version>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
@@ -24,7 +24,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Finsemble.Core" Version="8.4.1" />
+    <PackageReference Include="Finsemble.Core" Version="8.5.0" />
   </ItemGroup>
 
 </Project>

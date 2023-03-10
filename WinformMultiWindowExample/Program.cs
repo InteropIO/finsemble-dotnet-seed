@@ -8,7 +8,6 @@
 	using System.Diagnostics;
 	using System.Linq;
 	using System.Windows.Forms;
-	using System.Diagnostics;
 
 	internal static class Program
 	{

@@ -10,9 +10,9 @@ using System.Windows;
 [assembly: AssemblyTitle("Authentication")]
 [assembly: AssemblyDescription("")]
 [assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("")]
+[assembly: AssemblyCompany("Finsemble")]
 [assembly: AssemblyProduct("Authentication")]
-[assembly: AssemblyCopyright("Copyright ©  2017 - 2022")]
+[assembly: AssemblyCopyright("Copyright ©  2017 - 2023")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 
@@ -51,5 +51,5 @@ using System.Windows;
 // You can specify all the values or you can default the Build and Revision Numbers
 // by using the '*' as shown below:
 // [assembly: AssemblyVersion("1.0.*")]
-[assembly: AssemblyVersion("7.1.1.0")]
-[assembly: AssemblyFileVersion("7.1.1.0")]
+[assembly: AssemblyVersion("8.5.0.0")]
+[assembly: AssemblyFileVersion("8.5.0.0")]
