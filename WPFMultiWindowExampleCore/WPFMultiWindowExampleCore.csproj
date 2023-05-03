@@ -26,7 +26,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Finsemble.WPF.Core" Version="8.6.0" />
+    <PackageReference Include="Finsemble.WPF.Core" Version="8.7.0" />
   </ItemGroup>
 
 </Project>

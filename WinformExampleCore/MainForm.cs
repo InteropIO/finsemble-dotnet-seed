@@ -167,7 +167,7 @@ namespace WinformExampleCore
 		{
 			try
 			{
-				var response = await _bridge.Clients.ConfigClient.GetValue(new JObject { ["field"] = "finsemble.components" });
+				var response = await _bridge.Clients.ConfigClient.Get(new [] { "finsemble", "components" });
 
 				if (response.error != null)
 				{
@@ -175,7 +175,7 @@ namespace WinformExampleCore
 				}
 				else if (response.response != null)
 				{
-					var components = (JObject)response.response?["data"];
+					var components = (JObject)response.response;
 					foreach (var property in components?.Properties())
 					{
 						object value = components?[property.Name]?["foreign"]?["components"]?["App Launcher"]?["launchableByUser"];

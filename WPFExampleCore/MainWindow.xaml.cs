@@ -306,13 +306,13 @@ namespace WPFExampleCore
 
 		private async void SetUpFinsembleComponents()
 		{
-			var response = await FSBL.Clients.ConfigClient.GetValue(new JObject { ["field"] = "finsemble.components" });
+			var response = await FSBL.Clients.ConfigClient.Get(new [] { "finsemble", "components" });
 			if (response.error != null)
 			{
 				return;
 			}
 
-			var components = (JObject)response.response?["data"];
+			var components = (JObject)response.response;
 			foreach (var property in components?.Properties())
 			{
 				object value = components?[property.Name]?["foreign"]?["components"]?["App Launcher"]?["launchableByUser"];

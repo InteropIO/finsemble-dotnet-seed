@@ -46,8 +46,8 @@
     <OutputPath>bin\x64\Release\</OutputPath>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="Finsemble, Version=8.6.0.0, Culture=neutral, PublicKeyToken=9df516fcbc4ebe73, processorArchitecture=MSIL">
-      <HintPath>..\packages\Finsemble.8.6.0\lib\net452\Finsemble.dll</HintPath>
+    <Reference Include="Finsemble, Version=8.7.0.0, Culture=neutral, PublicKeyToken=9df516fcbc4ebe73, processorArchitecture=MSIL">
+      <HintPath>..\packages\Finsemble.8.7.0\lib\net452\Finsemble.dll</HintPath>
     </Reference>
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="Microsoft.IdentityModel.Logging, Version=6.16.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">

@@ -174,7 +174,7 @@ namespace WPFExample
 			FSBL.Connect("Finsemble WPF Demo", JWK);
 		}
 
-		private void Finsemble_Connected(object sender, EventArgs e)
+		private async void Finsemble_Connected(object sender, EventArgs e)
 		{
 			this.Dispatcher.Invoke(delegate //main thread
 			{
@@ -264,32 +264,28 @@ namespace WPFExample
 				//     This is not currently supported in the .Net RouterClient implementation and will need to done in a Finsemble HTML5 service
 				Subscribe_to_pubsub();
 
-				FSBL.ConfigClient.GetValue(new JObject { ["field"] = "finsemble.components" }, (routerClient, response) =>
-				{
-					if (response.error != null)
-					{
-						return;
-					}
-
-					var components = (JObject)response.response?["data"];
-					foreach (var property in components?.Properties())
-					{
-						object value = components?[property.Name]?["foreign"]?["components"]?["App Launcher"]?["launchableByUser"];
-						if ((value != null) && bool.Parse(value.ToString()))
-						{
-							FSBL.getDispatcher().Invoke(delegate //main thread
-							{
-								ComponentSelect.ItemsComboBox.Items.Add(property.Name);
-							});
-						}
-					}
-				});
-
 				//FSBL.LinkerClient?.LinkToChannel("group2", null, (s, a) => { });
 				//restore state if one exists
 				UpdateDisplayData();
 				this.Show();
 			});
+
+			// load available component list
+			var result = await FSBL.ConfigClient.Get(new[] { "finsemble", "components" });
+			if (result?.response is JObject components)
+			{
+				foreach (var property in components?.Properties())
+				{
+					object value = components?[property.Name]?["foreign"]?["components"]?["App Launcher"]?["launchableByUser"];
+					if ((value != null) && bool.Parse(value.ToString()))
+					{
+						FSBL.getDispatcher().Invoke(delegate //main thread
+						{
+							ComponentSelect.ItemsComboBox.Items.Add(property.Name);
+						});
+					}
+				}
+			}
 
 			if (FSBL.FDC3Client is object)
 			{
