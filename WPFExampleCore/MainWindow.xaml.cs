@@ -179,7 +179,7 @@ namespace WPFExampleCore
 			#region communication through channels
 			if (FSBL.Clients.Fdc3Client is object)
 			{
-				FDC3Label.Visibility = Visibility.Visible;
+				Application.Current.Dispatcher.Invoke(delegate{ FDC3Label.Visibility = Visibility.Visible; });
 				ContextHandler contextHandler = (context, metadata) =>
 				{
 					FSBL.Clients.Logger.Log(new JToken[] { "WPF Core FDC3 Usage Example, context received by contextHandler.", context.Value });
