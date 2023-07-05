@@ -1,4 +1,4 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <OutputType>WinExe</OutputType>
@@ -11,8 +11,8 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="DotNetBrowser" Version="2.18.0" />
-    <PackageReference Include="DotNetBrowser.Wpf" Version="2.18.0" />
+    <PackageReference Include="DotNetBrowser" Version="2.23.0" />
+    <PackageReference Include="DotNetBrowser.Wpf" Version="2.23.0" />
   </ItemGroup>
 
 </Project>
