@@ -49,8 +49,8 @@
     <Reference Include="DotNetZip, Version=1.16.0.0, Culture=neutral, PublicKeyToken=6583c7c814667745, processorArchitecture=MSIL">
       <HintPath>..\packages\DotNetZip.1.16.0\lib\net40\DotNetZip.dll</HintPath>
     </Reference>
-    <Reference Include="Finsemble, Version=8.8.0.0, Culture=neutral, PublicKeyToken=9df516fcbc4ebe73, processorArchitecture=MSIL">
-      <HintPath>..\packages\Finsemble.8.8.0\lib\net452\Finsemble.dll</HintPath>
+    <Reference Include="Finsemble, Version=8.9.0.0, Culture=neutral, PublicKeyToken=9df516fcbc4ebe73, processorArchitecture=MSIL">
+      <HintPath>..\packages\Finsemble.8.9.0\lib\net452\Finsemble.dll</HintPath>
     </Reference>
     <Reference Include="Microsoft.IdentityModel.Logging, Version=6.16.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <HintPath>..\packages\Microsoft.IdentityModel.Logging.6.16.0\lib\net45\Microsoft.IdentityModel.Logging.dll</HintPath>
