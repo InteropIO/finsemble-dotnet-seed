@@ -53,8 +53,6 @@ namespace MultiWindowExample
 				};
 
 				fsbl.DragAndDropClient.SetScrim(Scrim); // The Scrim Label Control is used for drag and drop.
-
-				Show();
 			});
 		}
 	}
