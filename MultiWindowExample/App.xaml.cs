@@ -5,7 +5,9 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Threading;
+using System.Threading.Tasks;
 using System.Windows;
+using System.Windows.Interop;
 using System.Windows.Threading;
 
 namespace MultiWindowExample
@@ -15,8 +17,6 @@ namespace MultiWindowExample
 	/// </summary>
 	public partial class App : Application, ISingleInstanceApp
 	{
-		private static readonly object lockObj = new object();
-
 		private const string Unique = "6bea6fc4-5d9c-4961-b39d-89addcd65a73";
 
 		private static App application = null;
@@ -35,6 +35,10 @@ namespace MultiWindowExample
 			QI = "PODgpJrXxPAp72v_O0fNfAhWjHLeTk9TfLARl9lzPpYIoYR5tgP1Y_A-3feH_xtCfkzcCskfXIerQlY9lVmqs-eGEYjfuuPVYIruN4OsskMY1nz-h_14clyUmUwfCQJDV4qjcAzf80IMu53jYEW1BydRf90snRjk1dYgSq_qtTQ",
 		};
 
+		private static TaskCompletionSource<bool> ParentInstanceReadyTCS;
+
+		private static SemaphoreSlim SemaphoreSync = new SemaphoreSlim(1, 1);
+
 		/// <summary>
 		///
 		/// </summary>
@@ -42,7 +46,7 @@ namespace MultiWindowExample
 		public static void Main(string[] args)
 		{
 #if DEBUG
-            Debugger.Launch();
+			Debugger.Launch();
 #endif
 
 #if LOGGING && TRACE
@@ -82,25 +86,28 @@ namespace MultiWindowExample
 				// then ensure that we always release the mutex
 				if (SingleInstance<App>.InitializeAsFirstInstance(Unique))
 				{
-					application = new App();
+					// initialize the parent instance
+					if (FSBL == null)
+					{
+						ParentInstanceReadyTCS = new TaskCompletionSource<bool>();
+
+						// Register with Finsemble as a windowless component so the application will close when Finsemble is closed. 
+						FSBL = new Finsemble(args, null);
+						FSBL.Connected += FSBL_Connected;
+						// Subscribe on Disconnected event to close the Application
+						FSBL.Disconnected += OnShutdown;
+						FSBL.Connect("MultiWindowExample", JWK);
+					}
 
 					// If window type passed for initial launch, add listener to launch window when connected.
-					var argsList = args.ToList();
-					IEnumerable<string> nonFSBLArgs = GetNonFinsembleArgs(argsList);
-					if ((nonFSBLArgs != null) && nonFSBLArgs.Any())
+					var newWindowName = GetWindowNameToLaunch(args);
+					if (!string.IsNullOrEmpty(newWindowName))
 					{
-						// Non-finsemble arguments passed, launch window
-						LaunchWindow(args.ToList());
-					}
-					else
-					{
-						// Register with Finsemble as a windowless component so the application will close when Finsemble is closed. 
-						//Ensure that your window has been created (so that its window handle exists) before connecting to Finsemble.
-						var fsbl = new Finsemble(args.ToArray(), null);
-
-						fsbl.Connect("MultiWindowExample", JWK);
+						_ = LaunchWindow(newWindowName, args);
 					}
 
+					// start application
+					application = new App();
 					application.InitializeComponent();
 					mutex.ReleaseMutex();
 					application.Run();
@@ -112,120 +119,89 @@ namespace MultiWindowExample
 		}
 
 		/// <summary>
-		/// Giving a list of arguments, returns an enumerable of non-Finsemble arguments (no =)
-		/// </summary>
-		/// <param name="args">List of arguments</param>
-		/// <returns>Enumerable of non-Finsemble arguments</returns>
-		private static IEnumerable<string> GetNonFinsembleArgs(IList<string> args)
-		{
-			var nonFSBLArgs = args.Where(str => !str.Contains("=") && !str.Contains(".exe"));
-
-			return nonFSBLArgs;
-		}
-
-		/// <summary>
 		/// Launches a Finsemble aware window with the passed arguments.
 		/// </summary>
-		/// <param name="args">The arguments passed to the process.</param>
-		/// <returns>Always true?</returns>
-		private static bool LaunchWindow(IList<string> args)
+		/// <param name="windowName">The name of the window to be launched.</param>
+		/// <param name="args">Command line args for launched window.</param>
+		private static async Task<Window> LaunchWindow(string windowName, IEnumerable<string> args)
 		{
-#if DEBUG
-			Debugger.Launch();
-#endif
+			TaskCompletionSource<Window> tcs = new TaskCompletionSource<Window>();
 
-			if (!args.Any())
+			if (string.IsNullOrEmpty(windowName))
 			{
-				// Invalid number of arguments
-				return true;
+				// Invalid window name
+				throw new ArgumentNullException("windowName", "Invalid window name");
 			}
 
-			var nonFSBLArgs = GetNonFinsembleArgs(args);
-			if ((nonFSBLArgs == null) || !nonFSBLArgs.Any())
-			{
-				// no non-finsemble arguments. Cannot launch window.
-				return true;
-			}
-
-			string name = nonFSBLArgs.First();
-
-			// handle command line arguments of second instance
 			Window window = null;
 			Current.Dispatcher.Invoke(() =>
 			{
-				window = CreateWindow(name);
+				window = CreateWindow(windowName);
 			});
 
 			if (window == null)
 			{
-				Trace.TraceWarning($"Could not create window: {name}");
+				Trace.TraceWarning($"Could not create window: {windowName}");
+				tcs.SetResult(window);
+			}
+			else if (!(window is IIntegratable fsblWindow))
+			{
+				Trace.TraceWarning($"The window \"{windowName}\" is not a window that can be integrated into Finsemble.");
+				tcs.SetResult(window);
 			}
 			else
 			{
+				Current.Dispatcher.Invoke(() =>
+				{
+					// Ensure that your window has been created (so that its window handle exists) before connecting to Finsemble.
+					new WindowInteropHelper(window).EnsureHandle();
+				});
+
+				// Wait until the parent instance connects to Finsemble
+				await ParentInstanceReadyTCS.Task;
+
 				// Register with Finsemble
-				//Ensure that your window has been created (so that its window handle exists) before connecting to Finsemble.
-				var fsbl = new Finsemble(args.ToArray(), window);
+				var fsbl = new Finsemble(args?.ToArray(), window);
 				fsbl.Connected += (s, e) =>
 				{
-					IIntegratable fsblWin = window as IIntegratable;
-					if (fsblWin == null)
-					{
-						Trace.TraceWarning($"The window \"{name}\" is not a window that can be integrated into Finsemble.");
-					}
-					else
-					{
-						fsblWin.SetFinsemble(fsbl);
-					}
-
+					fsblWindow.SetFinsemble(fsbl);
 					Current.Dispatcher.Invoke(window.Show);
+
+					// releases the Task when the child window connected to Finsemble
+					tcs.SetResult(window);
 				};
 
 				// Dispose of Finsemble object when window is closed.
 				window.Closed += (s, e) =>
 				{
-					Trace.TraceInformation("disposing window from app.xaml");
-					fsbl.Dispose();
-					Trace.TraceInformation("dispose completed");
+					Trace.TraceInformation($"The window {windowName} has been closed");
 				};
 
 				fsbl.Connect("MultiWindowExample", JWK);
 			}
 
-			return true;
+			return await tcs.Task;
+		}
+
+		private static void FSBL_Connected(object sender, EventArgs e)
+		{
+			// Uncomment a row below if the parent app is appService and the config contains "waitForInitialization": true
+			// FSBL.PublishReady();
+			ParentInstanceReadyTCS.SetResult(true);
 		}
 
 		private static void OnShutdown(object sender, EventArgs e)
 		{
-			if (FSBL != null)
-			{
-				lock (lockObj)
-				{
-					if (FSBL != null)
-					{
-						try
-						{
-							// Dispose of Finsemble.
-							FSBL.Dispose();
-						}
-						catch { }
-						finally
-						{
-							FSBL = null;
-						}
-					}
-
-				}
-			}
+			FSBL = null;
 
 			try
 			{
 				// Release main thread so application can exit.
 				Current.Dispatcher.Invoke(application.Shutdown);
 			}
-			catch
+			catch (Exception ex)
 			{
-				// An error occurred, but I don't care as long as it exits.
-				;
+				Trace.TraceError($"Couldn't shutdown the apllication. Exception: {ex.Message}");
 			}
 		}
 
@@ -277,7 +253,27 @@ namespace MultiWindowExample
 		/// <returns></returns>
 		public bool SignalExternalCommandLineArgs(IList<string> args)
 		{
-			return LaunchWindow(args);
+			var newWindowName = GetWindowNameToLaunch(args);
+			Task.Run(async () =>
+			{
+				try
+				{
+					// The SemaphoreSync object will guarantee that only one child window will be created per time.
+					// Use TimeSpan as parameter to prevent an infinite waiting while SemaphoreSync is released.
+					await SemaphoreSync.WaitAsync(TimeSpan.FromMinutes(5));
+					await LaunchWindow(newWindowName, args);
+				}
+				catch(Exception ex)
+				{
+					Trace.TraceError($"Couldn't launch child window because {ex.Message}");
+				}
+				finally
+				{
+					SemaphoreSync.Release();
+				}
+
+			});
+			return true;
 		}
 		#endregion
 
@@ -288,11 +284,16 @@ namespace MultiWindowExample
 		/// <param name="e"></param>
 		private void Application_DispatcherUnhandledException(object sender, DispatcherUnhandledExceptionEventArgs e)
 		{
-#if DEBUG
-			Debugger.Launch();
-#endif
+			MessageBox.Show($"An Unhandled Exception has occurred. Please Check your event Logs. \n {e.Exception.Message}");
+		}
 
-			MessageBox.Show("An Unhandled Exception has occurred. Please Check your event Logs.");
+		/// <summary>
+		/// Returns the window name which should be created
+		/// </summary>
+		/// <param name="args">command line arguments passed to application</param>
+		private static string GetWindowNameToLaunch(IEnumerable<string> args)
+		{
+			return args?.FirstOrDefault(str => !str.Contains("=") && !str.Contains(".exe"));
 		}
 	}
 }

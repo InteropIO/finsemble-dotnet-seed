@@ -437,12 +437,10 @@ namespace MultiWindowExample
 		private static void ActivateFirstInstance(IList<string> args)
 		{
 			// Set main window state and process command line args
-			if (Application.Current == null)
+			if (Application.Current is TApplication application)
 			{
-				return;
+				application.SignalExternalCommandLineArgs(args);
 			}
-
-			((TApplication)Application.Current).SignalExternalCommandLineArgs(args);
 		}
 
 		#endregion
@@ -465,7 +463,10 @@ namespace MultiWindowExample
 				{
 					// Do an asynchronous call to ActivateFirstInstance function
 					Application.Current.Dispatcher.BeginInvoke(
-						DispatcherPriority.Normal, new DispatcherOperationCallback(SingleInstance<TApplication>.ActivateFirstInstanceCallback), args);
+						DispatcherPriority.Normal,
+						new DispatcherOperationCallback(ActivateFirstInstanceCallback),
+						args
+					);
 				}
 			}
 
