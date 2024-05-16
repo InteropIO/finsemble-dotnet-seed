@@ -11,6 +11,7 @@ using System.Data;
 using System.Diagnostics;
 using System.Drawing;
 using System.Linq;
+using System.Threading.Tasks;
 using System.Windows.Forms;
 
 namespace WinformExampleCore
@@ -522,14 +523,32 @@ namespace WinformExampleCore
 				}
 			});
 
+			// Check if the component able to receive the context
+			var contextToSend = await ShouldSendContextToComponent(context, componentName) ? context : null;
 			try
 			{
-				var appIdentifier = await _bridge.Clients.Fdc3Client.DesktopAgentClient.Open(componentName, context);
+				var appId = await _bridge.Clients.Fdc3Client.DesktopAgentClient.Open(componentName, contextToSend);
 			}
 			catch (Exception ex)
 			{
 				MessageBox.Show(ex.Message);
 			}
+		}
+
+		private async Task<bool> ShouldSendContextToComponent(Context context, string componentName)
+		{
+			var componentConfig = (await _bridge.Clients.ConfigClient.Get(new[] { "finsemble", "components", componentName }))?.response;
+			var intents = componentConfig?["appConfig"]?["interop"]?["intents"]?["listensFor"]?.Children();
+
+			foreach (var intent in intents)
+			{
+				if (intent?.First?["contexts"]?.ToString().Contains(context.Type) == true)
+				{
+					return true;
+				}
+			}
+
+			return false;
 		}
 
 		private void DragNDropEmittingButton_MouseDown(object sender, MouseEventArgs e)

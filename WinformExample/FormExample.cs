@@ -14,6 +14,7 @@ using Color = System.Drawing.Color;
 using ChartIQ.Finsemble.FDC3.Types;
 using Microsoft.IdentityModel.Tokens;
 using ChartIQ.Finsemble.FDC3.Interfaces;
+using System.Diagnostics;
 
 namespace WinformExample
 {
@@ -138,7 +139,10 @@ namespace WinformExample
 
 
 			// Example for getting Spawnable component list
-			FSBL.ConfigClient.GetValue(new JObject { ["field"] = "finsemble.components" }, HandleComponentsList);
+			var response = await FSBL.ConfigClient.Get(new[] { "finsemble", "components" });
+			HandleComponentsList(response);
+			
+			// FSBL.PublishReady();
 		}
 
 		private void HandleContext(Context context, IContextMetadata metadata)
@@ -457,35 +461,32 @@ namespace WinformExample
 			}));
 		}
 
-		private void HandleComponentsList(Object sender, FinsembleEventArgs response)
+		private void HandleComponentsList(FinsembleEventArgs response)
 		{
-			this.Invoke(new Action(() =>
+			if (response.error != null)
 			{
-				if (response.error != null)
+				FSBL.Logger.Error(new JToken[] { "Error when receiving spawnable component list: ", response.error.ToString() });
+			}
+			else if (response.response != null)
+			{
+				var components = response.response as JObject;
+				foreach (var property in components?.Properties())
 				{
-					FSBL.Logger.Error(new JToken[] { "Error when receiving spawnable component list: ", response.error.ToString() });
-				}
-				else if (response.response != null)
-				{
-					var components = (JObject)response.response?["data"];
-					foreach (var property in components?.Properties())
+					var launchableByUser = components?[property.Name]?["foreign"]?["components"]?["App Launcher"]?["launchableByUser"]?.ToObject<bool?>();
+					if (launchableByUser == true)
 					{
-						object value = components?[property.Name]?["foreign"]?["components"]?["App Launcher"]?["launchableByUser"];
-						if ((value != null) && bool.Parse(value.ToString()))
+						ComponentDropDown.Invoke(new Action(() =>
 						{
-							Dispatcher.CurrentDispatcher.Invoke(() =>
+							//elimination of duplicate names of components after Finsemble restart
+							if (!ComponentDropDown.Items.Contains(property.Name))
 							{
-								//elimination of duplicate names of components after Finsemble restart
-								if (!ComponentDropDown.Items.Contains(property.Name))
-								{
-									ComponentDropDown.Items.Add(property.Name);
-									ComponentDropDown.SelectedIndex = 0;
-								}
-							});
-						}
+								ComponentDropDown.Items.Add(property.Name);
+								ComponentDropDown.SelectedIndex = 0;
+							}
+						}));
 					}
 				}
-			}));
+			}
 		}
 
 		private void handleKeyPresses(object sender, System.Windows.Forms.KeyPressEventArgs e)
@@ -531,12 +532,37 @@ namespace WinformExample
 					}
 				});
 
-				var appId = await FSBL.FDC3Client.DesktopAgentClient.Open(componentName, context);
+				// Check if the component able to receive the context
+				var contextToSend = await ShouldSendContextToComponent(context, componentName) ? context : null;
+				try
+				{
+					var appId = await FSBL.FDC3Client.DesktopAgentClient.Open(componentName, contextToSend);
+				}
+				catch (Exception ex)
+				{
+					Trace.TraceError($"Failed to open the app: {ex.Message}");
+				}
 			}
 			else
 			{
 				FSBL.LauncherClient.Spawn(componentName, new JObject { ["addToWorkspace"] = true }, (s, a) => { });
 			}
+		}
+
+		private async Task<bool> ShouldSendContextToComponent(Context context, string componentName)
+		{
+			var componentConfig = (await FSBL.ConfigClient.Get(new[] { "finsemble", "components", componentName }))?.response;
+			var intents = componentConfig?["appConfig"]?["interop"]?["intents"]?["listensFor"]?.Children();
+
+			foreach (var intent in intents)
+			{
+				if (intent?.First?["contexts"]?.ToString().Contains(context.Type) == true)
+				{
+					return true;
+				}
+			}
+
+			return false;
 		}
 
 		private void LinkerButton_Click(object sender, EventArgs e)

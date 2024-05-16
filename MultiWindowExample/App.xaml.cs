@@ -110,6 +110,7 @@ namespace MultiWindowExample
 					application = new App();
 					application.InitializeComponent();
 					mutex.ReleaseMutex();
+					// Blocks main thread
 					application.Run();
 
 					// Allow single instance code to perform cleanup operations

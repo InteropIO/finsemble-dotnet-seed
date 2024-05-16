@@ -12,6 +12,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Diagnostics;
 using System.IO;
 using System.Runtime.InteropServices;
 using System.Runtime.Remoting;
@@ -188,7 +189,6 @@ namespace MultiWindowExample
 				// Assert.AreEqual(IntPtr.Zero, p);
 			}
 		}
-
 	}
 
 	public interface ISingleInstanceApp
@@ -250,18 +250,6 @@ namespace MultiWindowExample
 
 		#endregion
 
-		#region Public Properties
-
-		/// <summary>
-		/// Gets list of command line arguments for the application.
-		/// </summary>
-		public static IList<string> CommandLineArgs
-		{
-			get { return commandLineArgs; }
-		}
-
-		#endregion
-
 		#region Public Methods
 
 		/// <summary>
@@ -274,19 +262,19 @@ namespace MultiWindowExample
 			commandLineArgs = GetCommandLineArgs(uniqueName);
 
 			// Build unique application Id and the IPC channel name.
-			string applicationIdentifier = uniqueName + Environment.UserName;
+			string applicationIdentifier = $"{uniqueName}{Environment.UserName}";
 
-			string channelName = String.Concat(applicationIdentifier, Delimiter, ChannelNameSuffix);
+			string channelName = string.Concat(applicationIdentifier, Delimiter, ChannelNameSuffix);
 
 			// Create mutex based on unique application Id to check if this is the first instance of the application. 
-			bool firstInstance;
-			singleInstanceMutex = new Mutex(true, applicationIdentifier, out firstInstance);
+			singleInstanceMutex = new Mutex(true, applicationIdentifier, out bool firstInstance);
 			if (firstInstance)
 			{
 				CreateRemoteService(channelName);
 			}
 			else
 			{
+				Trace.TraceInformation($"Send message to the Main instance: {string.Join(", ", commandLineArgs)}");
 				SignalFirstInstance(channelName, commandLineArgs);
 			}
 
@@ -298,11 +286,8 @@ namespace MultiWindowExample
 		/// </summary>
 		public static void Cleanup()
 		{
-			if (singleInstanceMutex != null)
-			{
-				singleInstanceMutex.Close();
-				singleInstanceMutex = null;
-			}
+			singleInstanceMutex?.Close();
+			singleInstanceMutex = null;
 
 			if (channel != null)
 			{
@@ -321,7 +306,7 @@ namespace MultiWindowExample
 		/// <returns>List of command line arg strings.</returns>
 		private static IList<string> GetCommandLineArgs(string uniqueApplicationName)
 		{
-			string[] args = null;
+			string[] args = new string[] { };
 			if (AppDomain.CurrentDomain.ActivationContext == null)
 			{
 				// The application was not clickonce deployed, get args from standard API's
@@ -333,7 +318,7 @@ namespace MultiWindowExample
 				// Clickonce deployed apps cannot recieve traditional commandline arguments
 				// As a workaround commandline arguments can be written to a shared location before 
 				// the app is launched and the app can obtain its commandline arguments from the 
-				// shared location               
+				// shared location
 				string appFolderPath = Path.Combine(
 					Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), uniqueApplicationName);
 
@@ -349,18 +334,14 @@ namespace MultiWindowExample
 
 						File.Delete(cmdLinePath);
 					}
-					catch (IOException)
+					catch (IOException ex)
 					{
+						Trace.TraceError($"Failed to read file: {cmdLinePath}. The error: {ex.Message}");
 					}
 				}
 			}
 
-			if (args == null)
-			{
-				args = new string[] { };
-			}
-
-			return new List<string>(args);
+			return args;
 		}
 
 		/// <summary>
@@ -371,11 +352,12 @@ namespace MultiWindowExample
 		{
 			BinaryServerFormatterSinkProvider serverProvider = new BinaryServerFormatterSinkProvider();
 			serverProvider.TypeFilterLevel = TypeFilterLevel.Full;
-			IDictionary props = new Dictionary<string, string>();
-
-			props["name"] = channelName;
-			props["portName"] = channelName;
-			props["exclusiveAddressUse"] = "false";
+			IDictionary props = new Dictionary<string, string>()
+			{
+				{ "name", channelName },
+				{"portName", channelName },
+				{ "exclusiveAddressUse", "false"}
+			};
 
 			// Create the IPC Server channel with the channel properties
 			channel = new IpcServerChannel(props, serverProvider);
@@ -402,19 +384,16 @@ namespace MultiWindowExample
 			IpcClientChannel secondInstanceChannel = new IpcClientChannel();
 			ChannelServices.RegisterChannel(secondInstanceChannel, true);
 
-			string remotingServiceUrl = IpcProtocol + channelName + "/" + RemoteServiceName;
+			string remotingServiceUrl = $"{IpcProtocol}{channelName}/{RemoteServiceName}";
 
 			// Obtain a reference to the remoting service exposed by the server i.e the first instance of the application
-			IPCRemoteService firstInstanceRemoteServiceReference = (IPCRemoteService)RemotingServices.Connect(typeof(IPCRemoteService), remotingServiceUrl);
+			var firstInstanceRemoteServiceReference = RemotingServices.Connect(typeof(IPCRemoteService), remotingServiceUrl) as IPCRemoteService;
 
 			// Check that the remote service exists, in some cases the first instance may not yet have created one, in which case
 			// the second instance should just exit
-			if (firstInstanceRemoteServiceReference != null)
-			{
-				// Invoke a method of the remote service exposed by the first instance passing on the command line
-				// arguments and causing the first instance to activate itself
-				firstInstanceRemoteServiceReference.InvokeFirstInstance(args);
-			}
+			// Invoke a method of the remote service exposed by the first instance passing on the command line
+			// arguments and causing the first instance to activate itself
+			firstInstanceRemoteServiceReference?.InvokeFirstInstance(args);
 		}
 
 		/// <summary>
@@ -425,8 +404,7 @@ namespace MultiWindowExample
 		private static object ActivateFirstInstanceCallback(object arg)
 		{
 			// Get command line args to be passed to first instance
-			IList<string> args = arg as IList<string>;
-			ActivateFirstInstance(args);
+			ActivateFirstInstance(arg as IList<string>);
 			return null;
 		}
 
