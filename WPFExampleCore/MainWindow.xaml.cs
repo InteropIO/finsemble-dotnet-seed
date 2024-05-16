@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Interop;
@@ -405,13 +406,38 @@ namespace WPFExampleCore
 						}
 					});
 
-					var appId = await FSBL.Clients.Fdc3Client.DesktopAgentClient.Open(componentName, context);
+					// Check if the component able to receive the context
+					var contextToSend = await ShouldSendContextToComponent(context, componentName) ? context : null;
+					try
+					{
+						var appId = await FSBL.Clients.Fdc3Client.DesktopAgentClient.Open(componentName, contextToSend);
+					}
+					catch (Exception ex)
+					{
+						Trace.TraceError($"Failed to open the app: {ex.Message}");
+					}
 				}
 				else
 				{
 					FSBL.Clients.LauncherClient.Spawn(componentName, new JObject { ["addToWorkspace"] = true }, (s, a) => { });
 				}
 			}
+		}
+
+		private async Task<bool> ShouldSendContextToComponent(Context context, string componentName)
+		{
+			var componentConfig = (await FSBL.Clients.ConfigClient.Get(new[] { "finsemble", "components", componentName }))?.response;
+			var intents = componentConfig?["appConfig"]?["interop"]?["intents"]?["listensFor"]?.Children();
+
+			foreach (var intent in intents)
+			{
+				if (intent?.First?["contexts"]?.ToString().Contains(context.Type) == true)
+				{
+					return true;
+				}
+			}
+
+			return false;
 		}
 
 		private void Send_Click(object sender, RoutedEventArgs e)

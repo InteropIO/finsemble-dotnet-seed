@@ -12,6 +12,8 @@ using ChartIQ.Finsemble.TitlebarService.Models;
 using ChartIQ.Finsemble.FDC3.Types;
 using Microsoft.IdentityModel.Tokens;
 using System.Windows.Interop;
+using ChartIQ.Finsemble.FDC3.Interfaces;
+using System.Diagnostics;
 
 namespace WPFExample
 {
@@ -60,7 +62,16 @@ namespace WPFExample
 						}
 					});
 
-					var appId = await FSBL.FDC3Client.DesktopAgentClient.Open(componentName, context);
+					// Check if the component able to receive the context
+					var contextToSend = await ShouldSendContextToComponent(context, componentName) ? context : null;
+					try
+					{
+						var appId = await FSBL.FDC3Client.DesktopAgentClient.Open(componentName, contextToSend);
+					}
+					catch(Exception ex)
+					{
+						Trace.TraceError($"Failed to open the app: {ex.Message}");
+					}
 
 					//Intent 
 					//var context = new Context(new JObject
@@ -371,6 +382,18 @@ namespace WPFExample
 			//});
 
 			WindowReady?.Invoke(this, EventArgs.Empty);
+
+			_ = Task.Run(async () =>
+			{
+				await Task.Delay(5000);
+				Dispatcher.Invoke(delegate
+				{
+					Width = 1600;
+					Height = 60;
+					Top = 200;
+					Left = 200;
+				});
+			});
 		}
 
 		private void Logger_OnLog(object sender, JObject e)
@@ -552,6 +575,25 @@ namespace WPFExample
 					FSBL.Logger.Error(new JToken[] { "WPFExample Subscribe_to_Publish Error", ex.Message, ex.StackTrace });
 				}
 			});
+		}
+
+		/// <summary>
+		/// check if the component able to receive the context
+		/// </summary>
+		private async Task<bool> ShouldSendContextToComponent(IContext context, string componentName)
+		{
+			var componentConfig = (await FSBL.ConfigClient.Get(new[] { "finsemble", "components", componentName }))?.response;
+			var intents = componentConfig?["appConfig"]?["interop"]?["intents"]?["listensFor"]?.Children();
+
+			foreach (var intent in intents)
+			{
+				if (intent?.First?["contexts"]?.ToString().Contains(context.Type) == true)
+				{
+					return true;
+				}
+			}
+
+			return false;
 		}
 	}
 }
