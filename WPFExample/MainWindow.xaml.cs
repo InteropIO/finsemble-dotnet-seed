@@ -382,18 +382,6 @@ namespace WPFExample
 			//});
 
 			WindowReady?.Invoke(this, EventArgs.Empty);
-
-			_ = Task.Run(async () =>
-			{
-				await Task.Delay(5000);
-				Dispatcher.Invoke(delegate
-				{
-					Width = 1600;
-					Height = 60;
-					Top = 200;
-					Left = 200;
-				});
-			});
 		}
 
 		private void Logger_OnLog(object sender, JObject e)
