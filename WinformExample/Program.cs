@@ -31,7 +31,24 @@ namespace WinformExample
 
 			Application.EnableVisualStyles();
 			Application.SetCompatibleTextRenderingDefault(false);
-			Application.Run(new FormExample(args));
+			
+			// show form after connection to Finsemble prevents flickering on startup
+			var form = new FormExample(args);
+			form.Hide();
+
+			form.FormClosed += (s, e) =>
+			{
+				Application.Exit();
+			};
+
+			form.FSBL.Connected += (s,e) =>
+			{
+				form.Invoke(new Action(() =>
+				{
+					form.Show();
+				}));
+			};
+			Application.Run();
 		}
 
 		static void Application_ThreadException(object sender, ThreadExceptionEventArgs e)

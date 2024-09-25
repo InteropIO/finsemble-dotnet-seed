@@ -31,6 +31,17 @@
 			Trace.TraceInformation("Logging started");
 #endif
 
+			// required options for multi window examples.
+			// they should be get in the child window app process and pass to the parent window
+			var rco = InteropIO.Util.Util.GetRemoteConfigurationOptions();
+
+			if (rco != null)
+			{
+				var newArgs = args.ToList();
+				newArgs.Add(rco);
+				args = newArgs.ToArray();
+			}
+
 			ApplicationContext app = new ApplicationContext(args);
 			app.Run(args);
 		}
@@ -92,7 +103,7 @@
 			protected override void OnStartupNextInstance(StartupNextInstanceEventArgs eventArgs)
 			{
 				var nonFSBLArgs = GetNonFinsembleArgs(eventArgs.CommandLine);
-				string name = nonFSBLArgs.First();
+				string name = nonFSBLArgs?.FirstOrDefault();
 				Form form = CreateForm(name);
 				var fsbl = new Finsemble(eventArgs.CommandLine.ToArray(), form);
 				fsbl.Connected += (s, e) =>

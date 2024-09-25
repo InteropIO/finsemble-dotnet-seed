@@ -99,16 +99,20 @@ namespace MultiWindowExample
 						FSBL.Connect("MultiWindowExample", JWK);
 					}
 
+					// start application
+					application = new App();
+					application.InitializeComponent();
+
 					// If window type passed for initial launch, add listener to launch window when connected.
 					var newWindowName = GetWindowNameToLaunch(args);
 					if (!string.IsNullOrEmpty(newWindowName))
 					{
-						_ = LaunchWindow(newWindowName, args);
+						application.Startup += (s, a) =>
+						{
+							_ = LaunchWindow(newWindowName, args);
+						};
 					}
-
-					// start application
-					application = new App();
-					application.InitializeComponent();
+				
 					mutex.ReleaseMutex();
 					// Blocks main thread
 					application.Run();

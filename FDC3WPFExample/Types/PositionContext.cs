@@ -1,4 +1,4 @@
-﻿using ChartIQ.Finsemble.FDC3.Interfaces;
+﻿using InteropIO.FDC3.Interfaces;
 
 namespace FDC3WPFExample.Types
 {
@@ -9,5 +9,9 @@ namespace FDC3WPFExample.Types
 		public InstrumentContext Instrument { get; set; }
 
 		public int Holding { get; set; }
+
+		public object Id { get; set; }
+
+		public string Name { get; set; }
 	}
 }

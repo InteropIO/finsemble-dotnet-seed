@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <OutputType>WinExe</OutputType>
@@ -24,7 +24,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Finsemble.Core" Version="8.11.0" />
+    <PackageReference Include="Finsemble.Core" Version="10.0.0-iocd.20" />
   </ItemGroup>
 
 </Project>

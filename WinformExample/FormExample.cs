@@ -6,14 +6,12 @@ using System.Drawing;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Windows.Forms;
-using System.Windows.Threading;
-using ChartIQ.Finsemble.DragAndDrop;
-using ChartIQ.Finsemble.Router;
+using InteropIO.Router;
 using WinformExample.Controls;
 using Color = System.Drawing.Color;
-using ChartIQ.Finsemble.FDC3.Types;
+using InteropIO.FDC3.Types;
 using Microsoft.IdentityModel.Tokens;
-using ChartIQ.Finsemble.FDC3.Interfaces;
+using InteropIO.FDC3.Interfaces;
 using System.Diagnostics;
 
 namespace WinformExample
@@ -36,6 +34,8 @@ namespace WinformExample
 			Q = "4R0RUlCnmZRzEw9sqjwxMuvNM1BTSubvMvG0VIlBkYbCn9MOdwurBPxrYqnUcbw-q-qzQy6st6a4L-EAZSnfD3FEEFKeINOJK06l0EwjcLeP8B4YQ-bxd9UroXpl9ACiMqHzyvJCNOpw8A22nbjKVnVhW1E17F-LFAJoWBetYA0",
 			QI = "PODgpJrXxPAp72v_O0fNfAhWjHLeTk9TfLARl9lzPpYIoYR5tgP1Y_A-3feH_xtCfkzcCskfXIerQlY9lVmqs-eGEYjfuuPVYIruN4OsskMY1nz-h_14clyUmUwfCQJDV4qjcAzf80IMu53jYEW1BydRf90snRjk1dYgSq_qtTQ",
 		};
+
+		public Finsemble FSBL = null;
 
 		public FormExample(String[] args)
 		{
@@ -74,85 +74,74 @@ namespace WinformExample
 
 		private async void FinsembleConnected(object sender, EventArgs e)
 		{
-			FSBL.Logger.OnLog += Logger_OnLog;
+			if (FSBL.Clients.Logger != null)
+			{
+				FSBL.Clients.Logger.OnLog += Logger_OnLog;
 
-			FSBL.Logger.Log(new JToken[] { "Winform example connected to Finsemble." });
-			System.Diagnostics.Debug.WriteLine("FSBL Ready.");
+				FSBL.Clients.Logger.Log(new JToken[] { "Winform example connected to Finsemble." });
+			}
+			Trace.TraceInformation("FSBL Ready.");
 
 			// Update UI buttons
-			FSBL.WindowClient.WindowStateChanged += WindowClient_WindowStateChanged;
-			WindowClient_WindowStateChanged(null, FSBL.WindowClient.currentWindowState);
-
-			if (FSBL.LinkerClient != null)
+			if (FSBL.Clients.WindowClient != null)
 			{
-				// Listen to Linker state change to render connected channels
-				FSBL.LinkerClient.OnStateChange(HandleLinkerStateChange);
+				// hide and disable linker and docking buttons if IOCD connected
+				// IOCD window wrapper already has corresponding built in components
+				if (FSBL.IsIOCDConnected)
+				{
+					LinkerButton.Enabled = false;
+					LinkerButton.Visible = false;
 
-				// Example for LinkerClient subscribe
-				FSBL.LinkerClient.Subscribe("symbol", HandleLinkerData);
+					DockingButton.Enabled = false;
+					DockingButton.Visible = false;
+				}
+
+				FSBL.Clients.WindowClient.WindowStateChanged += WindowClient_WindowStateChanged;
+				WindowClient_WindowStateChanged(null, FSBL.Clients.WindowClient.CurrentWindowState);
+
+				//Example for handling component state in a workspace (and hand-off to getSpawnData if no state found)
+				var state = await FSBL.Clients.WindowClient?.GetComponentState(new JObject { ["field"] = "symbol" });
+				HandleGetComponentState(state);
 			}
-			else //use default FDC3 client
-			{
-				FSBL.FDC3Client.StateChanged += HandleLinkerStateChange;
 
-				//setting initial state of linked channels
-				HandleLinkerStateChange(null, FSBL.FDC3Client.LastStateChangedArgs);
+			FSBL.Clients.FDC3Client.StateChanged += HandleLinkerStateChange;
 
-				// Example for Fdc3Client subscribe to specific context. The "*" for subscription to all contexts.
-				var listener = FSBL.FDC3Client.DesktopAgentClient.AddContextListener("fdc3.instrument", HandleContext);
-			}
+			//setting initial state of linked channels
+			HandleLinkerStateChange(null, FSBL.Clients.FDC3Client.LastStateChangedArgs);
 
-			//Example for handling component state in a workspace (and hand-off to getSpawnData if no state found)
-			FSBL.WindowClient.GetComponentState(new JObject { ["field"] = "symbol" }, HandleGetComponentState);
-
+			// Example for Fdc3Client subscribe to specific context. The "*" for subscription to all contexts.
+			var listener = FSBL.Clients.FDC3Client.DesktopAgentClient?.AddContextListener("fdc3.instrument", HandleContext);
 
 			// Example for Handling PubSub data
-			FSBL.RouterClient.Subscribe("Finsemble.TestWPFPubSubSymbol", HandlePubSub);
+			FSBL.Clients.RouterClient.Subscribe("Finsemble.TestWPFPubSubSymbol", HandlePubSub);
 
+			// Using custom fonts
 			finfont.AddFontFile(@"Resources\finfont.ttf");
 			finfont.AddFontFile(@"Resources\font-finance.ttf");
-			var finFont = new System.Drawing.Font(finfont.Families[0], 100);
-			var fontFinance = new System.Drawing.Font(finfont.Families[1], 7);
+			var finFont = new Font(finfont.Families[0], 100);
+			var fontFinance = new Font(finfont.Families[1], 7);
 			Invoke(new Action(() =>
 			{
-				scrim.Font = finFont;
-
 				LinkerButton.Font = fontFinance;
-				DragNDropEmittingButton.Font = fontFinance;
 				AlwaysOnTopButton.Font = fontFinance;
 				DockingButton.Font = fontFinance;
 				DockingButton.UseEllipse = true;
 				AlwaysOnTopButton.UseEllipse = true;
 			}));
 
-			FSBL.DragAndDropClient.SetScrim(scrim);
-			FSBL.DragAndDropClient.AddReceivers(new List<KeyValuePair<string, EventHandler<FinsembleEventArgs>>>()
-			{
-				new KeyValuePair<string, EventHandler<FinsembleEventArgs>>("symbol", HandleDragAndDropReceive)
-			});
-
-			// Emitters for data that can be dragged using the drag icon.
-			FSBL.DragAndDropClient.SetEmitters(new List<KeyValuePair<string, DragAndDropClient.emitter>>()
-			{
-				new KeyValuePair<string, DragAndDropClient.emitter>("symbol", HandleDragAndDropEmit)
-			});
-
-
 			// Example for getting Spawnable component list
-			var response = await FSBL.ConfigClient.Get(new[] { "finsemble", "components" });
-			HandleComponentsList(response);
-
-			FSBL.PublishReady();
+			var args = await FSBL.Clients.ConfigClient.Get(new[] { "finsemble", "apps" });
+			HandleComponentsList(this, args);
 		}
 
 		private void HandleContext(Context context, IContextMetadata metadata)
 		{
 
-			FSBL.Logger.Debug($"Context received: {context.Value}");
+			FSBL.Clients.Logger.Debug($"Context received: {context.Value}");
 
 			if (context == null)
 			{
-				FSBL.Logger.Error(new JToken[] { "Error when receiving context. Context is null " });
+				FSBL.Clients.Logger.Error(new JToken[] { "Error when receiving context. Context is null " });
 			}
 			else
 			{
@@ -180,13 +169,13 @@ namespace WinformExample
 
 		private void HandleLinkerStateChange(Object sender, FinsembleEventArgs response)
 		{
-			this.Invoke(new Action(() =>
+			if (response?.error != null)
 			{
-				if (response.error != null)
-				{
-					FSBL.Logger.Error(new JToken[] { "Error when receiving linker state change data: ", response.error.ToString() });
-				}
-				else if (response.response != null)
+				FSBL.Clients.Logger?.Error(new JToken[] { "Error when receiving linker state change data: ", response.error.ToString() });
+			}
+			else if (response?.response != null)
+			{
+				Invoke(new Action(() =>
 				{
 					var visiblePillsBeforeChange = LinkerGroups.Count(x => x.Value.Visible);
 
@@ -216,10 +205,8 @@ namespace WinformExample
 					AlignAllLinkerPills();
 
 					var visiblePillsAfterChange = LinkerGroups.Count(x => x.Value.Visible);
-					var marginShift = CalculateDragNDropLeftMarginShift(visiblePillsBeforeChange, visiblePillsAfterChange);
-					DragNDropEmittingButton.Location = new Point(DragNDropEmittingButton.Location.X + marginShift, DragNDropEmittingButton.Location.Y);
-				}
-			}));
+				}));
+			}
 		}
 
 		private void CreateLinkerPills(JArray allChannels)
@@ -228,7 +215,7 @@ namespace WinformExample
 			{
 				int positionX = 0;
 				const int positionY = 10;
-				
+
 
 				var colorConverter = new ColorConverter();
 				foreach (var channel in allChannels)
@@ -275,11 +262,6 @@ namespace WinformExample
 			}
 		}
 
-		private int CalculateDragNDropLeftMarginShift(int visiblePillsBeforeShift, int visiblePillsAfterShift)
-		{
-			return (visiblePillsAfterShift - visiblePillsBeforeShift) * (LinkerPillWidth + 2);
-		}
-
 		private void WindowClient_WindowStateChanged(object sender, JObject state)
 		{
 			var isGrouped = state?["isGrouped"]?.ToObject<bool>() ?? false;
@@ -318,73 +300,52 @@ namespace WinformExample
 			}));
 		}
 
-		private void HandleGetComponentState(object s, FinsembleEventArgs state)
+		private async void HandleGetComponentState(JToken state)
 		{
-			this.Invoke(new Action(() =>
+			if (state is JValue symbol)
 			{
-				if (state.response != null)
+				var symbolTxt = symbol?.ToString();
+				if (!string.IsNullOrEmpty(symbolTxt))
 				{
-					// Example for restoring state
-					if (state.response is JValue)
+					Invoke(new Action(() =>
 					{
-						var symbol = (JValue)state.response;
-						if (symbol != null)
-						{
-							var symbolTxt = symbol?.ToString();
-							if (!string.IsNullOrEmpty(symbolTxt))
-							{
-								DataLabel.Text = symbolTxt;
-								DataToSendInput.Text = symbolTxt;
-								SourceLabel.Text = "via component state";
-							}
-						}
-					}
-					else
-					{
-						// Example for Handling Spawn data
-						FSBL.WindowClient.GetSpawnData(HandleSpawnData);
-					}
+						DataLabel.Text = symbolTxt;
+						DataToSendInput.Text = symbolTxt;
+						SourceLabel.Text = "via component state";
+					}));
 				}
-				else
-				{
-					// Example for Handling Spawn data
-					FSBL.WindowClient.GetSpawnData(HandleSpawnData);
-				}
-			}));
+			}
+			else
+			{
+				// Example for Handling Spawn data
+				var spawnData = await FSBL.Clients.WindowClient.GetSpawnData();
+				HandleSpawnData(spawnData);
+			}
 		}
 
-		private void HandleSpawnData(Object sender, FinsembleEventArgs res)
+		private async void HandleSpawnData(JToken spawnData)
 		{
-			this.Invoke(new Action(async () =>
+			if (spawnData != null)
 			{
-				var receivedData = (JObject)res.response;
-				if (res.error != null)
+				Invoke(new Action(() =>
 				{
-					FSBL.Logger.Error(new JToken[] { "Error when retrieving spawn data: ", res.error.ToString() });
-				}
-				else if (res.response != null)
-				{
-					JToken value = receivedData.GetValue("spawndata");
-					if (value != null)
-					{
-						DataLabel.Text = value.ToString();
-						DataToSendInput.Text = value.ToString();
-						SourceLabel.Text = "via Spawndata";
-						await SaveStateAsync();
-					}
-				}
-			}));
+					DataLabel.Text = spawnData.ToString();
+					DataToSendInput.Text = spawnData.ToString();
+					SourceLabel.Text = "via spawn data";
+				}));
+				await SaveStateAsync();
+			}
 		}
 
 		private void HandlePubSub(object sender, FinsembleEventArgs state)
 		{
-			this.Invoke(new Action(async () =>
+			Invoke(new Action(async () =>
 			{
 				try
 				{
 					if (state.error != null)
 					{
-						FSBL.Logger.Error(new JToken[] { "Error when retrieving spawn data: ", state.error.ToString() });
+						FSBL.Clients.Logger.Error(new JToken[] { "Error when retrieving spawn data: ", state.error.ToString() });
 					}
 					else if (state.response != null)
 					{
@@ -401,86 +362,31 @@ namespace WinformExample
 				}
 				catch (Exception ex)
 				{
-					FSBL.Logger.Error(new JToken[] { "Error when retrieving linker channels: ", ex.Message });
+					FSBL.Clients.Logger.Error(new JToken[] { "Error when retrieving linker channels: ", ex.Message });
 				}
 			}));
 		}
 
-		private void HandleDragAndDropReceive(object sender, FinsembleEventArgs args)
-		{
-			this.Invoke(new Action(async () =>
-			{
-				if (args.error != null)
-				{
-					FSBL.Logger.Error(new JToken[] { "Error when receiving drag and drop data: ", args.error.ToString() });
-				}
-				else if (args.response != null)
-				{
-					var data = args.response["data"]?["symbol"];
-					if (data != null)
-					{
-						//Check if we received an object (so data.symbol.symbol) or a string (data.symbol) to support variations in the format
-						if (data.HasValues)
-						{
-							data = data?["symbol"];
-							DataLabel.Text = data.ToString();
-							DataToSendInput.Text = data.ToString();
-							SourceLabel.Text = "via Drag and Drop";
-							await SaveStateAsync();
-						}
-					}
-				}
-			}));
-		}
-
-		private JObject HandleDragAndDropEmit()
-		{
-			return new JObject
-			{
-				["symbol"] = DataToSendInput.Text,
-				["description"] = "Symbol " + DataToSendInput.Text
-			};
-		}
-
-		private void HandleLinkerData(object sender, FinsembleEventArgs response)
-		{
-			this.Invoke(new Action(async () =>
-			{
-				if (response.error != null)
-				{
-					FSBL.Logger.Error(new JToken[] { "Error when receiving linker data: ", response.error.ToString() });
-				}
-				else if (response.response != null)
-				{
-					string value = response.response?["data"]?.ToString();
-					DataLabel.Text = value;
-					SourceLabel.Text = "via Linker";
-					DataToSendInput.Text = value;
-					await SaveStateAsync();
-				}
-			}));
-		}
-
-		private void HandleComponentsList(FinsembleEventArgs response)
+		private void HandleComponentsList(object sender, FinsembleEventArgs response)
 		{
 			if (response.error != null)
 			{
-				FSBL.Logger.Error(new JToken[] { "Error when receiving spawnable component list: ", response.error.ToString() });
+				FSBL.Clients.Logger.Error(new JToken[] { "Error when receiving spawnable component list: ", response.error.ToString() });
 			}
-			else if (response.response != null)
+			else if (response?.response != null && response.response is JArray apps)
 			{
-				var components = response.response as JObject;
-				foreach (var property in components?.Properties())
+				foreach (var app in apps)
 				{
-					var launchableByUser = components?[property.Name]?["foreign"]?["components"]?["App Launcher"]?["launchableByUser"]?.ToObject<bool?>();
-					if (launchableByUser == true)
+					object value = app?["hostManifests"]?["Finsemble"]?["foreign"]?["components"]?["App Launcher"]?["launchableByUser"];
+					if ((value != null) && bool.Parse(value.ToString()))
 					{
 						ComponentDropDown.Invoke(new Action(() =>
 						{
+							var appId = app?["appId"]?.ToString();
 							//elimination of duplicate names of components after Finsemble restart
-							if (!ComponentDropDown.Items.Contains(property.Name))
+							if (!ComponentDropDown.Items.Contains(appId))
 							{
-								ComponentDropDown.Items.Add(property.Name);
+								ComponentDropDown.Items.Add(appId);
 								ComponentDropDown.SelectedIndex = 0;
 							}
 						}));
@@ -489,27 +395,13 @@ namespace WinformExample
 			}
 		}
 
-		private void handleKeyPresses(object sender, System.Windows.Forms.KeyPressEventArgs e)
-		{
-			if (e.KeyChar == (char)Keys.Return)
-			{
-				this.Invoke(new Action(async () =>
-				{
-					DataLabel.Text = DataToSendInput.Text;
-					SourceLabel.Text = "via Text input";
-					await SaveStateAsync();
-				}));
-				e.Handled = true;
-			}
-		}
-
 		// Example for saving component state
 		private async Task SaveStateAsync()
 		{
-			await FSBL.WindowClient.SetComponentState(new JObject
+			await FSBL.Clients.WindowClient.SetComponentState(new JObject
 			{
 				["field"] = "symbol",
-				//["value"] = datavalue.Text
+				["value"] = DataToSendInput.Text
 			});
 		}
 
@@ -520,7 +412,7 @@ namespace WinformExample
 
 			var componentName = selected.ToString();
 
-			if (FSBL.FDC3Client != null)
+			if (FSBL.Clients.FDC3Client != null)
 			{
 				var context = new Context(new JObject
 				{
@@ -536,7 +428,7 @@ namespace WinformExample
 				var contextToSend = await ShouldSendContextToComponent(context, componentName) ? context : null;
 				try
 				{
-					var appId = await FSBL.FDC3Client.DesktopAgentClient.Open(componentName, contextToSend);
+					var appId = await FSBL.Clients.FDC3Client.DesktopAgentClient.Open(new AppIdentifier(componentName), contextToSend);
 				}
 				catch (Exception ex)
 				{
@@ -545,14 +437,15 @@ namespace WinformExample
 			}
 			else
 			{
-				FSBL.LauncherClient.Spawn(componentName, new JObject { ["addToWorkspace"] = true }, (s, a) => { });
+				FSBL.Clients.AppsClient.Spawn(componentName, new JObject { ["addToWorkspace"] = true }, (s, a) => { });
 			}
 		}
 
 		private async Task<bool> ShouldSendContextToComponent(Context context, string componentName)
 		{
-			var componentConfig = (await FSBL.ConfigClient.Get(new[] { "finsemble", "components", componentName }))?.response;
-			var intents = componentConfig?["appConfig"]?["interop"]?["intents"]?["listensFor"]?.Children();
+			var apps = (await FSBL.Clients.ConfigClient.Get(new[] { "finsemble", "apps" }))?.response as JArray;
+			var appConfig = apps.FirstOrDefault(x => x is JObject app && app?["appId"]?.ToString() == componentName) as JObject;
+			var intents = appConfig?["interop"]?["intents"]?["listensFor"]?.Children();
 
 			foreach (var intent in intents)
 			{
@@ -567,68 +460,51 @@ namespace WinformExample
 
 		private void LinkerButton_Click(object sender, EventArgs e)
 		{
-			if (FSBL.LinkerClient != null)
-			{
-				FSBL.LinkerClient.OpenLinkerWindow();
-			}
-			else
-			{
-				FSBL.Util.OpenLinkerWindow();
-			}
+			FSBL.Clients.Util.OpenLinkerWindow();
 		}
 
 		private async void AlwaysOnTopButton_Click(object sender, EventArgs e)
 		{
-			var isAlwaysOnTop = await FSBL.WindowClient.IsAlwaysOnTop();
+			if(FSBL.Clients.WindowClient != null)
+			{
+				var result = await FSBL.Clients.FinsembleWindow.IsAlwaysOnTop(new JObject());
+				var isAlwaysOnTop = result?["data"]?.ToObject<bool>();
 
-			var newAlwaysOnTop = !isAlwaysOnTop;
-			await FSBL.WindowClient.SetAlwaysOnTop(newAlwaysOnTop);
+				if (isAlwaysOnTop != null)
+				{
+					var newAlwaysOnTop = !isAlwaysOnTop.Value;
+					await FSBL.Clients.WindowClient.SetAlwaysOnTop(newAlwaysOnTop);
+				}
+			}
 		}
 
 		private void DockingButton_Click(object sender, EventArgs e)
 		{
-			var currentWindowName = FSBL.WindowClient.GetWindowIdentifier()["windowName"].ToString();
 			if (DockingButton.Text == ">")
 			{
-				FSBL.RouterClient.Transmit("DockingService.formGroup", new JObject { ["windowName"] = currentWindowName });
+				FSBL.Clients.WindowClient.FormGroup();
 			}
 			else
 			{
-				FSBL.RouterClient.Query("DockingService.leaveGroup", new JObject { ["name"] = currentWindowName }, delegate (object s, FinsembleEventArgs res) { });
+				FSBL.Clients.WindowClient.EjectFromGroup();
 			}
 		}
 
 		private void SendButton_Click(object sender, EventArgs e)
 		{
-			if (FSBL.LinkerClient != null)
+			// Use Default FDC3
+			//Broadcast
+			var context = new Context(new JObject
 			{
-				FSBL.LinkerClient.Publish(new JObject
+				["type"] = "fdc3.instrument",
+				["name"] = DataToSendInput.Text,
+				["id"] = new JObject
 				{
-					["dataType"] = "symbol",
-					["data"] = DataToSendInput.Text
-				});
-			}
-			else
-			{
-				// Use Default FDC3
-				//Broadcast
-				var context = new Context(new JObject
-				{
-					["type"] = "fdc3.instrument",
-					["name"] = DataToSendInput.Text,
-					["id"] = new JObject
-					{
-						["ticker"] = DataToSendInput.Text
-					}
-				});
+					["ticker"] = DataToSendInput.Text
+				}
+			});
 
-				FSBL.FDC3Client.DesktopAgentClient.Broadcast(context);
-			}
-		}
-
-		private void DragNDropEmittingButton_MouseDown(object sender, MouseEventArgs e)
-		{
-			FSBL.DragAndDropClient.DragStartWithData(sender);
+			_ = FSBL.Clients.FDC3Client.DesktopAgentClient.Broadcast(context);
 		}
 
 		protected override void OnFormClosing(FormClosingEventArgs e)

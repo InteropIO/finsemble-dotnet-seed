@@ -14,6 +14,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Diagnostics;
 using System.IO;
+using System.Linq;
 using System.Runtime.InteropServices;
 using System.Runtime.Remoting;
 using System.Runtime.Remoting.Channels;
@@ -388,6 +389,15 @@ namespace MultiWindowExample
 
 			// Obtain a reference to the remoting service exposed by the server i.e the first instance of the application
 			var firstInstanceRemoteServiceReference = RemotingServices.Connect(typeof(IPCRemoteService), remotingServiceUrl) as IPCRemoteService;
+
+			// required options for multi window examples.
+			// they should be get in the child window app process and pass to the parent window
+			var rco = InteropIO.Util.Util.GetRemoteConfigurationOptions();
+			if (rco != null)
+			{
+				args = args.ToList();
+				args.Add(rco);
+			}
 
 			// Check that the remote service exists, in some cases the first instance may not yet have created one, in which case
 			// the second instance should just exit

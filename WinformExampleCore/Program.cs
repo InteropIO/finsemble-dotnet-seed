@@ -35,7 +35,24 @@ namespace WinformExampleCore
 			AppDomain.CurrentDomain.UnhandledException += new UnhandledExceptionEventHandler(CurrentDomain_UnhandledException);
 
 			string[] args = Environment.GetCommandLineArgs();
-			Application.Run(new MainForm(args));
+
+			// show form after connection to Finsemble prevents flickering on startup
+			var form = new MainForm(args);
+			form.Hide();
+
+			form.FormClosed += (s, e) =>
+			{
+				Application.Exit();
+			};
+
+			form.FSBL.Connected += (s, e) =>
+			{
+				form.Invoke(new Action(() =>
+				{
+					form.Show();
+				}));
+			};
+			Application.Run();
 		}
 
 		static void Application_ThreadException(object sender, ThreadExceptionEventArgs e)

@@ -17,7 +17,7 @@ namespace WinformMultiWindowExample
         public void SetFinsemble(Finsemble fsbl)
         {
             FSBL = fsbl;
-            FSBL.Logger.Log(new JToken[] { "Winform example connected to Finsemble. Form1" });
+            FSBL.Clients.Logger.Log(new JToken[] { "Winform example connected to Finsemble. Form1" });
         }
     }
 }

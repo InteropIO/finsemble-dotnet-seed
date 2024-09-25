@@ -32,7 +32,6 @@ namespace WinformExampleCore
 		/// </summary>
 		private void InitializeComponent()
 		{
-			this.ScrimLabel = new System.Windows.Forms.Label();
 			this.AlwaysOnTopButton = new WinformExampleCore.Controls.RoundedButton();
 			this.DockingButton = new WinformExampleCore.Controls.RoundedButton();
 			this.LinkerButton = new WinformExampleCore.Controls.RoundedButton();
@@ -47,26 +46,9 @@ namespace WinformExampleCore
 			this.ComponentDropDown = new WinformExampleCore.Controls.DropDown();
 			this.MessagesLabel = new System.Windows.Forms.Label();
 			this.MessagesRichBox = new System.Windows.Forms.RichTextBox();
-			this.DragNDropEmittingButton = new WinformExampleCore.Controls.RoundedButton();
 			this.panel2 = new System.Windows.Forms.Panel();
 			this.panel2.SuspendLayout();
 			this.SuspendLayout();
-			// 
-			// ScrimLabel
-			// 
-			this.ScrimLabel.AccessibleName = "MainBackground";
-			this.ScrimLabel.AllowDrop = true;
-			this.ScrimLabel.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(23)))), ((int)(((byte)(26)))), ((int)(((byte)(32)))));
-			this.ScrimLabel.Dock = System.Windows.Forms.DockStyle.Fill;
-			this.ScrimLabel.Font = new System.Drawing.Font("Microsoft Sans Serif", 100F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
-			this.ScrimLabel.ForeColor = System.Drawing.Color.Transparent;
-			this.ScrimLabel.Location = new System.Drawing.Point(0, 0);
-			this.ScrimLabel.Margin = new System.Windows.Forms.Padding(6, 0, 6, 0);
-			this.ScrimLabel.Name = "ScrimLabel";
-			this.ScrimLabel.Size = new System.Drawing.Size(552, 584);
-			this.ScrimLabel.TabIndex = 4;
-			this.ScrimLabel.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
-			this.ScrimLabel.Visible = false;
 			// 
 			// AlwaysOnTopButton
 			// 
@@ -287,25 +269,6 @@ namespace WinformExampleCore
 			this.MessagesRichBox.TabIndex = 22;
 			this.MessagesRichBox.Text = "";
 			// 
-			// DragNDropEmittingButton
-			// 
-			this.DragNDropEmittingButton.ButtonColor = System.Drawing.Color.FromArgb(((int)(((byte)(40)))), ((int)(((byte)(45)))), ((int)(((byte)(56)))));
-			this.DragNDropEmittingButton.CornerRadius = 20;
-			this.DragNDropEmittingButton.Font = new System.Drawing.Font("Microsoft Sans Serif", 7.8F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
-			this.DragNDropEmittingButton.ImageMargins = new System.Drawing.Printing.Margins(0, 0, 0, 0);
-			this.DragNDropEmittingButton.Location = new System.Drawing.Point(41, 19);
-			this.DragNDropEmittingButton.Margin = new System.Windows.Forms.Padding(2);
-			this.DragNDropEmittingButton.Name = "DragNDropEmittingButton";
-			this.DragNDropEmittingButton.OnHoverButtonColor = System.Drawing.Color.FromArgb(((int)(((byte)(40)))), ((int)(((byte)(45)))), ((int)(((byte)(56)))));
-			this.DragNDropEmittingButton.OnHoverTextColor = System.Drawing.Color.Black;
-			this.DragNDropEmittingButton.Size = new System.Drawing.Size(22, 24);
-			this.DragNDropEmittingButton.TabIndex = 27;
-			this.DragNDropEmittingButton.Text = "*";
-			this.DragNDropEmittingButton.TextColor = System.Drawing.Color.White;
-			this.DragNDropEmittingButton.UseEllipse = true;
-			this.DragNDropEmittingButton.UseVisualStyleBackColor = true;
-			this.DragNDropEmittingButton.MouseDown += new System.Windows.Forms.MouseEventHandler(this.DragNDropEmittingButton_MouseDown);
-			// 
 			// panel2
 			// 
 			this.panel2.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
@@ -329,7 +292,6 @@ namespace WinformExampleCore
 			this.Controls.Add(this.ComponentDropDown);
 			this.Controls.Add(this.MessagesRichBox);
 			this.Controls.Add(this.DataToSendInput);
-			this.Controls.Add(this.DragNDropEmittingButton);
 			this.Controls.Add(this.MessagesLabel);
 			this.Controls.Add(this.LaunchButton);
 			this.Controls.Add(this.SpawnLabel);
@@ -338,7 +300,6 @@ namespace WinformExampleCore
 			this.Controls.Add(this.LinkerButton);
 			this.Controls.Add(this.DockingButton);
 			this.Controls.Add(this.AlwaysOnTopButton);
-			this.Controls.Add(this.ScrimLabel);
 			this.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point);
 			this.Name = "MainForm";
 			this.Text = "Winform Example Core";
@@ -350,7 +311,6 @@ namespace WinformExampleCore
 		}
 
 		#endregion
-		private System.Windows.Forms.Label ScrimLabel;
 		private Controls.RoundedButton AlwaysOnTopButton;
 		private Controls.RoundedButton DockingButton;
 		private Controls.RoundedButton LinkerButton;
@@ -364,7 +324,6 @@ namespace WinformExampleCore
 		private System.Windows.Forms.Label SpawnLabel;
 		private Controls.RoundedButton LaunchButton;
 		private System.Windows.Forms.RichTextBox MessagesRichBox;
-		private Controls.RoundedButton DragNDropEmittingButton;
 		private Controls.DropDown ComponentDropDown;
 		private Panel panel2;
 	}

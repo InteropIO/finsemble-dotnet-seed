@@ -13,8 +13,6 @@ namespace WinformExample
 		/// </summary>
 		private System.ComponentModel.IContainer components = null;
 
-		private static Finsemble FSBL = null;
-
 		/// <summary>
 		/// Clean up any resources being used.
 		/// </summary>
@@ -36,7 +34,6 @@ namespace WinformExample
 		/// </summary>
 		private void InitializeComponent()
 		{
-			this.scrim = new System.Windows.Forms.Label();
 			this.SendASymbolLabel = new System.Windows.Forms.Label();
 			this.label1 = new System.Windows.Forms.Label();
 			this.panel1 = new System.Windows.Forms.Panel();
@@ -45,7 +42,6 @@ namespace WinformExample
 			this.MessagesRichBox = new System.Windows.Forms.RichTextBox();
 			this.MessagesLabel = new System.Windows.Forms.Label();
 			this.ComponentDropDown = new WinformExample.Controls.DropDown();
-			this.DragNDropEmittingButton = new WinformExample.Controls.RoundedButton();
 			this.DockingButton = new WinformExample.Controls.RoundedButton();
 			this.AlwaysOnTopButton = new WinformExample.Controls.RoundedButton();
 			this.LinkerButton = new WinformExample.Controls.RoundedButton();
@@ -55,21 +51,6 @@ namespace WinformExample
 			this.panel2 = new System.Windows.Forms.Panel();
 			this.panel2.SuspendLayout();
 			this.SuspendLayout();
-			// 
-			// scrim
-			// 
-			this.scrim.AccessibleName = "MainBackground";
-			this.scrim.AllowDrop = true;
-			this.scrim.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(23)))), ((int)(((byte)(26)))), ((int)(((byte)(32)))));
-			this.scrim.Dock = System.Windows.Forms.DockStyle.Fill;
-			this.scrim.Font = new System.Drawing.Font("font-finance", 100F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-			this.scrim.ForeColor = System.Drawing.Color.Transparent;
-			this.scrim.Location = new System.Drawing.Point(0, 0);
-			this.scrim.Name = "scrim";
-			this.scrim.Size = new System.Drawing.Size(550, 576);
-			this.scrim.TabIndex = 4;
-			this.scrim.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
-			this.scrim.Visible = false;
 			// 
 			// SendASymbolLabel
 			// 
@@ -177,25 +158,6 @@ namespace WinformExample
 			this.ComponentDropDown.Name = "ComponentDropDown";
 			this.ComponentDropDown.Size = new System.Drawing.Size(203, 31);
 			this.ComponentDropDown.TabIndex = 35;
-			// 
-			// DragNDropEmittingButton
-			// 
-			this.DragNDropEmittingButton.ButtonColor = System.Drawing.Color.FromArgb(((int)(((byte)(34)))), ((int)(((byte)(38)))), ((int)(((byte)(47)))));
-			this.DragNDropEmittingButton.CornerRadius = 20;
-			this.DragNDropEmittingButton.Font = new System.Drawing.Font("font-finance", 7.8F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-			this.DragNDropEmittingButton.ImageMargins = new System.Drawing.Printing.Margins(0, 0, 0, 0);
-			this.DragNDropEmittingButton.Location = new System.Drawing.Point(36, 10);
-			this.DragNDropEmittingButton.Margin = new System.Windows.Forms.Padding(2);
-			this.DragNDropEmittingButton.Name = "DragNDropEmittingButton";
-			this.DragNDropEmittingButton.OnHoverButtonColor = System.Drawing.Color.FromArgb(((int)(((byte)(40)))), ((int)(((byte)(45)))), ((int)(((byte)(56)))));
-			this.DragNDropEmittingButton.OnHoverTextColor = System.Drawing.Color.White;
-			this.DragNDropEmittingButton.Size = new System.Drawing.Size(22, 24);
-			this.DragNDropEmittingButton.TabIndex = 27;
-			this.DragNDropEmittingButton.Text = "*";
-			this.DragNDropEmittingButton.TextColor = System.Drawing.Color.White;
-			this.DragNDropEmittingButton.UseEllipse = true;
-			this.DragNDropEmittingButton.UseVisualStyleBackColor = true;
-			this.DragNDropEmittingButton.MouseDown += new System.Windows.Forms.MouseEventHandler(this.DragNDropEmittingButton_MouseDown);
 			// 
 			// DockingButton
 			// 
@@ -331,7 +293,6 @@ namespace WinformExample
 			this.ClientSize = new System.Drawing.Size(550, 576);
 			this.Controls.Add(this.panel2);
 			this.Controls.Add(this.ComponentDropDown);
-			this.Controls.Add(this.DragNDropEmittingButton);
 			this.Controls.Add(this.DockingButton);
 			this.Controls.Add(this.AlwaysOnTopButton);
 			this.Controls.Add(this.LinkerButton);
@@ -342,7 +303,6 @@ namespace WinformExample
 			this.Controls.Add(this.SendButton);
 			this.Controls.Add(this.DataToSendInput);
 			this.Controls.Add(this.LaunchButton);
-			this.Controls.Add(this.scrim);
 			this.Name = "FormExample";
 			this.Text = "Winform Example";
 			this.panel2.ResumeLayout(false);
@@ -354,7 +314,6 @@ namespace WinformExample
 
 
 		#endregion
-		private System.Windows.Forms.Label scrim;
 		private Controls.RoundedButton LaunchButton;
 		private Controls.FinsembleInput DataToSendInput;
 		private Controls.RoundedButton SendButton;
@@ -368,7 +327,6 @@ namespace WinformExample
 		private Controls.RoundedButton LinkerButton;
 		private Controls.RoundedButton AlwaysOnTopButton;
 		private Controls.RoundedButton DockingButton;
-		private Controls.RoundedButton DragNDropEmittingButton;
 		private Controls.DropDown ComponentDropDown;
 		private Panel panel2;
 	}

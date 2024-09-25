@@ -22,7 +22,7 @@ namespace WinformMultiWindowExample
 		public void SetFinsemble(Finsemble fsbl)
 		{
 			FSBL = fsbl;
-			FSBL.Logger.Log(new JToken[] { "Winform example connected to Finsemble. Form3" });
+			FSBL.Clients.Logger.Log(new JToken[] { "Winform example connected to Finsemble. Form3" });
 		}
 	}
 }

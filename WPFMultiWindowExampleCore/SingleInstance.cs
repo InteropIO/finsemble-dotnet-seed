@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO.Pipes;
+using System.Linq;
 using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
@@ -186,6 +187,15 @@ namespace WPFMultiWindowExampleCore
 		{
 			try
 			{
+				// required options for multi window examples.
+				// they should be get in the child window app process and pass to the parent window
+				var rco = Finsemble.Core.Clients.Util.Util.GetRemoteConfigurationOptions();
+				if (rco != null)
+				{
+					args = args.ToList();
+					args.Add(rco);
+				}
+
 				using (NamedPipeClientStream namedPipeClient = new NamedPipeClientStream(channelName))
 				{
 					namedPipeClient.Connect(1000);

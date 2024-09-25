@@ -4,21 +4,13 @@
 	xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
 	xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
 	xmlns:local="clr-namespace:FDC3WPFExample"
-	xmlns:Finsemble="clr-namespace:ChartIQ.Finsemble;assembly=Finsemble"
     xmlns:customControls="clr-namespace:FDC3WPFExample.CustomControls"
-	xmlns:Custom="http://schemas.microsoft.com/winfx/2006/xaml/presentation/ribbon" xmlns:Finsemble1="clr-namespace:ChartIQ.Finsemble.HeaderControl;assembly=Finsemble" x:Class="FDC3WPFExample.MainWindow" 
+	xmlns:Custom="http://schemas.microsoft.com/winfx/2006/xaml/presentation/ribbon" 
+	x:Class="FDC3WPFExample.MainWindow" 
 	mc:Ignorable="d" 
 	Title="MainWindow" Height="700" 
-	Width="600" WindowStyle="None" 
+	Width="600" WindowStyle="SingleBorderWindow" 
 	Background="{x:Null}">
-
-    <WindowChrome.WindowChrome>
-        <WindowChrome 
-			CaptionHeight="1"
-        	CornerRadius ="0" 
-			ResizeBorderThickness="4" 
-			GlassFrameThickness="0"/>
-    </WindowChrome.WindowChrome>
 
 	<Window.Resources>
 		<SolidColorBrush x:Key="DisabledForegroundBrush" Color="#888" />
@@ -177,7 +169,6 @@
 
 	<Border x:Name="WindowBorder">
         <Grid Background="#171a20">
-            <Finsemble1:WPFWindowTitleBar x:Name="FinsembleHeader" Height="25" VerticalAlignment="Top" Margin="0"/>
             <Label x:Name="Scrim" Visibility="Hidden" Panel.ZIndex="1000" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" />
 			<Grid Margin="15,35,15,0" x:Name="LayoutGrid">
 				<Grid.RowDefinitions>

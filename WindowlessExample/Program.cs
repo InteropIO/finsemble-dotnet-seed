@@ -3,7 +3,7 @@ using System.Threading;
 using System.Diagnostics;
 using ChartIQ.Finsemble;
 using ChartIQ.Finsemble.Events;
-using ChartIQ.Finsemble.Router;
+using InteropIO.Router;
 using Microsoft.IdentityModel.Tokens;
 using Newtonsoft.Json.Linq;
 
@@ -57,7 +57,7 @@ namespace WindowlessExample
 
 		private static void OnConnected(object sender, EventArgs e)
 		{
-			FSBL.Logger.Log("Windowless example connected to Finsemble.");
+			FSBL.Clients.Logger.Log("Windowless example connected to Finsemble.");
 
 			// If the appd config contains ` "appService": true, "waitForInitialization": true `,
 			// signal to Finsemble that appService initialization is complete
@@ -66,15 +66,15 @@ namespace WindowlessExample
 			// Send log message every 5 seconds
 			timer.Interval = 5 * 1000;
 			timer.AutoReset = true;
-			timer.Elapsed += (s1, e1) => FSBL.Logger.Log(string.Format("Windowless example elapsed event was raised at {0}", e1.SignalTime));
+			timer.Elapsed += (s1, e1) => FSBL.Clients.Logger.Log(string.Format("Windowless example elapsed event was raised at {0}", e1.SignalTime));
 			timer.Start();
 
 			//Search provider example
-			FSBL.SearchClient.Register(
+			FSBL.Clients.SearchClient.Register(
 				"Windowless example",
 				(object o, FinsembleQueryArgs args) =>
 				{
-					FSBL.Logger.Log("Received query", args.response?["data"]?["text"]);
+					FSBL.Clients.Logger.Log("Received query", args.response?["data"]?["text"]);
 					JArray results = new JArray{
 						new JObject {
 							["name"] = "Example search result",
@@ -87,12 +87,12 @@ namespace WindowlessExample
 				},
 				(object o, FinsembleQueryArgs args) =>
 				{
-					FSBL.Logger.Log("Search result action clicked on", args.response["item"], "action:", args.response["action"]);
+					FSBL.Clients.Logger.Log("Search result action clicked on", args.response["item"], "action:", args.response["action"]);
 					args.sendQueryMessage(new FinsembleEventResponse("Performed search result action", null));
 				},
 				(object o, FinsembleQueryArgs args) =>
 				{
-					FSBL.Logger.Log("Search provider title was click on");
+					FSBL.Clients.Logger.Log("Search provider title was click on");
 					args.sendQueryMessage(new FinsembleEventResponse("Performed search provider action", null));
 				},
 				"Windowless example search provider",
@@ -100,11 +100,11 @@ namespace WindowlessExample
 					{
 						if (args.error != null)
 						{
-							FSBL.Logger.Error("Error returned when registering as a search provider", args.error);
+							FSBL.Clients.Logger.Error("Error returned when registering as a search provider", args.error);
 						}
 						else
 						{
-							FSBL.Logger.Log("Registered search provider");
+							FSBL.Clients.Logger.Log("Registered search provider");
 						}
 					}
 			);

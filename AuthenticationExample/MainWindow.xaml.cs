@@ -52,7 +52,7 @@ namespace AuthenticationExample
 
         private void PublishCredentials_Click(object sender, RoutedEventArgs e)
         {
-            finsemble.AuthenticationClient.PublishAuthorization(UserName.Text, JObject.FromObject(new Credentials(Guid.NewGuid().ToString())));
+            finsemble.Clients.AuthenticationClient.PublishAuthorization(UserName.Text, JObject.FromObject(new Credentials(Guid.NewGuid().ToString())));
             this.loggedIn = true;
             Close();
         }

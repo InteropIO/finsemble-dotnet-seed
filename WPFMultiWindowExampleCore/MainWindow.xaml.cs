@@ -2,9 +2,7 @@
 using System.Diagnostics;
 using System.Windows;
 using System.Windows.Interop;
-using System.Windows.Media;
 using Finsemble.WPF.Core;
-using Finsemble.WPF.Core.TitlebarService.Models;
 using Microsoft.IdentityModel.Tokens;
 
 namespace WPFMultiWindowExampleCore
@@ -31,10 +29,9 @@ namespace WPFMultiWindowExampleCore
 		{
 			InitializeComponent();
 
-			InitHwnd();
 			ConnectToFinsemble(args);
 
-			this.Closed += MainWindow_Closed; ;
+			this.Closed += MainWindow_Closed;
 		}
 
 		/// <summary>
@@ -45,15 +42,6 @@ namespace WPFMultiWindowExampleCore
 		private void MainWindow_Closed(object sender, EventArgs e)
 		{
 			FSBL.Dispose();
-		}
-
-		/// <summary>
-		/// Method needed to retrieve window handler without showing the window itself
-		/// </summary>
-		private void InitHwnd()
-		{
-			var helper = new WindowInteropHelper(this);
-			helper.EnsureHandle();
 		}
 
 		/// <summary>
@@ -70,42 +58,9 @@ namespace WPFMultiWindowExampleCore
 		private void Finsemble_Connected(object sender, EventArgs e)
 		{
 			Trace.TraceInformation("FSBL connected");
-			
+
 			Application.Current.Dispatcher.Invoke(() =>
 			{
-				FinsembleHeader.SetBridge(FSBL); // The Header Control needs a connected finsemble instance
-
-				////Set window title
-				FinsembleHeader.GetHandlingService().Title = this.LabelWindowName.Content.ToString();
-
-				//Styling the Finsemble Header
-				FinsembleHeader.GetHandlingService().ActiveBackground = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#22262F"));
-				FinsembleHeader.GetHandlingService().InactiveBackground = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#22262F"));
-				FinsembleHeader.GetHandlingService().ButtonHoverBackground = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#0A8CF4"));
-				FinsembleHeader.GetHandlingService().InactiveButtonHoverBackground = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#0A8CF4"));
-				FinsembleHeader.GetHandlingService().CloseButtonHoverBackground = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#F26666"));
-				FinsembleHeader.GetHandlingService().InactiveCloseButtonHoverBackground = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#F26666"));
-				FinsembleHeader.GetHandlingService().DockingButtonDockedBackground = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#0A8CF4"));
-				FinsembleHeader.GetHandlingService().TitleForeground = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#ACB2C0"));
-				FinsembleHeader.GetHandlingService().ButtonForeground = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#ACB2C0"));
-
-				FinsembleHeader.GetHandlingService().ButtonFont = new TitlebarFontConfiguration()
-				{
-					FontFamily = null,
-					FontSize = 8,
-					FontStyle = FontStyles.Normal,
-					FontWeight = FontWeights.Normal
-				};
-				FinsembleHeader.GetHandlingService().TitleFont = new TitlebarFontConfiguration()
-				{
-					FontFamily = null,
-					FontSize = 12,
-					FontStyle = FontStyles.Normal,
-					FontWeight = FontWeights.SemiBold
-				};
-
-				FSBL.Clients.DragAndDropClient.SetScrim(Scrim); // The Scrim Label Control is used for drag and drop.
-
 				Show();
 			});
 

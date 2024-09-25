@@ -1,15 +1,12 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Diagnostics;
+using System.Linq;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Interop;
-using System.Windows.Media;
 using Finsemble.Core.Clients.FDC3.Types;
 using Finsemble.Core.Clients.Router;
 using Finsemble.WPF.Core;
-using Finsemble.WPF.Core.Clients;
-using Finsemble.WPF.Core.TitlebarService.Models;
 using Microsoft.IdentityModel.Tokens;
 using Newtonsoft.Json.Linq;
 
@@ -20,7 +17,9 @@ namespace WPFExampleCore
 	/// </summary>
 	public partial class MainWindow : Window
 	{
-		private FinsembleWPF FSBL;
+		public FinsembleWPF FSBL;
+		public event EventHandler WindowReady;
+
 		private JsonWebKey JWK = new JsonWebKey()
 		{
 			D = "S7msrBKYM_VhXmAWTLhoRobLTevToYbX3xkbkN-EiaZ6Hg-xfozn5uAQGnBnoP1ldKOgoj5Z3dx6kTgR-3xfonEfdkk6wn0OVNbuFYyGkeeV4ts5JmyVpihFqE3RbkWuQ5D5xpIhXWl1fOWEuFfGCYIib2pmBUyc4Lz4OYmMOIGEC9nJg6ZuoKOh0nDZBjjO6vbYbXCEi0ys-FD7NAWsM8jTNDxLyXmpCNSVJOnGTX9CcxnFGdLVO8fqbooaydSHtFJE9YVqUKWp54hOBFMHdsTY5iT88urrvdBLxtGf6NGUVetpw-nFiOihDRPb9wMuLY9CT4DDzLecxadrLKh0PQ",
@@ -36,7 +35,10 @@ namespace WPFExampleCore
 		public MainWindow(string[] args)
 		{
 			//Disconnect Finsemble properly if Unhandled Exception happens. Otherwise you can disrupt your workspace.
-			Application.Current.DispatcherUnhandledException += Current_DispatcherUnhandledException;
+			if (Application.Current != null)
+			{
+				Application.Current.DispatcherUnhandledException += Current_DispatcherUnhandledException;
+			}
 
 			//Example how to handle window closing event
 			Closing += MainWindow_Closing;
@@ -79,157 +81,56 @@ namespace WPFExampleCore
 
 		private void Finsemble_Connected(object sender, EventArgs e)
 		{
-			Application.Current.Dispatcher.Invoke(async delegate //main thread
+			this.Dispatcher.Invoke(async delegate //main thread
 			{
 				// Initialize after Finsemble is connected
 				InitializeComponent();
-
-				// The Header Control needs a connected finsemble instance
-				FinsembleHeader.SetBridge(FSBL);
-
-				#region Styling the Finsemble Header
-
-				FinsembleHeader.GetHandlingService().ActiveBackground = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#22262F"));
-				FinsembleHeader.GetHandlingService().InactiveBackground = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#22262F"));
-				FinsembleHeader.GetHandlingService().ButtonHoverBackground = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#0A8CF4"));
-				FinsembleHeader.GetHandlingService().InactiveButtonHoverBackground = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#0A8CF4"));
-				FinsembleHeader.GetHandlingService().CloseButtonHoverBackground = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#F26666"));
-				FinsembleHeader.GetHandlingService().InactiveCloseButtonHoverBackground = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#F26666"));
-				FinsembleHeader.GetHandlingService().DockingButtonDockedBackground = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#0A8CF4"));
-				FinsembleHeader.GetHandlingService().TitleForeground = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#ACB2C0"));
-				FinsembleHeader.GetHandlingService().ButtonForeground = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#ACB2C0"));
-				FinsembleHeader.GetHandlingService().ButtonFont = new TitlebarFontConfiguration()
-				{
-					FontFamily = null,
-					FontSize = 8,
-					FontStyle = FontStyles.Normal,
-					FontWeight = FontWeights.Normal
-				};
-				FinsembleHeader.GetHandlingService().TitleFont = new TitlebarFontConfiguration()
-				{
-					FontFamily = null,
-					FontSize = 12,
-					FontStyle = FontStyles.Normal,
-					FontWeight = FontWeights.SemiBold
-				};
-
-				//Set window title
-				FinsembleHeader.GetHandlingService().Title = "WPF Example Core Component";
-
-				#endregion
-
-				#region Drag And Drop
-				FSBL.Clients.DragAndDropClient.SetScrim(Scrim); // The Scrim Label Control is used for drag and drop.
-
-				// Receivers for dropped data.
-				FSBL.Clients.DragAndDropClient.AddReceivers(new List<KeyValuePair<string, EventHandler<FinsembleEventArgs>>>()
-				{
-					new KeyValuePair<string, EventHandler<FinsembleEventArgs>>("symbol", (s, args) =>
-					{
-						var data = args.response["data"]?["symbol"];
-						if(data != null)
-						{
-							//Check if we received an object (so data.symbol.symbol) or a string (data.symbol) to support variations in the format
-							if(data.HasValues) {
-								data = data?["symbol"];
-							}
-							Application.Current.Dispatcher.Invoke((Action)delegate //main thread
-							{
-								Application.Current.Dispatcher.Invoke((Action)async delegate //main thread
-								{
-									DroppedData.Content = data.ToString();
-									DataToSend.TextBox.Text = data.ToString();
-									DroppedDataSource.Content = "via Drag and Drop";
-									await SaveStateAsync();
-								});
-							});
-						}
-					})
-				});
-
-				// Emitters for data that can be dragged using the drag icon.
-				FSBL.Clients.DragAndDropClient.SetEmitters(new List<KeyValuePair<string, DragAndDropClient.emitter>>()
-			{
-				new KeyValuePair<string, DragAndDropClient.emitter>("symbol", () =>
-				{
-					//set state on drag so correct symbol is displayed
-					Application.Current.Dispatcher.Invoke(async delegate //main thread
-					{
-						DroppedData.Content = DataToSend.TextBox.Text;
-						await SaveStateAsync();
-					});
-					return new JObject
-					{
-						["symbol"] = DataToSend.TextBox.Text,
-						["description"] = "Symbol " + DataToSend.TextBox.Text
-					};
-				})
-			});
-				#endregion
-
-				//Subscribe to a PubSub topic
-				//N.B. You must add a PubSub responder before publishing or subscribing to any topic that doesn't start with 'Finsemble'
-				//     This is not currently supported in the .Net RouterClient implementation and will need to done in a Finsemble HTML5 service
-				SubscribeToPubSub();
-
-				SetUpFinsembleComponents();
-				await UpdateDisplayData();
 				this.Show();
 			});
 
+			//Subscribe to a PubSub topic
+			//N.B. You must add a PubSub responder before publishing or subscribing to any topic that doesn't start with 'Finsemble'
+			//     This is not currently supported in the .Net RouterClient implementation and will need to done in a Finsemble HTML5 service
+			SubscribeToPubSub();
+
+			SetUpFinsembleComponents();
+			_ =UpdateDisplayData();
+
 			#region communication through channels
-			if (FSBL.Clients.Fdc3Client is object)
-			{
-				Application.Current.Dispatcher.Invoke(delegate{ FDC3Label.Visibility = Visibility.Visible; });
-				ContextHandler contextHandler = (context, metadata) =>
-				{
-					FSBL.Clients.Logger.Log(new JToken[] { "WPF Core FDC3 Usage Example, context received by contextHandler.", context.Value });
-					if (context.Type.Equals("fdc3.instrument"))
-					{
-						Application.Current.Dispatcher.Invoke(async delegate //main thread
-						{
-							DataToSend.TextBox.Text = context.Id?["ticker"]?.ToString();
-							DroppedData.Content = context.Id?["ticker"]?.ToString();
-							DroppedDataSource.Content = "context shared via FDC3";
-							await SaveStateAsync();
-						});
-					}
-				};
-				FSBL.Clients.Fdc3Client.DesktopAgentClient.AddContextListener("fdc3.instrument", contextHandler);
 
-				IntentHandler intentHandler = (context, metadata) =>
-				{
-					FSBL.Clients.Logger.Log(new JToken[] { "WPF Core FDC3 Usage Example: context received by intentHandler.", context.Value });
-					if (context.Type != null && context.Type.Equals("fdc3.instrument"))
-					{
-						Application.Current.Dispatcher.Invoke(async delegate //main thread
-						{
-							DataToSend.TextBox.Text = context.Id?["ticker"]?.ToString();
-							DroppedData.Content = context.Id?["ticker"]?.ToString();
-							DroppedDataSource.Content = "context shared via FDC3 intent";
-							await SaveStateAsync();
-						});
-					}
-
-					return null;
-				};
-				FSBL.Clients.Fdc3Client.DesktopAgentClient.AddIntentListener("ViewChart", intentHandler);
-			}
-			else
+			ContextHandler contextHandler = (context, metadata) =>
 			{
-				//Use Default linker
-				//Subscribe to Finsemble Linker Channels
-				FSBL.Clients.LinkerClient?.Subscribe("symbol", (error, response) =>
+				FSBL.Clients.Logger.Log(new JToken[] { "WPF Core FDC3 Usage Example, context received by contextHandler.", context.Value });
+				if (context.Type.Equals("fdc3.instrument"))
 				{
-					Application.Current.Dispatcher.Invoke(async delegate //main thread
+					Dispatcher.Invoke(async delegate //main thread
 					{
-						DataToSend.TextBox.Text = response.response?["data"]?.ToString();
-						DroppedData.Content = response.response?["data"]?.ToString();
-						DroppedDataSource.Content = "via Linker";
+						DataToSend.TextBox.Text = context.Id?["ticker"]?.ToString();
+						DroppedData.Content = context.Id?["ticker"]?.ToString();
+						DroppedDataSource.Content = "context shared via FDC3";
 						await SaveStateAsync();
 					});
-				});
-			}
+				}
+			};
+			FSBL.Clients.Fdc3Client.DesktopAgentClient.AddContextListener("fdc3.instrument", contextHandler);
+
+			IntentHandler intentHandler = (context, metadata) =>
+			{
+				FSBL.Clients.Logger.Log(new JToken[] { "WPF Core FDC3 Usage Example: context received by intentHandler.", context.Value });
+				if (context.Type != null && context.Type.Equals("fdc3.instrument"))
+				{
+					Dispatcher.Invoke(async delegate //main thread
+					{
+						DataToSend.TextBox.Text = context.Id?["ticker"]?.ToString();
+						DroppedData.Content = context.Id?["ticker"]?.ToString();
+						DroppedDataSource.Content = "context shared via FDC3 intent";
+						await SaveStateAsync();
+					});
+				}
+
+				return null;
+			};
+			FSBL.Clients.Fdc3Client.DesktopAgentClient.AddIntentListener("ViewChart", intentHandler);
 			#endregion
 
 			#region Logging
@@ -251,6 +152,7 @@ namespace WPFExampleCore
 			*/
 			#endregion
 
+			WindowReady?.Invoke(this, EventArgs.Empty);
 		}
 
 		private async Task SaveStateAsync()
@@ -282,7 +184,7 @@ namespace WPFExampleCore
 					if (state.response != null)
 					{
 						var pubSubData = (JObject)state.response;
-						Application.Current.Dispatcher.Invoke(async delegate //main thread
+						Dispatcher.Invoke(async delegate //main thread
 						{
 							// The initial publish will always be an empty object.
 							// Therefore, we need these null operators to handle that case.
@@ -307,22 +209,21 @@ namespace WPFExampleCore
 
 		private async void SetUpFinsembleComponents()
 		{
-			var response = await FSBL.Clients.ConfigClient.Get(new [] { "finsemble", "components" });
-			if (response.error != null)
-			{
-				return;
-			}
+			var response = await FSBL.Clients.ConfigClient.Get(new [] { "finsemble", "apps" });
 
-			var components = (JObject)response.response;
-			foreach (var property in components?.Properties())
+			if (response?.response != null && response.response is JArray apps)
 			{
-				object value = components?[property.Name]?["foreign"]?["components"]?["App Launcher"]?["launchableByUser"];
-				if ((value != null) && bool.Parse(value.ToString()))
+				foreach (var app in apps)
 				{
-					Application.Current.Dispatcher.Invoke(delegate //main thread
+					object value = app?["hostManifests"]?["Finsemble"]?["foreign"]?["components"]?["App Launcher"]?["launchableByUser"];
+					if ((value != null) && bool.Parse(value.ToString()))
 					{
-						ComponentSelect.ItemsComboBox.Items.Add(property.Name);
-					});
+						var appId = app?["appId"]?.ToString();
+						Dispatcher.Invoke(delegate //main thread
+						{
+							ComponentSelect.ItemsComboBox.Items.Add(appId);
+						});
+					}
 				}
 			}
 		}
@@ -335,7 +236,7 @@ namespace WPFExampleCore
 				string symbolTxt = state.response == null ? null : state.response?.ToString();
 				if (!string.IsNullOrEmpty(symbolTxt) && !symbolTxt.Equals("{}"))
 				{
-					Application.Current.Dispatcher.Invoke(delegate //main thread
+					Dispatcher.Invoke(delegate //main thread
 					{
 						DataToSend.TextBox.Text = symbolTxt;
 						DroppedData.Content = symbolTxt;
@@ -345,24 +246,22 @@ namespace WPFExampleCore
 				else
 				{
 					//Get SpawnData if no previous state
-					FSBL.Clients.WindowClient.GetSpawnData((sender, r) =>
+					var spawnData = await FSBL.Clients.WindowClient.GetSpawnData();
+					symbolTxt = spawnData?["symbol"]?.ToString();
+					Dispatcher.Invoke(delegate //main thread
 					{
-						Application.Current.Dispatcher.Invoke(async delegate //main thread
+						if (!string.IsNullOrEmpty(symbolTxt) && !symbolTxt.Equals("{}"))
 						{
-							symbolTxt = r.response == null ? null : r.response?["symbol"]?.ToString();
-							if (!string.IsNullOrEmpty(symbolTxt) && !symbolTxt.Equals("{}"))
-							{
-								DataToSend.TextBox.Text = symbolTxt;
-								DroppedData.Content = symbolTxt;
-								DroppedDataSource.Content = "via SpawnData";
-							}
-							else
-							{
-								DataToSend.TextBox.Text = "MSFT";
-								DroppedData.Content = "MSFT";
-								DroppedDataSource.Content = "via default value";
-							}
-						});
+							DataToSend.TextBox.Text = symbolTxt;
+							DroppedData.Content = symbolTxt;
+							DroppedDataSource.Content = "via SpawnData";
+						}
+						else
+						{
+							DataToSend.TextBox.Text = "MSFT";
+							DroppedData.Content = "MSFT";
+							DroppedDataSource.Content = "via default value";
+						}
 					});
 				}
 				await SaveStateAsync();
@@ -410,7 +309,7 @@ namespace WPFExampleCore
 					var contextToSend = await ShouldSendContextToComponent(context, componentName) ? context : null;
 					try
 					{
-						var appId = await FSBL.Clients.Fdc3Client.DesktopAgentClient.Open(componentName, contextToSend);
+						var appId = await FSBL.Clients.Fdc3Client.DesktopAgentClient.Open(new AppIdentifier(componentName), contextToSend);
 					}
 					catch (Exception ex)
 					{
@@ -426,8 +325,11 @@ namespace WPFExampleCore
 
 		private async Task<bool> ShouldSendContextToComponent(Context context, string componentName)
 		{
-			var componentConfig = (await FSBL.Clients.ConfigClient.Get(new[] { "finsemble", "components", componentName }))?.response;
-			var intents = componentConfig?["appConfig"]?["interop"]?["intents"]?["listensFor"]?.Children();
+			var apps = (await FSBL.Clients.ConfigClient.Get(new[] { "finsemble", "apps" }))?.response as JArray;
+			var appConfig = apps.FirstOrDefault(x => x is JObject app && app?["appId"]?.ToString() == componentName) as JObject;
+			var intents = appConfig?["interop"]?["intents"]?["listensFor"]?.Children();
+
+			if (intents == null) return false;
 
 			foreach (var intent in intents)
 			{
@@ -442,33 +344,21 @@ namespace WPFExampleCore
 
 		private void Send_Click(object sender, RoutedEventArgs e)
 		{
-			if (FSBL.Clients.Fdc3Client is object)
+			//FDC3 Usage example 
+			//Broadcast
+			var context = new Context(new JObject
 			{
-				//FDC3 Usage example 
-				//Broadcast
-				var context = new Context(new JObject
+				["type"] = "fdc3.instrument",
+				["name"] = DataToSend.TextBox.Text,
+				["id"] = new JObject
 				{
-					["type"] = "fdc3.instrument",
-					["name"] = DataToSend.TextBox.Text,
-					["id"] = new JObject
-					{
-						["ticker"] = DataToSend.TextBox.Text
-					}
-				});
+					["ticker"] = DataToSend.TextBox.Text
+				}
+			});
 
-				FSBL.Clients.Fdc3Client.DesktopAgentClient.Broadcast(context);
-			}
-			else
-			{
-				// Use Default Linker
-				FSBL.Clients.LinkerClient?.Publish(new JObject
-				{
-					["dataType"] = "symbol",
-					["data"] = DataToSend.TextBox.Text
-				});
-			}
+			_ = FSBL.Clients.Fdc3Client.DesktopAgentClient.Broadcast(context);
 
-			Application.Current.Dispatcher.Invoke(async delegate //main thread
+			Dispatcher.Invoke(async delegate //main thread
 			{
 				DroppedData.Content = DataToSend.TextBox.Text;
 				DroppedDataSource.Content = "via Text entry";
@@ -478,7 +368,7 @@ namespace WPFExampleCore
 
 		private void DataToSend_EnterKeyPressed(object sender, EventArgs e)
 		{
-			Application.Current.Dispatcher.Invoke(delegate //main thread
+			Dispatcher.Invoke(delegate //main thread
 			{
 				DroppedData.Content = DataToSend.TextBox.Text;
 				DroppedDataSource.Content = "via Text input";

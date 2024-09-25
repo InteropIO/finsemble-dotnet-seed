@@ -1,9 +1,8 @@
 ﻿using Finsemble.Winform.Core;
 using Microsoft.IdentityModel.Tokens;
 using System;
-using System.Collections.Generic;
 using System.Diagnostics;
-using System.Text;
+using System.Threading.Tasks;
 using System.Windows.Forms;
 
 namespace WinformMultiWindowExampleCore
@@ -14,7 +13,8 @@ namespace WinformMultiWindowExampleCore
 	public class FinsembleForm:Form
 	{
 		public FinsembleWinform FSBL { get; private set; }
-		private bool allowshowdisplay = false;
+
+		private string[] Args { get; set; }
 		private JsonWebKey JWK = new JsonWebKey()
 		{
 			D = "S7msrBKYM_VhXmAWTLhoRobLTevToYbX3xkbkN-EiaZ6Hg-xfozn5uAQGnBnoP1ldKOgoj5Z3dx6kTgR-3xfonEfdkk6wn0OVNbuFYyGkeeV4ts5JmyVpihFqE3RbkWuQ5D5xpIhXWl1fOWEuFfGCYIib2pmBUyc4Lz4OYmMOIGEC9nJg6ZuoKOh0nDZBjjO6vbYbXCEi0ys-FD7NAWsM8jTNDxLyXmpCNSVJOnGTX9CcxnFGdLVO8fqbooaydSHtFJE9YVqUKWp54hOBFMHdsTY5iT88urrvdBLxtGf6NGUVetpw-nFiOihDRPb9wMuLY9CT4DDzLecxadrLKh0PQ",
@@ -33,16 +33,19 @@ namespace WinformMultiWindowExampleCore
 		/// <param name="args">Command line parameters <see cref="string[]"/>.</param>
 		public FinsembleForm(string[] args)
 		{
-			ConnectToFinsemble(args);
+			Args = args;
+
+			Visible = false;
 
 			// Dispose of Finsemble object when window is closed.
-			this.FormClosed += FinsembleForm_FormClosed;
+			FormClosed += FinsembleForm_FormClosed;
 		}
 
-		//Don't show the form until Finsemble has connected
-		protected override void SetVisibleCore(bool value)
+		public async Task ConnectToFinsemble()
 		{
-			base.SetVisibleCore(allowshowdisplay ? value : allowshowdisplay);
+			FSBL = new FinsembleWinform(this, Handle.ToString("X"), Args);
+			FSBL.Connected += Finsemble_Connected;
+			await FSBL.Connect("WinformMultiWindowExampleCore", JWK);
 		}
 
 		private void FinsembleForm_FormClosed(object sender, FormClosedEventArgs e)
@@ -52,23 +55,11 @@ namespace WinformMultiWindowExampleCore
 			Trace.TraceInformation("dispose completed");
 		}
 
-		/// <summary>
-		/// The ConnectToFinsemble.
-		/// </summary>
-		/// <param name="args">Command line parameters <see cref="string"/>.</param>
-		private async void ConnectToFinsemble(string[] args)
-		{
-			FSBL = new FinsembleWinform(this, this.Handle.ToString("X"), args);
-			FSBL.Connected += Finsemble_Connected;
-			await FSBL.Connect("WinformMultiWindowExampleCore", JWK);
-		}
-
 		private void Finsemble_Connected(object sender, EventArgs e)
 		{
 			Trace.TraceInformation("FSBL connected");
 			//show the form
-			this.allowshowdisplay = true;
-			this.Visible = true;
+			Show();
 
 			FSBL.Clients.Logger.Log($"Winform core example connected to Finsemble. {this.Text}");
 		}

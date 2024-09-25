@@ -1,4 +1,4 @@
-﻿using ChartIQ.Finsemble.FDC3.Interfaces;
+﻿using InteropIO.FDC3.Interfaces;
 using ChartIQ.Finsemble.FDC3.Types;
 using FDC3WPFExample.Types;
 using Newtonsoft.Json.Linq;
