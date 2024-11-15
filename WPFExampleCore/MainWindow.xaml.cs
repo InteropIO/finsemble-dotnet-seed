@@ -4,9 +4,11 @@ using System.Linq;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Interop;
+using System.Windows.Media;
 using Finsemble.Core.Clients.FDC3.Types;
 using Finsemble.Core.Clients.Router;
 using Finsemble.WPF.Core;
+using Finsemble.WPF.Core.TitlebarService.Models;
 using Microsoft.IdentityModel.Tokens;
 using Newtonsoft.Json.Linq;
 
@@ -81,12 +83,53 @@ namespace WPFExampleCore
 
 		private void Finsemble_Connected(object sender, EventArgs e)
 		{
-			this.Dispatcher.Invoke(async delegate //main thread
+			Trace.TraceInformation($"{FSBL.WindowName} - Finsemble connected");
+			this.Dispatcher.Invoke(delegate //main thread
 			{
 				// Initialize after Finsemble is connected
 				InitializeComponent();
+
+				FinsembleHeader.SetBridge(FSBL);
+				
+				#region Styling the Finsemble Header
+
+				if (!FSBL.IsIOCDConnected)
+				{
+
+					FinsembleHeader.GetHandlingService().ActiveBackground = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#22262F"));
+					FinsembleHeader.GetHandlingService().InactiveBackground = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#22262F"));
+					FinsembleHeader.GetHandlingService().ButtonHoverBackground = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#0A8CF4"));
+					FinsembleHeader.GetHandlingService().InactiveButtonHoverBackground = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#0A8CF4"));
+					FinsembleHeader.GetHandlingService().CloseButtonHoverBackground = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#F26666"));
+					FinsembleHeader.GetHandlingService().InactiveCloseButtonHoverBackground = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#F26666"));
+					FinsembleHeader.GetHandlingService().DockingButtonDockedBackground = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#0A8CF4"));
+					FinsembleHeader.GetHandlingService().TitleForeground = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#ACB2C0"));
+					FinsembleHeader.GetHandlingService().ButtonForeground = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#ACB2C0"));
+					FinsembleHeader.GetHandlingService().ButtonFont = new TitlebarFontConfiguration()
+					{
+						FontFamily = null,
+						FontSize = 8,
+						FontStyle = FontStyles.Normal,
+						FontWeight = FontWeights.Normal
+					};
+					FinsembleHeader.GetHandlingService().TitleFont = new TitlebarFontConfiguration()
+					{
+						FontFamily = null,
+						FontSize = 12,
+						FontStyle = FontStyles.Normal,
+						FontWeight = FontWeights.SemiBold
+					};
+
+					//Set window title
+					FinsembleHeader.GetHandlingService().Title = "WPF Example Core Component";
+				}
+
+				#endregion
+
 				this.Show();
 			});
+
+			Trace.TraceInformation($"{FSBL.WindowName} - Window shown");
 
 			//Subscribe to a PubSub topic
 			//N.B. You must add a PubSub responder before publishing or subscribing to any topic that doesn't start with 'Finsemble'
@@ -153,6 +196,7 @@ namespace WPFExampleCore
 			#endregion
 
 			WindowReady?.Invoke(this, EventArgs.Empty);
+			Trace.TraceInformation($"{FSBL.WindowName} - Window ready");
 		}
 
 		private async Task SaveStateAsync()

@@ -49,14 +49,14 @@
     <Reference Include="DotNetZip, Version=1.16.0.0, Culture=neutral, PublicKeyToken=6583c7c814667745, processorArchitecture=MSIL">
       <HintPath>..\packages\DotNetZip.1.16.0\lib\net40\DotNetZip.dll</HintPath>
     </Reference>
-    <Reference Include="fdc3.ioConnectNET, Version=1.10.0.0, Culture=neutral, PublicKeyToken=dbb353f1544d18d3, processorArchitecture=MSIL">
-      <HintPath>..\packages\fdc3.io.Connect.NET.1.10.0.0\lib\net45\fdc3.ioConnectNET.dll</HintPath>
+    <Reference Include="fdc3.ioConnectNET, Version=1.12.0.0, Culture=neutral, PublicKeyToken=dbb353f1544d18d3, processorArchitecture=MSIL">
+      <HintPath>..\packages\fdc3.io.Connect.NET.1.12.0.0\lib\net45\fdc3.ioConnectNET.dll</HintPath>
     </Reference>
-    <Reference Include="Finsemble, Version=10.0.0.20, Culture=neutral, PublicKeyToken=9df516fcbc4ebe73, processorArchitecture=MSIL">
-      <HintPath>..\packages\Finsemble.10.0.0-iocd.20\lib\net452\Finsemble.dll</HintPath>
+    <Reference Include="Finsemble, Version=10.0.0.32, Culture=neutral, PublicKeyToken=9df516fcbc4ebe73, processorArchitecture=MSIL">
+      <HintPath>..\packages\Finsemble.10.0.0-iocd.32\lib\net452\Finsemble.dll</HintPath>
     </Reference>
-    <Reference Include="ioConnectNET, Version=1.21.0.0, Culture=neutral, PublicKeyToken=dbb353f1544d18d3, processorArchitecture=MSIL">
-      <HintPath>..\packages\io.Connect.NET.1.21.0.0\lib\net45\ioConnectNET.dll</HintPath>
+    <Reference Include="ioConnectNET, Version=1.24.0.0, Culture=neutral, PublicKeyToken=dbb353f1544d18d3, processorArchitecture=MSIL">
+      <HintPath>..\packages\io.Connect.NET.1.24.0.0\lib\net45\ioConnectNET.dll</HintPath>
     </Reference>
     <Reference Include="Microsoft.IdentityModel.Logging, Version=6.17.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <HintPath>..\packages\Microsoft.IdentityModel.Logging.6.17.0\lib\net45\Microsoft.IdentityModel.Logging.dll</HintPath>

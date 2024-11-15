@@ -10,6 +10,8 @@ using System.Windows.Interop;
 using InteropIO.FDC3.Interfaces;
 using System.Diagnostics;
 using System.Linq;
+using System.Windows.Media;
+using InteropIO.TitleBarService.Models;
 
 namespace WPFExample
 {
@@ -171,10 +173,43 @@ namespace WPFExample
 
 		private async void Finsemble_Connected(object sender, EventArgs e)
 		{
+			Trace.TraceInformation($"{FSBL.windowName} - Finsemble connected");
 			this.Dispatcher.Invoke(delegate //main thread
 			{
 				// Initialize this Window and show it
 				InitializeComponent(); // Initialize after Finsemble is connected
+
+				FinsembleHeader.SetBridge(FSBL);
+				if (!FSBL.IsIOCDConnected)
+				{
+					FinsembleHeader.GetHandlingService().ActiveBackground = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#22262F"));
+					FinsembleHeader.GetHandlingService().InactiveBackground = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#22262F"));
+					FinsembleHeader.GetHandlingService().ButtonHoverBackground = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#0A8CF4"));
+					FinsembleHeader.GetHandlingService().InactiveButtonHoverBackground = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#0A8CF4"));
+					FinsembleHeader.GetHandlingService().CloseButtonHoverBackground = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#F26666"));
+					FinsembleHeader.GetHandlingService().InactiveCloseButtonHoverBackground = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#F26666"));
+					FinsembleHeader.GetHandlingService().DockingButtonDockedBackground = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#0A8CF4"));
+					FinsembleHeader.GetHandlingService().TitleForeground = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#ACB2C0"));
+					FinsembleHeader.GetHandlingService().ButtonForeground = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#ACB2C0"));
+
+					FinsembleHeader.GetHandlingService().ButtonFont = new TitlebarFontConfiguration()
+					{
+						FontFamily = null,
+						FontSize = 8,
+						FontStyle = FontStyles.Normal,
+						FontWeight = FontWeights.Normal
+					};
+					FinsembleHeader.GetHandlingService().TitleFont = new TitlebarFontConfiguration()
+					{
+						FontFamily = null,
+						FontSize = 12,
+						FontStyle = FontStyles.Normal,
+						FontWeight = FontWeights.SemiBold
+					};
+
+					//Set window title
+					FinsembleHeader.GetHandlingService().Title = "WPF Example Component";
+				}
 
 				//Subscribe to a PubSub topic
 				//N.B. You must add a PubSub responder before publishing or subscribing to any topic that doesn't start with 'Finsemble'
@@ -187,8 +222,12 @@ namespace WPFExample
 				this.Show();
 			});
 
+			Trace.TraceInformation($"{FSBL.windowName} - Shown");
+
 			// load available component list
+			Trace.TraceInformation($"{FSBL.windowName} - Getting apps");
 			var result = await FSBL.Clients.ConfigClient.Get(new[] { "finsemble", "apps" });
+			Trace.TraceInformation($"{FSBL.windowName} - Apps recieved");
 			if (result?.response is JArray apps)
 			{
 				foreach (var app in apps)
@@ -203,6 +242,7 @@ namespace WPFExample
 					}
 				}
 			}
+			Trace.TraceInformation($"{FSBL.windowName} - Apps added to dropdown");
 
 			//FDC3 Usage example	
 			FSBL.getDispatcher().Invoke(delegate //main thread	
@@ -274,6 +314,7 @@ namespace WPFExample
 			//});
 
 			WindowReady?.Invoke(this, EventArgs.Empty);
+			Trace.TraceInformation($"{FSBL.windowName} - Window ready");
 		}
 
 		private void Logger_OnLog(object sender, JObject e)

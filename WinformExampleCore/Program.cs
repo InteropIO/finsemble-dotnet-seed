@@ -40,18 +40,6 @@ namespace WinformExampleCore
 			var form = new MainForm(args);
 			form.Hide();
 
-			form.FormClosed += (s, e) =>
-			{
-				Application.Exit();
-			};
-
-			form.FSBL.Connected += (s, e) =>
-			{
-				form.Invoke(new Action(() =>
-				{
-					form.Show();
-				}));
-			};
 			Application.Run();
 		}
 

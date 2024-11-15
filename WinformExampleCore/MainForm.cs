@@ -18,7 +18,7 @@ namespace WinformExampleCore
 	public partial class MainForm : Form
 	{
 		public FinsembleWinform FSBL;
-		
+
 		private string[] _startupArgs;
 		private IListener _contextListenter;
 		const int LinkerPillWidth = 15;
@@ -44,10 +44,7 @@ namespace WinformExampleCore
 
 			this.Visible = false;
 			_startupArgs = args;
-		}
 
-		private void MainForm_Load(object sender, EventArgs e)
-		{
 			this.Visible = false;
 
 			MessagesRichBox.SendToBack();
@@ -108,6 +105,7 @@ namespace WinformExampleCore
 
 			LoadAndSetButtonsFont();
 			this.Visible = true;
+			Show();
 		}
 
 		private void WindowClient_WindowStateChanged(object sender, JObject state)
@@ -152,7 +150,7 @@ namespace WinformExampleCore
 		{
 			try
 			{
-				var response = await FSBL.Clients.ConfigClient.Get(new [] { "finsemble", "apps" });
+				var response = await FSBL.Clients.ConfigClient.Get(new[] { "finsemble", "apps" });
 
 				if (response.error != null)
 				{
@@ -354,17 +352,20 @@ namespace WinformExampleCore
 		{
 			finfont.AddFontFile(@"Resources\finfont.ttf");
 			finfont.AddFontFile(@"Resources\font-finance.ttf");
-			var finFont = new System.Drawing.Font(finfont.Families[0], 100);
-			var fontFinance = new System.Drawing.Font(finfont.Families[1], 7);
-			Invoke(new Action(() =>
+			if (finfont.Families.Length >= 2)
 			{
-				LinkerButton.Font = fontFinance;
-				AlwaysOnTopButton.Font = fontFinance;
-				DockingButton.Font = fontFinance;
+				var finFont = new System.Drawing.Font(finfont.Families[0], 100);
+				var fontFinance = new System.Drawing.Font(finfont.Families[1], 7);
+				Invoke(new Action(() =>
+				{
+					LinkerButton.Font = fontFinance;
+					AlwaysOnTopButton.Font = fontFinance;
+					DockingButton.Font = fontFinance;
 
-				DockingButton.UseEllipse = true;
-				AlwaysOnTopButton.UseEllipse = true;
-			}));
+					DockingButton.UseEllipse = true;
+					AlwaysOnTopButton.UseEllipse = true;
+				}));
+			}
 		}
 
 
@@ -470,5 +471,10 @@ namespace WinformExampleCore
 		}
 
 		#endregion
+
+		private void MainForm_FormClosed(object sender, FormClosedEventArgs e)
+		{
+			Application.Exit();
+		}
 	}
 }
