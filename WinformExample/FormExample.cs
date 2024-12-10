@@ -141,8 +141,6 @@ namespace WinformExample
 			// Example for getting Spawnable component list
 			var response = await FSBL.ConfigClient.Get(new[] { "finsemble", "components" });
 			HandleComponentsList(response);
-
-			FSBL.PublishReady();
 		}
 
 		private void HandleContext(Context context, IContextMetadata metadata)
